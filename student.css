@@ -1,3 +1,4 @@
+/* ==== base ==== */
 body{padding:0!important}
 #theme-pop .tp-logout{display:none}
 .wrap{width:100%;margin:0 auto}
@@ -831,6 +832,7 @@ body.student-dashboard-view .g-sched .month-day.today b,body.student-dashboard-v
 body.student-dashboard-view .g-sched .month-day.outside{color:#c3cad4!important}
 body.student-dashboard-view .g-sched .month-day.month-day::after{content:""!important;display:block!important;position:static!important;flex:none;width:4px;height:4px;margin:0!important;border-radius:50%;background:transparent!important;transform:none!important}
 body.student-dashboard-view .g-sched .month-day.has-session::after,body.student-dashboard-view .g-sched .month-day.has-session.selected::after{background:#b38324!important}
+/* ==== mobile-fix ==== */
 @media(max-width:780px){body.student-dashboard-view .student-shell{grid-template-columns:minmax(0,1fr)!important}
 body.student-dashboard-view .student-welcome,body.student-dashboard-view .student-sidebar,body.student-dashboard-view .student-workspace,body.student-dashboard-view .student-main,body.student-dashboard-view .student-main-content{min-width:0;max-width:100%;box-sizing:border-box}
 body.student-dashboard-view .student-shell *,body.student-dashboard-view .student-shell *::before,body.student-dashboard-view .student-shell *::after{box-shadow:none!important;text-shadow:none!important}
@@ -965,6 +967,7 @@ body.student-dashboard-view .m-week .icon-btn{color:#1B1D22!important}
 body.student-dashboard-view .m-week .t-thisweek{color:#1B1D22!important;font-weight:700;background:transparent!important}
 body.student-dashboard-view .m-week .t-thisweek.on{color:#94a3b8!important}
 body.student-dashboard-view .m-week .overview-week-label,body.student-dashboard-view .m-week .overview-week-label b{color:#1B1D22!important}}
+/* ==== teacher-css ==== */
 .t-content{display:flex;flex-direction:column;gap:14px;flex:1 1 auto;min-height:0}
 .student-main>.t-daybar,.t-stick>.t-daybar{flex:none;margin-bottom:14px}
 @media(min-width:781px){.student-workspace>.m-stick{display:none!important}}
@@ -1143,10 +1146,12 @@ a.t-open:hover span{text-decoration:underline}
 body.student-dashboard-view .t-slot.mode-up .t-mode-head{display:inline-flex;align-items:center;box-sizing:border-box;height:24px;padding:0 9px;border-radius:9999px;background:#F4F5F7;color:#475569;font-size:.6875rem;font-weight:700;white-space:nowrap}
 body.student-dashboard-view .t-row-head{grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:8px!important}
 body.student-dashboard-view .t-row-head .t-sum{flex-wrap:nowrap!important;justify-content:flex-end!important}}
+/* ==== m-tools-fix ==== */
 @media(max-width:780px){body.student-dashboard-view .student-shell>.student-welcome{grid-template-columns:auto minmax(0,1fr) auto!important;grid-template-areas:"left title right"!important}
 body.student-dashboard-view .student-shell>.student-welcome .student-welcome-right{display:flex!important;grid-area:right;align-items:center;justify-content:flex-end;min-width:0}
 body.student-dashboard-view .student-welcome-right .student-welcome-actions{display:none!important}
 body.student-dashboard-view .student-welcome-tools .icon-btn,body.student-dashboard-view .student-welcome-tools #btn-mode{color:#1B1D22!important;width:36px;height:36px;background:transparent!important;border:0!important}}
+/* ==== m-prof-fix ==== */
 @media(max-width:780px){body.student-dashboard-view .m-av{width:40px!important;height:40px!important;border-radius:12px!important;background:#F4F5F7!important;background-image:none!important;border:0!important;color:#1B1D22!important}
 body.student-dashboard-view .m-av svg{width:20px!important;height:20px!important;stroke-width:1.8}
 body.student-dashboard-view .student-workspace .m-profile .m-pi{flex:1 1 auto;min-width:0}
@@ -1156,27 +1161,35 @@ body.student-dashboard-view .m-profile .overview-week-label{min-width:0!importan
 body.student-dashboard-view .m-profile .overview-week-label .week-name{display:inline!important}
 body.student-dashboard-view .m-profile .icon-btn{width:28px!important;height:32px!important}
 body.student-dashboard-view .m-profile .t-thisweek{height:32px;padding:0 6px;font-size:.75rem}}
+/* ==== m-prof-fix2 ==== */
 @media(max-width:780px){body.student-dashboard-view .student-workspace .m-profile{padding:0!important;gap:10px!important;overflow:hidden;align-items:stretch!important}
 body.student-dashboard-view .student-workspace .m-profile .m-av{width:52px!important;height:auto!important;min-height:52px;align-self:stretch;border-radius:13px 0 0 13px!important}
 body.student-dashboard-view .student-workspace .m-profile .m-pi{padding:9px 0;justify-content:center}
 body.student-dashboard-view .m-profile>.m-week{padding-right:8px!important;align-self:center}}
+/* ==== m-prof-fix3 ==== */
 @media(max-width:780px){body.student-dashboard-view .m-profile .m-week .icon-btn,body.student-dashboard-view .m-profile .m-week .t-thisweek{display:none!important}
 body.student-dashboard-view .m-profile .overview-week-label{text-align:right}
 body.student-dashboard-view .m-profile .overview-week-label .week-dates{display:block!important}
 body.student-dashboard-view .m-profile .overview-week-label .week-name{padding:0}}
+/* ==== m-prof-fix5 ==== */
 @media(max-width:780px){body.student-dashboard-view .m-profile .overview-week-label{flex-direction:column!important;align-items:flex-end!important;white-space:nowrap}
 body.student-dashboard-view .m-profile .overview-week-label .week-dates{white-space:nowrap!important}}
+/* ==== m-prof-fix6 ==== */
 @media(max-width:780px){body.student-dashboard-view .m-profile .overview-week-label{gap:2px!important;line-height:1.15!important;font-family:inherit}
 body.student-dashboard-view .m-profile .overview-week-label .week-name{font-size:.9375rem!important;font-weight:800!important;line-height:1.15!important;color:#1B1D22!important}
 body.student-dashboard-view .m-profile .overview-week-label .week-dates{font-size:.6875rem!important;font-weight:400!important;line-height:1.15!important;color:#64748b!important}}
+/* ==== m-prof-fix7 ==== */
 @media(max-width:780px){body.student-dashboard-view .student-workspace>.m-stick{padding-bottom:12px!important}}
+/* ==== sb-autohide ==== */
 *{scrollbar-width:thin;scrollbar-color:transparent transparent}
 *:hover{scrollbar-color:#cbd0d8 transparent}
 *::-webkit-scrollbar{width:8px;height:8px;background:transparent}
 *::-webkit-scrollbar-track{background:transparent}
 *::-webkit-scrollbar-thumb{background:transparent;border-radius:8px}
 *:hover::-webkit-scrollbar-thumb{background:#cbd0d8}
+/* ==== m-hide-wk ==== */
 @media(max-width:780px){body.student-dashboard-view .student-week-only-date{display:none!important}}
+/* ==== att-css ==== */
 .profile-att{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:#E6F6EC;color:#157347;font-size:.75rem;font-weight:700}
 .att-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
 .att-strip>div{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #E4E6EA;border-radius:12px;background:#fff}
@@ -1186,18 +1199,24 @@ body.student-dashboard-view .m-profile .overview-week-label .week-dates{font-siz
 .att-strip span{font-size:.6875rem;color:#6B7280}
 .hr-tags{display:flex;align-items:center;justify-content:flex-end;gap:6px}
 @media(max-width:600px){.student-main .student-history-row>.hr-tags{grid-column:2;grid-row:2;justify-self:end}}
+/* ==== flat-rows ==== */
 .student-main .row,.student-workspace .row{background:transparent!important;border:0!important;border-bottom:1px solid #E4E6EA!important;border-radius:0!important;padding:10px 0!important;box-shadow:none!important}
 .student-main .space-y-2>.row:last-child,.student-main .student-library-list>.row:last-child{border-bottom:0!important}
 .student-main a.row:hover{background:transparent!important}
 .student-main a.row:hover span{text-decoration:underline;text-underline-offset:4px}
+/* ==== sub-pill ==== */
 .student-main .student-library-week>h3,.student-main .student-week-only-head>h2,.student-main .student-week-preview-head>h2{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;margin:0 0 8px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.8125rem;font-weight:700;line-height:1}
 .student-main .student-library-week>h3 span{font-weight:500;color:#6B7280;margin-left:4px}
 .student-main .student-week-only-head>h2 svg,.student-main .student-week-preview-head>h2 svg{width:15px;height:15px}
+/* ==== no-card-hl ==== */
 body .student-overview-highlight .g-week-sched,body .student-overview-highlight .g-prog,body .student-overview-highlight .g-tuition,body .student-overview-top .card,body .student-overview-view .card{border-top:1px solid #E4E6EA!important;border-left:1px solid #E4E6EA!important}
+/* ==== sub-pill2 ==== */
 .student-main .g-asg>h2,.student-main .g-mat>h2{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;margin:0 0 10px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.8125rem;font-weight:700;line-height:1}
 .student-main .g-asg>h2 svg,.student-main .g-mat>h2 svg{width:15px;height:15px}
+/* ==== sub-pill3 ==== */
 .student-main .g-hist>h2,.student-main .g-tuition-history>h2{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;margin:0 0 10px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.8125rem;font-weight:700;line-height:1}
 .student-main .g-hist>h2 svg,.student-main .g-tuition-history>h2 svg{width:15px;height:15px}
+/* ==== hl-sync ==== */
 .student-overview-highlight>.card{display:flex!important;flex-direction:column;padding:18px 20px!important}
 .student-overview-highlight .week-calendar-head,.student-overview-highlight .tuition-head,.student-overview-highlight .prog-head{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:space-between!important;gap:10px;height:32px;min-height:32px;margin:0 0 14px!important}
 .student-overview-highlight .week-calendar-title,.student-overview-highlight .tuition-head h2,.student-overview-highlight .prog-head h2{display:inline-flex!important;align-items:center;gap:6px;flex:0 0 auto!important;height:32px;padding:0 12px!important;margin:0!important;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.875rem!important;font-weight:700!important;line-height:1;width:auto!important;overflow:visible!important}
@@ -1207,18 +1226,23 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
 .student-overview-highlight .week-calendar-range{padding:0;color:#6B7280}
 .student-overview-highlight .prog-pill{background:#F4F5F7;color:#1B1D22}
 .student-overview-highlight .month-detail,.student-overview-highlight #tuition-status-text,.student-overview-highlight .g-prog>*:last-child{flex:1 1 auto}
+/* ==== pill-unify ==== */
 .student-main .student-library-week>h3,.student-main .student-week-only-head>h2,.student-main .student-week-preview-head>h2,.student-main .g-asg>h2,.student-main .g-mat>h2,.student-main .g-hist>h2,.student-main .g-tuition-history>h2,.student-overview-highlight .week-calendar-title,.student-overview-highlight .tuition-head h2,.student-overview-highlight .prog-head h2{display:inline-flex!important;align-items:center;gap:6px;height:32px!important;padding:0 12px!important;border-radius:999px!important;background:#F4F5F7!important;color:#1B1D22!important;font-size:.875rem!important;font-weight:700!important;line-height:1!important;width:auto!important}
 .student-main .student-library-week>h3 svg,.student-main .student-week-only-head>h2 svg,.student-main .student-week-preview-head>h2 svg,.student-main .g-asg>h2 svg,.student-main .g-mat>h2 svg,.student-main .g-hist>h2 svg,.student-main .g-tuition-history>h2 svg,.student-overview-highlight .week-calendar-title svg,.student-overview-highlight .tuition-head h2 svg,.student-overview-highlight .prog-head h2 svg{width:15px!important;height:15px!important;flex:none;padding:0!important;background:transparent!important;border-radius:0!important;color:#1B1D22!important}
+/* ==== pill-fit ==== */
 .student-main .g-asg>h2,.student-main .g-mat>h2,.student-main .g-hist>h2,.student-main .g-tuition-history>h2,.student-main .student-library-week>h3,.student-main .student-week-only-head>h2,.student-main .student-week-preview-head>h2{align-self:flex-start!important;justify-self:start!important;width:fit-content!important;max-width:100%!important;flex:0 0 auto!important}
+/* ==== stat-like-avatar ==== */
 .student-overview-top .g-info .stat{padding:0!important;gap:16px!important;overflow:hidden;align-items:stretch!important;border-radius:17px!important}
 .student-overview-top .g-info .stat>svg{height:auto!important;min-height:78px;align-self:stretch;box-sizing:border-box;border-radius:0!important;background:#F4F5F7!important;color:#1B1D22!important}
 .student-overview-top .g-info .stat>div{align-self:center;padding:10px 12px 10px 0;min-width:0}
 .student-overview-top .g-info .stat.s0>svg,.student-overview-top .g-info .stat.s1>svg,.student-overview-top .g-info .stat.s2>svg,.student-overview-top .g-info .stat.s3>svg{background:#F4F5F7!important;color:#1B1D22!important}
+/* ==== stat-compact ==== */
 .student-overview-top .g-info .stat>svg{flex:0 0 76px!important;width:76px!important;padding:0 24px!important;stroke-width:1.9!important}
 .student-overview-top .g-info .stat.s0>svg{background:#E6F6EC!important;color:#157347!important}
 .student-overview-top .g-info .stat.s1>svg{background:#FDECEF!important;color:#be123c!important}
 .student-overview-top .g-info .stat.s2>svg{background:#FFF1DC!important;color:#9A5B00!important}
 .student-overview-top .g-info .stat.s3>svg{background:#ECEAFB!important;color:#5b3fc4!important}
+/* ==== rail-compact ==== */
 @media(min-width:781px){.student-rail,.student-shell-inner-tabs .student-rail{overflow:hidden!important;justify-content:flex-start!important;gap:8px!important;padding:12px!important}
 .student-rail>*{flex:0 0 auto!important;margin:0!important}
 .student-shell-inner-tabs .student-rail .g-week-sched,.student-shell-inner-tabs .student-rail .g-sched,.student-shell-inner-tabs .student-rail .g-tuition,.student-shell-inner-tabs .student-rail .g-info,.student-shell-inner-tabs .student-rail .g-hero,.student-shell-inner-tabs .student-rail .g-hist{padding:9px 11px!important}
@@ -1232,7 +1256,9 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
 .student-rail .profile-avatar{transform:none}
 .student-rail .stat span{font-size:.65rem}
 .student-rail .month-detail{display:none!important}}
+/* ==== th-tag-align ==== */
 @media(min-width:781px){.tuition-history-row>.tag{align-self:end!important;margin-bottom:-3px;justify-self:end}}
+/* ==== rail-tuition-grid ==== */
 .student-rail #student-tuition{display:grid!important;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;row-gap:6px;align-items:center}
 .student-rail #student-tuition .tuition-head,.student-rail #student-tuition #tuition-status-text,.student-rail #student-tuition .tuition-amts.compact{display:contents!important}
 .student-rail #student-tuition .tuition-head h2{grid-column:1;grid-row:1;margin:0!important}
@@ -1240,9 +1266,10 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
 .student-rail #student-tuition .tuition-amts.compact b{grid-column:2;grid-row:1;justify-self:end;margin:0;font-size:1rem}
 .student-rail #student-tuition .ta-date{grid-column:2;grid-row:2;justify-self:end;font-size:.75rem;color:#818999}
 
-/* Tổng quan: hàng tuần chia 3 ô (bài học, bài tập, sổ từ vựng) */
+/* Tổng quan: hàng tuần chia 3 cột (bài học, bài tập, sổ từ vựng); thẻ Từ của hôm nay nổi bật */
 .student-overview-view .student-materials{grid-template-columns:repeat(3,minmax(0,1fr))}
 .student-overview-view .student-materials>#wotd-root{display:contents}
-.student-overview-view .student-materials>#wotd-root>.card{height:100%;min-height:0;max-height:none;overflow:auto;box-sizing:border-box}
+.student-overview-view .student-materials>#wotd-root>.card{height:100%;min-height:0;max-height:none;overflow:auto;box-sizing:border-box;background:#FFF4CF;border-color:#F0D98A}
+.student-overview-view .g-wotd .wotd-pill{background:#FFFFFF!important}
 @media(max-width:780px){.student-overview-view .student-materials{grid-template-columns:1fr}
 .student-overview-view .student-materials>#wotd-root>.card{height:auto;min-height:196px}}
