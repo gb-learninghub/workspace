@@ -59,6 +59,7 @@
           <input id="search" type="search" class="field m-fold w-full sm:w-56" placeholder="Tìm tên, mã hoặc lớp" aria-label="Tìm học viên">
           <select id="filter-class" class="field m-fold w-full sm:w-52" aria-label="Lọc theo lớp"></select>
           <button id="btn-add" type="button" class="btn-primary m-ico" aria-label="Thêm học viên" title="Thêm học viên"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm học viên</span></button>
+          <button id="btn-parents" type="button" class="btn-soft m-hide" aria-label="Phụ huynh" title="Quản lý trang phụ huynh"><i data-lucide="users" class="w-4 h-4"></i><span>Phụ huynh</span></button>
           <button id="btn-export" type="button" class="btn-soft m-hide" aria-label="Xuất CSV"><i data-lucide="download" class="w-4 h-4"></i><span>Xuất CSV</span></button>
         </div>
       </div>
@@ -147,13 +148,30 @@
       </div>
     </section>
     </div>
+    <div id="parents" class="edlg" hidden role="dialog" aria-modal="true" aria-labelledby="ph-title">
+    <section class="edlg-card bg-white rounded-2xl border border-slate-200 p-5 sm:p-6" style="width:min(680px,100%)">
+      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-1"><i data-lucide="users" class="w-4 h-4"></i><span id="ph-title">Trang phụ huynh</span></h3>
+      <p class="text-xs text-slate-500 mb-3">Mỗi phụ huynh có một link riêng (mã 8 số), nối được nhiều con (mỗi học sinh chỉ thuộc một phụ huynh), xem được lịch học, chuyên cần, bài về nhà và học phí của các con được nối. Học sinh đã có phụ huynh thì trang học sinh chỉ hiện trạng thái học phí, không hiện số tiền.</p>
+      <div id="ph-list" class="mb-4"></div>
+      <h4 class="font-bold text-slate-800 text-xs mb-2" id="ph-form-title">Thêm phụ huynh</h4>
+      <input id="ph-label" type="text" class="field w-full mb-2" placeholder="Tên gọi (ví dụ: Mẹ bé Khanh)" aria-label="Tên gọi phụ huynh" autocomplete="off" maxlength="60">
+      <input id="ph-search" type="text" class="field w-full mb-2" placeholder="Tìm học sinh để nối" aria-label="Tìm học sinh" autocomplete="off">
+      <div id="ph-pick" style="max-height:220px;overflow:auto" class="mb-3"></div>
+      <div class="flex flex-wrap items-center gap-3">
+        <button type="button" id="ph-save" class="btn-primary"><i data-lucide="save" class="w-4 h-4"></i><span>Lưu</span></button>
+        <button type="button" id="ph-reset" class="btn-soft">Làm mới form</button>
+        <button type="button" id="ph-close" class="btn-soft">Đóng</button>
+        <span id="ph-msg" role="alert" class="text-sm text-rose-700"></span>
+      </div>
+    </section>
+    </div>
   </main>
 
   <script>
     (function () {
       const $ = id => document.getElementById(id);
       const esc = LMS.esc, SCORE = LMS.score;
-      const state = { client: null, classes: [], students: [], tuitionRules: {}, q: '', cls: 'all', busy: false, sort: { key: 'class', dir: 1 } };
+      const state = { parents: [], links: [], client: null, classes: [], students: [], tuitionRules: {}, q: '', cls: 'all', busy: false, sort: { key: 'class', dir: 1 } };
 
       const natural = (a, b) => String(a).localeCompare(String(b), 'vi', { numeric: true });
       const vnd = n => Number(n || 0).toLocaleString('vi-VN') + ' đ';
@@ -191,7 +209,18 @@
         state.classes = (c.data || []).slice().sort((a, b) => natural(a.class_code, b.class_code));
         state.tuitionRules = tr.data && tr.data.value && typeof tr.data.value === 'object' ? tr.data.value : {};
         state.students = (s.data || []).map(r => Object.assign({}, r, { monthly_tuition: Number(r.monthly_tuition || 0) }));
+        await loadParents();
       }
+
+      async function loadParents() {
+        const [p, l] = await Promise.all([
+          state.client.from('parents').select('id,code,label').order('id'),
+          state.client.from('parent_students').select('parent_id,student_id')
+        ]);
+        state.parents = p.error ? [] : (p.data || []);
+        state.links = l.error ? [] : (l.data || []);
+      }
+      const hasParent = sid => state.links.some(x => x.student_id === sid);
 
       function fillClassSelects() {
         const opts = state.classes.map(c => `<option value="${c.id}">${esc(c.class_name)}</option>`).join('');
@@ -278,7 +307,7 @@
           const clsCell = cls ? `<a href="class.html?class=${encodeURIComponent(cls.class_code)}" class="text-sky-700 underline">${esc(cls.class_name)}</a>` : 'Chưa xếp lớp';
           return `<tr class="hover:bg-slate-50/60">
             <td class="cell-main py-3 px-2">
-              <a href="student.html#${encodeURIComponent(s.student_code)}" class="inline-flex items-center font-semibold text-sm text-sky-700 hover:underline" style="min-height:44px">${esc(s.student_name)}</a>
+              <a href="student.html#${encodeURIComponent(s.student_code)}" class="inline-flex items-center font-semibold text-sm text-sky-700 hover:underline" style="min-height:44px">${esc(s.student_name)}</a>${hasParent(s.id) ? ' <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600" title="Đã có trang phụ huynh">Phụ huynh</span>' : ''}
               <div class="code-chip mt-0.5"><span>${esc(s.student_code)}</span>
                 <button type="button" class="icon-btn" style="width:32px;height:32px" data-act="copy" data-id="${s.id}" aria-label="Sao chép mã ${esc(s.student_name)}"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
               </div>
@@ -482,7 +511,73 @@
         tg.manual = tg.manual.filter(m => !(m.kind === k && m.week_start === w)); renderManual();
       }
 
+
+      /* ---------- Phụ huynh ---------- */
+      const ph = { editId: null, sel: new Set() };
+      const phMsg = t => { $('ph-msg').textContent = t || ''; };
+      const phLink = p => new URL('parent.html#' + p.code, location.href).href;
+      function phResetForm() { ph.editId = null; ph.sel = new Set(); $('ph-label').value = ''; $('ph-search').value = ''; $('ph-form-title').textContent = 'Thêm phụ huynh'; phMsg(''); renderPick(); }
+      function renderParents() {
+        if (!state.parents.length) { $('ph-list').innerHTML = '<div class="text-xs text-slate-500">Chưa có phụ huynh nào.</div>'; return icons(); }
+        $('ph-list').innerHTML = state.parents.map(p => {
+          const kids = state.links.filter(x => x.parent_id === p.id).map(x => find(x.student_id)).filter(Boolean).map(x => esc(x.student_name)).join(', ') || 'Chưa nối học sinh';
+          return `<div class="flex items-center justify-between gap-2 py-2 border-b border-slate-100">
+            <div class="min-w-0"><div class="font-semibold text-sm text-slate-800">${esc(p.label)} <span class="text-xs text-slate-500" style="font-family:ui-monospace,monospace">${esc(p.code)}</span></div><div class="text-xs text-slate-500" style="overflow-wrap:anywhere">${kids}</div></div>
+            <div class="flex shrink-0">
+              <button type="button" class="icon-btn" data-pact="copy" data-pid="${p.id}" aria-label="Sao chép link ${esc(p.label)}" title="Sao chép link"><i data-lucide="link" class="w-4 h-4"></i></button>
+              <button type="button" class="icon-btn" data-pact="regen" data-pid="${p.id}" aria-label="Đổi mã ${esc(p.label)}" title="Đổi mã"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+              <button type="button" class="icon-btn" data-pact="edit" data-pid="${p.id}" aria-label="Sửa ${esc(p.label)}"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+              <button type="button" class="icon-btn danger" data-pact="del" data-pid="${p.id}" aria-label="Xóa ${esc(p.label)}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div></div>`;
+        }).join('');
+        icons();
+      }
+      function renderPick() {
+        const q = $('ph-search').value.trim().toLowerCase();
+        const list = state.students.filter(s => s.is_active && (!q || s.student_name.toLowerCase().includes(q)));
+        const ownerOf = sid => { const l = state.links.find(x => x.student_id === sid && x.parent_id !== ph.editId); return l ? state.parents.find(p => p.id === l.parent_id) : null; };
+        $('ph-pick').innerHTML = list.map(s => { const c = classOf(s), o = ownerOf(s.id); return `<label class="flex items-center gap-2 py-1.5" style="min-height:44px;cursor:${o ? 'default' : 'pointer'};${o ? 'opacity:.55' : ''}"><input type="checkbox" data-sid="${s.id}" ${ph.sel.has(s.id) ? 'checked' : ''} ${o ? 'disabled' : ''} style="width:20px;height:20px"><span class="text-sm">${esc(s.student_name)}</span><span class="text-xs text-slate-500">${esc(c ? c.class_code : 'Chưa xếp lớp')}</span>${o ? `<span class="text-xs text-slate-500">· đã nối với ${esc(o.label)}</span>` : ''}</label>`; }).join('') || '<div class="text-xs text-slate-500">Không có học sinh phù hợp.</div>';
+      }
+      async function phReload() { await loadParents(); renderParents(); renderPick(); render(); }
+      async function phSave() {
+        const label = $('ph-label').value.trim();
+        if (!label) return phMsg('Nhập tên gọi phụ huynh.');
+        if (!ph.sel.size) return phMsg('Chọn ít nhất một học sinh.');
+        phMsg(''); $('ph-save').disabled = true;
+        try {
+          const c = state.client; let pid = ph.editId;
+          if (pid) { const u = await c.from('parents').update({ label }).eq('id', pid); if (u.error) throw u.error; }
+          else { const i = await c.from('parents').insert({ label }).select('id').single(); if (i.error) throw i.error; pid = i.data.id; }
+          const have = new Set(state.links.filter(x => x.parent_id === pid).map(x => x.student_id));
+          const add = [...ph.sel].filter(x => !have.has(x)).map(student_id => ({ parent_id: pid, student_id }));
+          const del = [...have].filter(x => !ph.sel.has(x));
+          if (add.length) { const r = await c.from('parent_students').insert(add); if (r.error) throw r.error; }
+          if (del.length) { const r = await c.from('parent_students').delete().eq('parent_id', pid).in('student_id', del); if (r.error) throw r.error; }
+          LMS.toast('Đã lưu phụ huynh ' + label); phResetForm(); await phReload();
+        } catch (e) { phMsg(LMS.friendlyError(e)); }
+        $('ph-save').disabled = false;
+      }
+      async function phAction(act, pid) {
+        const p = state.parents.find(x => x.id === Number(pid)); if (!p) return;
+        if (act === 'copy') { const url = phLink(p); try { await navigator.clipboard.writeText(url); LMS.toast('Đã sao chép link của ' + p.label); } catch (e) { LMS.toast('Không sao chép được. Link: ' + url); } }
+        else if (act === 'edit') { ph.editId = p.id; ph.sel = new Set(state.links.filter(x => x.parent_id === p.id).map(x => x.student_id)); $('ph-label').value = p.label; $('ph-form-title').textContent = 'Sửa phụ huynh'; phMsg(''); renderPick(); $('ph-label').focus(); }
+        else if (act === 'regen') { if (!(await LMS.confirm('Đổi mã của ' + p.label + '? Link cũ sẽ không dùng được nữa.', { ok: 'Đổi mã' }))) return; const r = await state.client.rpc('regen_parent_code', { p_parent_id: p.id }); if (r.error) return phMsg(LMS.friendlyError(r.error)); LMS.toast('Đã đổi mã. Nhớ gửi lại link mới.'); await phReload(); }
+        else if (act === 'del') { if (!(await LMS.confirm('Xóa phụ huynh ' + p.label + '? Link sẽ ngừng dùng được và học sinh đã nối sẽ hiện lại số tiền học phí ở trang học sinh.', { ok: 'Xóa' }))) return; const r = await state.client.from('parents').delete().eq('id', p.id); if (r.error) return phMsg(LMS.friendlyError(r.error)); if (ph.editId === p.id) phResetForm(); await phReload(); }
+      }
+      function openParents() { phResetForm(); renderParents(); $('parents').hidden = false; }
+      function bindParents() {
+        $('btn-parents').addEventListener('click', openParents);
+        $('ph-close').addEventListener('click', () => { $('parents').hidden = true; });
+        $('parents').addEventListener('mousedown', e => { if (e.target === $('parents')) $('parents').hidden = true; });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('parents').hidden) $('parents').hidden = true; });
+        $('ph-save').addEventListener('click', phSave); $('ph-reset').addEventListener('click', phResetForm);
+        $('ph-search').addEventListener('input', renderPick);
+        $('ph-pick').addEventListener('change', e => { const cb = e.target.closest('[data-sid]'); if (!cb) return; const id = Number(cb.dataset.sid); if (cb.checked) ph.sel.add(id); else ph.sel.delete(id); });
+        $('ph-list').addEventListener('click', e => { const b = e.target.closest('[data-pact]'); if (b) phAction(b.dataset.pact, b.dataset.pid); });
+      }
+
       function bind() {
+        bindParents();
         document.querySelectorAll('.sortbtn').forEach(b => b.addEventListener('click', () => {
           const k = b.dataset.sort; state.sort = state.sort.key === k ? { key: k, dir: -state.sort.dir } : { key: k, dir: 1 }; render();
         }));

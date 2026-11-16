@@ -1183,11 +1183,20 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         else { const i = await st.c.from('assignments').insert(row).select('id').single(); if (i.error) return fail(LMS.friendlyError(i.error)); id = i.data.id; }
         const k = await st.c.from('assignment_keys').upsert({ assignment_id: id, answer_key }, { onConflict: 'assignment_id' });
         if (k.error) return fail(LMS.friendlyError(k.error));
+        let vocabNote = '';
+        const vm = text.match(/<script[^>]*id=["']gb-vocab["'][^>]*>([\s\S]*?)<\/script>/);
+        if (vm) {
+          let VB; try { VB = JSON.parse(vm[1]); } catch (e) { return fail('Khối từ vựng (gb-vocab) không đọc được (JSON lỗi). Bài đã lưu, từ vựng chưa đăng.'); }
+          const items = (Array.isArray(VB) ? VB : (VB.items || [])).filter(x => x && String(x.word || '').trim()).map(x => ({ word: String(x.word).trim(), pos: x.pos || '', ipa: x.ipa || '', meaning_vi: x.meaning || x.meaning_vi || '', example: x.example || '', topic: x.topic || '', tier: x.tier === 'ref' ? 'ref' : 'core' }));
+          const pv = await st.c.rpc('publish_lesson_vocab', { p_file_key: page_path, p_items: items, p_skill: skill || (/reading/i.test(tn) ? 'reading' : null) });
+          if (pv.error) return fail('Bài đã lưu nhưng đăng từ vựng lỗi: ' + LMS.friendlyError(pv.error));
+          vocabNote = ' Từ vựng: ' + (pv.data.core || 0) + ' từ vào sổ, ' + (pv.data.ref || 0) + ' từ tham khảo.';
+        }
         const clean = text.replace(/<script[^>]*id=["']gb-key["'][^>]*>[\s\S]*?<\/script>[ \t]*\r?\n?/, '');
         const blob = new Blob([clean], { type: 'text/html' }), url = URL.createObjectURL(blob);
         await openAsg(code);
         msg.style.color = '#047857';
-        msg.innerHTML = 'Đã lưu bài <b>' + esc(code) + '</b> (' + questions.length + ' câu' + (parts.length ? ', ' + parts.length + ' phần' : '') + ', ' + (kind === 'lesson' ? 'bài học' : 'bài tập') + ', đường dẫn ' + esc(page_path) + '). Hãy đẩy lên GitHub <b>bản đã gỡ key</b>: <a href="' + url + '" download="' + esc(file.name) + '" style="text-decoration:underline;font-weight:700">Tải bản sạch</a>. Xong chọn lớp, ngày và hạn bên dưới rồi Giao.';
+        msg.innerHTML = 'Đã lưu bài <b>' + esc(code) + '</b> (' + questions.length + ' câu' + (parts.length ? ', ' + parts.length + ' phần' : '') + ', ' + (kind === 'lesson' ? 'bài học' : 'bài tập') + ', đường dẫn ' + esc(page_path) + ').' + esc(vocabNote) + ' Hãy đẩy lên GitHub <b>bản đã gỡ key</b>: <a href="' + url + '" download="' + esc(file.name) + '" style="text-decoration:underline;font-weight:700">Tải bản sạch</a>. Xong chọn lớp, ngày và hạn bên dưới rồi Giao.';
         $('da-file').value = '';
       }
       async function openAsg(code) {
