@@ -235,3 +235,11 @@ html.gb-ready body{opacity:1;transition:opacity .15s ease-out}
 .tuition-row .mh:not(.m-show)::after,td .mh:not(.m-show)::after,#payments .mh:not(.m-show)::after,#expenses .mh:not(.m-show)::after{width:16px;height:16px}
 .money.mh:not(.m-show){display:flex;justify-content:flex-end}
 .tuition-row .status-cell .money.mh:not(.m-show){display:inline-flex}
+
+/* Học phí trên điện thoại: icon mắt nằm dưới nhãn (không cùng dòng), ô tổng không lộ số khi đang ẩn */
+body.tuition-page .tuition-main>section:first-child .stat-n.mh:not(.m-show){font-size:0!important;min-height:22px;justify-content:center}
+body.tuition-page .tuition-main>section:first-child .stat-n.mh:not(.m-show)::after{width:18px;height:18px}
+@media(max-width:640px){
+body.tuition-page .tuition-row>div[data-label].mh:not(.m-show),body.tuition-page .tuition-row .status-cell .money.mh:not(.m-show){display:block!important;min-height:0;text-align:left!important}
+body.tuition-page .tuition-row .mh:not(.m-show)::after{display:block;width:16px;height:16px;margin-top:2px}
+}
