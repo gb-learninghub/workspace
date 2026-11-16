@@ -234,31 +234,33 @@
 
   /* Thẻ "Từ của hôm nay" ở trang tổng quan. Dữ liệu giữ trong bộ nhớ theo mã học viên, vẽ lại không gọi mạng. */
   var WD = {};
-  var WCSS = '.wotd{border:1px solid var(--t-border,#E4E6EA);border-radius:16px;background:#fff;padding:14px 16px;margin-top:14px;display:flex;flex-direction:column;gap:6px}' +
-    '.wotd-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.8125rem;font-weight:700;color:var(--t-muted,#818999)}.wotd-w{font-size:1.5rem;font-weight:800;line-height:1.2}' +
-    '.wotd-m{font-size:.9375rem;color:var(--t-muted,#818999);margin-left:8px;font-weight:500}.wotd-mean{font-size:1.0625rem;min-height:24px}.wotd-def{font-size:.9375rem;color:#454B57}' +
-    '.wotd-act{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px}.wotd-act .vnb-btn{min-height:44px}.wotd-em{font-size:.9375rem;color:#454B57;line-height:1.55}';
-  function wcss() { if (document.getElementById('wotd-css')) return; var s = document.createElement('style'); s.id = 'wotd-css'; s.textContent = WCSS + '.wotd .vnb-btn{min-height:44px;padding:0 18px;border-radius:22px;border:1px solid var(--t-border,#D5D8DE);background:#fff;font:inherit;font-weight:600;color:#1B1D22;cursor:pointer}.wotd .vnb-btn.pri{background:#16181D;border-color:#16181D;color:#fff}.wotd .vnb-sm{width:44px;height:44px;border-radius:22px;border:1px solid var(--t-border,#E4E6EA);background:#fff;color:#454B57;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}.wotd svg{width:18px;height:18px}'; document.head.appendChild(s); }
+  var WCSS = '#wotd-root{margin:0}.g-wotd{display:flex;flex-direction:column;gap:8px}.student-main .g-wotd>.wotd-top{display:flex;align-items:center;justify-content:space-between;gap:8px}' +
+    '.student-main .g-wotd .wotd-pill{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.875rem;font-weight:700;line-height:1;margin:0}.g-wotd .wotd-pill svg{width:15px;height:15px}' +
+    '.g-wotd .wotd-cnt{font-size:.8125rem;color:var(--t-muted,#818999)}.wotd-line{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.wotd-w{font-size:1.375rem;font-weight:800;line-height:1.25}' +
+    '.wotd-m{font-size:.875rem;color:var(--t-muted,#818999);font-weight:500}.wotd-mean{font-size:.9375rem}.wotd-def{font-size:.8125rem;color:#454B57;line-height:1.5}' +
+    '.wotd-act{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.wotd-em{font-size:.8125rem;color:#596579;line-height:1.5}';
+  function wcss() { if (document.getElementById('wotd-css')) return; var s = document.createElement('style'); s.id = 'wotd-css'; s.textContent = WCSS + '.wotd .vnb-btn{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--t-border,#D5D8DE);background:#fff;font:inherit;font-size:.875rem;font-weight:600;color:#1B1D22;cursor:pointer}.wotd .vnb-btn.pri{background:#16181D;border-color:#16181D;color:#fff}.wotd .vnb-sm{width:44px;height:44px;border-radius:22px;border:1px solid var(--t-border,#E4E6EA);background:#fff;color:#454B57;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}.g-wotd .vnb-sm svg{width:18px;height:18px}'; document.head.appendChild(s); }
 
   function wotd(root, o) {
     if (!root) return;
     wcss();
     var st = WD[o.code] || (WD[o.code] = { d: null, show: false, err: false, loading: false }), api = V.api(o.c, o.code);
+    function top(cnt) { return '<div class="wotd-top"><h2 class="wotd-pill"><i data-lucide="sparkles"></i>Từ của hôm nay</h2>' + (cnt ? '<span class="wotd-cnt">' + cnt + '</span>' : '') + '</div>'; }
     function draw() {
       var d = st.d, h;
-      if (st.err) h = '<div class="wotd-h">Từ của hôm nay</div><div class="wotd-em">Chưa tải được từ hôm nay, kiểm tra mạng rồi tải lại trang.</div>';
-      else if (!d) h = '<div class="wotd-h">Từ của hôm nay</div><div class="wotd-em">Đang tải...</div>';
-      else if (d.empty) h = '<div class="wotd-h">Từ của hôm nay</div><div class="wotd-em">Sổ của em chưa có từ nào. Từ trong bài học sẽ tự vào sổ khi giáo viên giao bài, hoặc em tự thêm ở tab Sổ từ vựng.</div><div class="wotd-act"><button type="button" class="vnb-btn pri" data-wotd="open">Mở sổ từ vựng</button></div>';
+      if (st.err) h = top('') + '<div class="wotd-em">Chưa tải được từ hôm nay, kiểm tra mạng rồi tải lại trang.</div>';
+      else if (!d) h = top('') + '<div class="wotd-em">Đang tải...</div>';
+      else if (d.empty) h = top('') + '<div class="wotd-em">Sổ của em chưa có từ nào. Từ trong bài học sẽ tự vào sổ khi giáo viên giao bài, hoặc em tự thêm ở tab Sổ từ vựng.</div><div class="wotd-act"><button type="button" class="vnb-btn pri" data-wotd="open">Mở sổ từ vựng</button></div>';
       else {
         var mean = d.meaning ? (st.show ? esc(d.meaning) : '<button type="button" class="vnb-btn" data-wotd="reveal">Chạm để hiện nghĩa</button>') : '<span class="vnb-tag first">chờ nghĩa</span>';
-        h = '<div class="wotd-h"><span>Từ của hôm nay</span><span>' + d.done + '/' + d.total + ' từ đã thuộc</span></div>' +
-          '<div><span class="wotd-w">' + esc(d.word) + '</span>' + (d.pos ? '<span class="wotd-m">' + esc(d.pos) + '</span>' : '') + (d.ipa ? '<span class="wotd-m">' + esc(d.ipa) + '</span>' : '') + '</div>' +
+        h = top(d.done + '/' + d.total + ' từ đã thuộc') +
+          '<div class="wotd-line"><span class="wotd-w">' + esc(d.word) + '</span>' + (d.pos ? '<span class="wotd-m">' + esc(d.pos) + '</span>' : '') + (d.ipa ? '<span class="wotd-m">' + esc(d.ipa) + '</span>' : '') + '</div>' +
           '<div class="wotd-mean">' + mean + '</div>' + (st.show && d.definition ? '<div class="wotd-def">' + esc(d.definition) + '</div>' : '') + (st.show && d.example ? '<div class="wotd-def"><i>' + esc(d.example) + '</i></div>' : '') +
           '<div class="wotd-act"><button type="button" class="vnb-sm" data-wotd="say" aria-label="Phát âm"><i data-lucide="volume-2"></i></button>' +
           '<button type="button" class="vnb-btn' + (d.learned ? '' : ' pri') + '" data-wotd="learn">' + (d.learned ? 'Bỏ đánh dấu thuộc' : 'Đã thuộc') + '</button>' +
           '<button type="button" class="vnb-btn" data-wotd="open">Mở sổ</button></div>';
       }
-      root.innerHTML = '<div class="wotd">' + h + '</div>'; icons();
+      root.innerHTML = '<section class="card g-wotd wotd">' + h + '</section>'; icons();
     }
     root.onclick = function (e) {
       var b = e.target.closest('[data-wotd]'); if (!b || !st.d) return;
