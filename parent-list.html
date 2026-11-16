@@ -194,9 +194,12 @@ table.stack thead{display:none!important}
 
       function renderPick() {
         const q = $('ph-search').value.trim().toLowerCase();
-        const list = state.students.filter(s => s.is_active && (!q || s.student_name.toLowerCase().includes(q))).sort((a, b) => natural((classOf(a) || {}).class_code || 'zzz', (classOf(b) || {}).class_code || 'zzz') || natural(a.student_name, b.student_name));
+        const fold = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+        const lab = ' ' + fold($('ph-label').value) + ' ';
+        const sug = new Set(lab.trim().length < 2 ? [] : state.students.filter(s => { const n = fold(s.student_name), w = n.split(' ').pop(); return s.is_active && n && (lab.includes(' ' + n + ' ') || (w.length > 1 && lab.includes(' ' + w + ' '))); }).map(s => s.id));
+        const list = state.students.filter(s => s.is_active && (!q || s.student_name.toLowerCase().includes(q))).sort((a, b) => (sug.has(b.id) - sug.has(a.id)) || natural((classOf(a) || {}).class_code || 'zzz', (classOf(b) || {}).class_code || 'zzz') || natural(a.student_name, b.student_name));
         const ownerOf = sid => { const l = state.links.find(x => x.student_id === sid && x.parent_id !== ph.editId); return l ? state.parents.find(p => p.id === l.parent_id) : null; };
-        $('ph-pick').innerHTML = list.map(s => { const c = classOf(s), o = ownerOf(s.id); return `<label class="flex items-center gap-2 py-1.5" style="min-height:44px;cursor:${o ? 'default' : 'pointer'};${o ? 'opacity:.55' : ''}"><input type="checkbox" data-sid="${s.id}" ${ph.sel.has(s.id) ? 'checked' : ''} ${o ? 'disabled' : ''} style="width:20px;height:20px"><span class="text-sm">${esc(s.student_name)}</span><span class="text-xs text-slate-500">${esc(c ? c.class_code : 'Chưa xếp lớp')}</span>${o ? `<span class="text-xs text-slate-500">· đã nối với ${esc(o.label)}</span>` : ''}</label>`; }).join('') || '<div class="text-xs text-slate-500">Không có học sinh phù hợp.</div>';
+        $('ph-pick').innerHTML = list.map(s => { const c = classOf(s), o = ownerOf(s.id); return `<label class="flex items-center gap-2 py-1.5" style="min-height:44px;cursor:${o ? 'default' : 'pointer'};${o ? 'opacity:.55' : ''}"><input type="checkbox" data-sid="${s.id}" ${ph.sel.has(s.id) ? 'checked' : ''} ${o ? 'disabled' : ''} style="width:20px;height:20px"><span class="text-sm">${esc(s.student_name)}</span>${sug.has(s.id) ? '<span class="text-xs font-bold" style="background:#FFF3C4;color:#7A5B00;border-radius:6px;padding:1px 6px">Gợi ý</span>' : ''}<span class="text-xs text-slate-500">${esc(c ? c.class_code : 'Chưa xếp lớp')}</span>${o ? `<span class="text-xs text-slate-500">· đã nối với ${esc(o.label)}</span>` : ''}</label>`; }).join('') || '<div class="text-xs text-slate-500">Không có học sinh phù hợp.</div>';
       }
 
       function openEditor(p) {
@@ -254,6 +257,7 @@ table.stack thead{display:none!important}
         $('editor').addEventListener('mousedown', e => { if (e.target === $('editor')) closeEditor(); });
         document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('editor').hidden) closeEditor(); });
         $('ph-search').addEventListener('input', renderPick);
+        $('ph-label').addEventListener('input', renderPick);
         $('ph-pick').addEventListener('change', e => { const cb = e.target.closest('[data-sid]'); if (!cb) return; const id = Number(cb.dataset.sid); if (cb.checked) ph.sel.add(id); else ph.sel.delete(id); });
         $('rows').addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b) act(b.dataset.act, b.dataset.id); });
       }
