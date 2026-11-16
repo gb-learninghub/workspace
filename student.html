@@ -1592,7 +1592,7 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
           : '<div class="text-sm text-slate-500">Chưa có lịch sử đóng học phí.</div>';
       const tuitionHistoryHtml = `<section class="card g-tuition-history"><h2><i data-lucide="wallet"></i>Lịch sử đóng học phí</h2><p class="text-xs text-slate-500 mb-3">Theo dõi trạng thái và ngày đóng theo từng tháng.</p><div id="tuition-history-list">${tuitionHistoryContent()}</div></section>`;
       const views = {
-        overview: `<div class="student-week-materials"><div class="student-materials">${matWeekHtml}${hwWeekHtml}${isOverview?'<div id="wotd-root"></div>':''}</div></div>`,
+        overview: `<div class="student-week-materials"><div class="student-materials">${matWeekHtml}${hwWeekHtml}<div id="wotd-root"></div></div></div>`,
         lessons: matHtml,
         homework: hwHtml,
         vocab: '<section class="card g-vocab"><div id="vocab-root"></div></section>',
