@@ -1,11 +1,5 @@
 /* lms.css — giao diện dùng chung cho các trang LMS */
 
-    @view-transition{navigation:auto}
-    ::view-transition-old(root){animation:lms-page-out .16s ease both}
-    ::view-transition-new(root){animation:lms-page-in .22s cubic-bezier(.2,.75,.25,1) both}
-    @keyframes lms-page-out{to{opacity:0;transform:translateY(-2px)}}
-    @keyframes lms-page-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-    @media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none!important}}
 
     :root{color-scheme:light;--sky-50:243 246 252;--sky-100:227 235 249;--sky-200:201 217 244;--sky-300:176 180 188;--sky-400:87 92 102;--sky-500:52 56 64;--sky-600:22 24 29;--sky-700:27 29 34;--sky-800:20 22 26;--sky-900:12 13 16;--t-primary:#16181D;--t-primary-2:#23262D;--t-accent:#4A4E57;--t-tint:#ECEEF1;--t-tint-2:#E4E6EA;--t-soft:#F4F5F7;--t-border:#E4E6EA;--t-line:#D5D8DE;--t-muted:#6B7280;--t-ink:#1B1D22;--page-bg:#FFFFFF;--lms-accent:var(--t-primary);--lms-accent-dark:var(--t-primary);--lms-tint:var(--t-tint);--lms-border:var(--t-border);--lms-muted:var(--t-muted);--lms-bg:var(--page-bg);--lms-ink:var(--t-ink);--nav-w:232px}
     html{-webkit-text-size-adjust:100%}

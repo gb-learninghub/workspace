@@ -63,7 +63,7 @@
   <script>
   (()=>{'use strict';
     const $=id=>document.getElementById(id), esc=LMS.esc;
-    const PROGRAM={gs:'GS',ac12:'AC12',ielts:'IE',toeic:'TO',comm:'GT'};
+    const PROGRAM={gs:'GS',ac12:'AC12',ielts:'IE',toeic:'TO',comm:'GT',all:'Tất cả'};
     let c,classes=[],students=[],counts={},classNotes={};
     const state=x=>x.is_archived?'archived':x.is_active?'active':'inactive';
     const classHref=x=>x.page_url||'class.html?class='+encodeURIComponent(x.class_code);

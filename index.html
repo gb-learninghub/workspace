@@ -327,6 +327,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         <option value="ielts">IE</option>
         <option value="toeic">TO</option>
         <option value="comm">GT</option>
+        <option value="all">Tất cả</option>
       </select>
       <label for="ds-status">Trạng thái</label>
       <select id="ds-status" class="field">
@@ -499,7 +500,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       const STATUS_TXT = { planned: 'Chưa dạy', done: 'Đã dạy', cancel: 'Hủy', makeup: 'Bù', holiday: 'Nghỉ lễ' };
       const DEF_BLOCKED = ['07:00 - 22:30', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 19:00', '20:30 - 22:00', '18:00 - 22:30'];
       const st = { c: null, classes: [], counts: {}, activeStudentCount: 0, unassignedCount: 0, programs: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'overview', mats: [], lib: [], libAsg: [], libLoaded: false, libProg: '', libWeek: 'all', libCollapsed: {}, scanAll: [], scanAt: 0, overviewFinance: null };
-      const CLASS_PROGRAM = { gs: 'GS', ac12: 'AC12', ielts: 'IE', toeic: 'TO', comm: 'GT' };
+      const CLASS_PROGRAM = { gs: 'GS', ac12: 'AC12', ielts: 'IE', toeic: 'TO', comm: 'GT', all: 'Tất cả' };
 
       const pad = n => String(n).padStart(2, '0');
       const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
@@ -1389,7 +1390,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         if (!code) { err.textContent = 'Nhập mã lớp.'; return; }
         if (st.classes.some(c => c.class_code.toLowerCase() === code.toLowerCase() && String(c.id) !== id)) { err.textContent = 'Mã lớp này đã có.'; return; }
         const state = $('dc-state').value;
-        const program = $('dc-program').value || LMS.score.programOf(code);
+        const program = $('dc-program').value || (/^00\./.test(code) ? 'all' : LMS.score.programOf(code));
         const base = { class_code: code, class_name: name, group_code: $('dc-group').value.trim() || null, is_active: state === 'active' };
         const settings = { page_url: $('dc-url').value.trim() || null, is_archived: state === 'archived', program: program };
         st.busy = true; let cid = id ? Number(id) : null, res;

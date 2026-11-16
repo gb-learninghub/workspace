@@ -57,7 +57,8 @@
       const past = sess.filter(s => s.date <= todayKey && s.status !== 'planned').slice().reverse();
       const weeks = (d.week_links || []).filter(w => (w.lessons || []).length || (w.homeworks || []).length).slice().reverse();
 
-      const prog = d.program || 'gs', PNAME = { ielts: 'IE', toeic: 'TO', ac12: 'AC12', gs: 'GS', comm: 'GT' };
+      const isAll = /^00\./.test((cls && cls.class_code) || ''), PNAME = { ielts: 'IE', toeic: 'TO', ac12: 'AC12', gs: 'GS', comm: 'GT' }, prog = isAll ? (S.demoProg || 'gs') : (d.program || 'gs');
+      window.__demoProg = v => { S.demoProg = v; renderHome(); };
       const titleCaseName = value => String(value || '').toLocaleLowerCase('vi').replace(/(^|\s)(\p{L})/gu, (_, space, letter) => space + letter.toLocaleUpperCase('vi'));
       const attP = sess.filter(x => x.attendance === 'present' || x.attendance === 'late').length, attA = sess.filter(x => x.attendance === 'absent').length, attRate = (attP + attA) ? Math.round(attP * 100 / (attP + attA)) : null;
       const attTag = x => x.attendance === 'present' ? '<span class="tag bg-emerald-50 text-emerald-700 inline-flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i><span>Có mặt</span></span>' : x.attendance === 'late' ? '<span class="tag bg-amber-50 text-amber-700 inline-flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5"></i><span>Trễ</span></span>' : x.attendance === 'absent' ? '<span class="tag bg-rose-50 text-rose-700 inline-flex items-center gap-1"><i data-lucide="x" class="w-3.5 h-3.5"></i><span>Vắng</span></span>' : '';
@@ -245,7 +246,7 @@
               return `<div class="sk c${i % 3}"><div class="sl"><i data-lucide="book-open"></i><span style="overflow-wrap:anywhere">${esc(g)}</span></div><div class="sv">${n} / ${a.length}</div><div class="bar"><i style="width:${Math.round(100 * n / a.length)}%"></i></div></div>`; }).join('')}</div></div></div>`;
         }
       }
-      const progHtml = `<section class="card g-prog" id="student-overview"><div class="prog-head"><h2><i data-lucide="bar-chart-3"></i>Tiến độ học tập</h2><span class="prog-pill">Chương trình: <b>${esc(PNAME[prog] || '')}</b></span></div>${progBody}</section>`;
+      const progHtml = `<section class="card g-prog" id="student-overview"><div class="prog-head"><h2><i data-lucide="bar-chart-3"></i>Tiến độ học tập</h2><span class="prog-pill">Chương trình: ${isAll ? `<select class="field" style="min-height:36px;width:auto;padding:0 10px;font-weight:700" aria-label="Chọn chương trình" onchange="window.__demoProg(this.value)">${Object.keys(PNAME).map(k => `<option value="${k}"${k === prog ? ' selected' : ''}>${PNAME[k]}</option>`).join('')}</select>` : `<b>${esc(PNAME[prog] || '')}</b>`}</span></div>${progBody}</section>`;
 
       /* Lịch sử buổi học: thu gọn mặc định, buổi mới nhất trước, không có buổi tương lai */
       const historyRows = past.slice(0, S.historyLimit).map(s => { const st = STATUS[s.status] || STATUS.planned;

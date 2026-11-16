@@ -740,7 +740,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
       try {
         const { client } = await LMS.requireTeacher();
         S.c = client; await load(); renderAll();
-        $('btn-obj').style.display = ['gs', 'comm'].includes(LMS.score.programOf(S.cls.class_code)) ? '' : 'none';
+        $('btn-obj').style.display = (['gs', 'comm'].includes(LMS.score.programOf(S.cls.class_code)) || /^00\./.test(S.cls.class_code)) ? '' : 'none';
       } catch (e) {
         document.querySelector('main').innerHTML = `<div class="bg-white rounded-2xl border border-slate-200 p-6 text-center"><p class="text-sm text-rose-700">${esc(LMS.friendlyError(e))}</p><a href="index.html" class="btn-soft mt-4">Về trang Tổng quan</a></div>`;
         $('class-title-header').textContent = 'Lớp'; icons();
