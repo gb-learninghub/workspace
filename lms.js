@@ -465,3 +465,69 @@
     theme: { apply: applyTheme, get: getTheme, DEF: DEF }
   };
 })();
+
+/* Desktop: chữ trong các khung thẳng hàng với chữ ở header; viền khung thò ra ngoài lề bằng đúng border+padding trái của khung. */
+(function () {
+  'use strict';
+  var mq = window.matchMedia('(min-width:1024px)'), busy = false, tmr = null;
+  function visible(e) { var c = getComputedStyle(e); return c.display !== 'none' && c.visibility !== 'hidden' && c.position !== 'fixed' && c.position !== 'absolute' && e.offsetWidth > 0; }
+  function bordered(e) { var c = getComputedStyle(e); return (parseFloat(c.borderLeftWidth) || 0) > 0 && c.borderLeftStyle !== 'none'; }
+  function filled(e) { var bg = getComputedStyle(e).backgroundColor; return !!bg && bg !== 'transparent' && !/rgba\(\s*\d+,\s*\d+,\s*\d+,\s*0\s*\)/.test(bg); }
+  function big(e) { return e.offsetWidth >= 120 && e.offsetHeight >= 60; }
+  function find(e, depth, test) {
+    if (!visible(e)) return null;
+    if (big(e) && test(e)) return e;
+    if (depth >= 2) return null;
+    for (var i = 0; i < e.children.length; i++) { var f = find(e.children[i], depth + 1, test); if (f) return f; }
+    return null;
+  }
+  function frameOf(e) { return find(e, 0, bordered) || find(e, 0, filled); }
+  function apply() {
+    var main = document.querySelector('body>main');
+    if (!main || !document.querySelector('body>header') || document.body.classList.contains('student-dashboard-view')) return;
+    busy = true;
+    var kids = [];
+    Array.prototype.forEach.call(main.children, function (e) {
+      if (e.tagName === 'SCRIPT' || e.tagName === 'STYLE') return;
+      if (/^view-/.test(e.id) && !bordered(e)) Array.prototype.forEach.call(e.children, function (x) { kids.push(x); }); else kids.push(e);
+    });
+    var all = Array.prototype.slice.call(main.querySelectorAll('[data-hang]'));
+    all.forEach(function (e) { e.style.removeProperty('margin-left'); e.style.removeProperty('margin-right'); e.removeAttribute('data-hang'); });
+    if (mq.matches) {
+      var work = [];
+      kids.forEach(function (e) {
+        if (!visible(e)) return;
+        var f = frameOf(e); if (!f) return;
+        var fc = getComputedStyle(f), ec = getComputedStyle(e);
+        var hang = (parseFloat(fc.borderLeftWidth) || 0) + (parseFloat(fc.paddingLeft) || 0);
+        if (e !== f) hang += (parseFloat(ec.paddingLeft) || 0) + (parseFloat(ec.borderLeftWidth) || 0);
+        if (hang > 0 && hang < 60) work.push([e, hang, parseFloat(ec.marginLeft) || 0]);
+      });
+      work.forEach(function (w) { w[0].setAttribute('data-hang', '1'); w[0].style.setProperty('margin-left', (w[2] - w[1]) + 'px', 'important'); w[0].style.setProperty('margin-right', (-w[1]) + 'px', 'important'); });
+    }
+    setTimeout(function () { busy = false; }, 0);
+  }
+  function later() { if (busy) return; clearTimeout(tmr); tmr = setTimeout(apply, 80); }
+  window.addEventListener('resize', later);
+  if (mq.addEventListener) mq.addEventListener('change', later);
+  document.addEventListener('DOMContentLoaded', function () {
+    later(); setTimeout(apply, 600); setTimeout(apply, 1800);
+    var m = document.querySelector('body>main');
+    if (m && window.MutationObserver) new MutationObserver(later).observe(m, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class'] });
+  });
+})();
+/* Thanh trượt tự ẩn: chỉ hiện khi đang cuộn, ẩn sau khoảng 1 giây */
+(function () {
+  if (window.__autoSb) return; window.__autoSb = true;
+  var st = document.createElement('style');
+  st.textContent = '*{scrollbar-width:thin;scrollbar-color:transparent transparent!important}*::-webkit-scrollbar{width:7px;height:7px;background:transparent!important}*::-webkit-scrollbar-track{background:transparent!important}*::-webkit-scrollbar-thumb{background:transparent!important;border-radius:8px;transition:background-color .3s ease}[data-sb]{scrollbar-color:#c3cad4 transparent!important}[data-sb]::-webkit-scrollbar-thumb{background:#c3cad4!important}';
+  document.head.appendChild(st);
+  var timers = new WeakMap();
+  document.addEventListener('scroll', function (e) {
+    var el = e.target === document ? document.documentElement : e.target;
+    if (!el || !el.setAttribute) return;
+    el.setAttribute('data-sb', '1');
+    clearTimeout(timers.get(el));
+    timers.set(el, setTimeout(function () { el.removeAttribute('data-sb'); }, 900));
+  }, true);
+})();

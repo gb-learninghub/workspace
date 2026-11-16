@@ -517,7 +517,7 @@ html[data-lms-view="overview"] #view-overview .overview-panel{padding:24px 26px}
 @media(min-width:1101px){
 .overview-finance .overview-section-title{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:start}
 .overview-finance .overview-section-title>div{grid-column:1/5}
-.overview-finance .overview-section-title>a{grid-column:5;justify-self:start;padding-left:43px;white-space:nowrap}
+.overview-finance .overview-section-title>a{grid-column:5;justify-self:end;padding:0 14px 0 0;white-space:nowrap}
 }
 @media(min-width:641px){
 body.classes-page .classes-table-scroll th:nth-child(2),body.classes-page .classes-table-scroll td:nth-child(2){text-align:center}

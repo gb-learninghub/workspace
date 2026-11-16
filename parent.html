@@ -160,5 +160,20 @@ form.code button{height:48px;padding:0 20px;border:0;border-radius:999px;backgro
   load();
 })();
 </script>
-</body>
+<script>/* Thanh trượt tự ẩn: chỉ hiện khi đang cuộn, ẩn sau khoảng 1 giây */
+(function () {
+  if (window.__autoSb) return; window.__autoSb = true;
+  var st = document.createElement('style');
+  st.textContent = '*{scrollbar-width:thin;scrollbar-color:transparent transparent!important}*::-webkit-scrollbar{width:7px;height:7px;background:transparent!important}*::-webkit-scrollbar-track{background:transparent!important}*::-webkit-scrollbar-thumb{background:transparent!important;border-radius:8px;transition:background-color .3s ease}[data-sb]{scrollbar-color:#c3cad4 transparent!important}[data-sb]::-webkit-scrollbar-thumb{background:#c3cad4!important}';
+  document.head.appendChild(st);
+  var timers = new WeakMap();
+  document.addEventListener('scroll', function (e) {
+    var el = e.target === document ? document.documentElement : e.target;
+    if (!el || !el.setAttribute) return;
+    el.setAttribute('data-sb', '1');
+    clearTimeout(timers.get(el));
+    timers.set(el, setTimeout(function () { el.removeAttribute('data-sb'); }, 900));
+  }, true);
+})();
+</script></body>
 </html>
