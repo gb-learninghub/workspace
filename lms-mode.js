@@ -19,13 +19,17 @@
     SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
   function paint(b) { var dark = d.getAttribute('data-mode') === 'dark'; b.innerHTML = dark ? SUN : MOON; b.setAttribute('aria-label', dark ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'); b.title = b.getAttribute('aria-label'); }
   function init() {
-    if (document.getElementById('btn-mode')) return;
-    var box = document.querySelector('header .header-tools, header .page-header-actions'); if (!box) return;
-    var b = document.createElement('button'); b.id = 'btn-mode'; b.type = 'button'; b.className = 'icon-btn';
+    var b = document.getElementById('btn-mode');
+    if (!b) {
+      var box = document.querySelector('header .header-tools, header .page-header-actions'); if (!box) return;
+      b = document.createElement('button'); b.id = 'btn-mode'; b.type = 'button'; b.className = 'icon-btn';
+      var ref = document.getElementById('btn-theme') || document.getElementById('btn-logout');
+      if (ref && ref.parentNode === box) box.insertBefore(b, ref); else box.appendChild(b);
+    }
+    if (b.dataset.bound) return;
+    b.dataset.bound = '1';
     paint(b);
     b.addEventListener('click', function () { var next = d.getAttribute('data-mode') === 'dark' ? 'light' : 'dark'; if (next === 'dark') d.setAttribute('data-mode', 'dark'); else d.removeAttribute('data-mode'); put(next); paint(b); });
-    var ref = document.getElementById('btn-theme') || document.getElementById('btn-logout');
-    if (ref && ref.parentNode === box) box.insertBefore(b, ref); else box.appendChild(b);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
   window.addEventListener('load', init);

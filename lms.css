@@ -265,3 +265,9 @@ body.tuition-page .tuition-head-bar>div:last-child:not(.m-fold-open)>:not(.m-fol
 body.tuition-page .tuition-head-bar h2,body.tuition-page .tuition-head-bar .btn-soft{font-size:.875rem!important;font-weight:700!important;line-height:1.2!important}
 body.tuition-page .tuition-head-bar .btn-soft{padding:0 12px!important;white-space:nowrap}
 }
+
+/* Sidebar đứng yên khi chuyển trang: tách riêng khỏi lớp mờ dần của nội dung */
+#lms-nav{view-transition-name:lms-nav}
+::view-transition-group(lms-nav){animation:none}
+::view-transition-old(lms-nav){display:none}
+::view-transition-new(lms-nav){animation:none}
