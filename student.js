@@ -70,7 +70,7 @@
         <div class="text-sm mt-2" style="opacity:.9;display:flex;align-items:center;gap:6px">${next ? '<i data-lucide="clock" class="w-4 h-4"></i>' + tmr(next) : ''}</div></div>
         <div class="hero-actions">
           ${next ? (next.mode === 'online' ? (joinOpen(next) ? joinBtn('solid') : `<span class="hero-btn ghost" title="Link mở trước 15 phút" style="opacity:.9;white-space:nowrap"><i data-lucide="video" class="w-4 h-4"></i><span>Meet</span></span>`) : `<span class="hero-btn ghost" style="opacity:.9" title="Học trực tiếp" aria-label="Học trực tiếp"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Học trực tiếp</span></span>`) : ''}
-          <a class="hero-btn ghost" href="${esc(isHttp(cls.drive_url) ? cls.drive_url : 'https://drive.google.com')}" target="_blank" rel="noopener" title="Drive bài giảng" aria-label="Drive bài giảng"><i data-lucide="folder" class="w-4 h-4"></i><span>Drive</span></a>
+          ${isHttp(cls.drive_url) ? `<a class="hero-btn ghost" href="${esc(cls.drive_url)}" target="_blank" rel="noopener" title="Drive bài giảng" aria-label="Drive bài giảng"><i data-lucide="folder" class="w-4 h-4"></i><span>Drive</span></a>` : ''}
         </div></section>`;
 
       const selWk = S.materialWeek || mondayKey(now), selWkEnd = (() => { const x = dOf(selWk); x.setDate(x.getDate() + 6); return ymd(x); })(), selMonth = selWkEnd.slice(0, 7);

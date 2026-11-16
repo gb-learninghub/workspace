@@ -97,7 +97,7 @@
       <div class="header-tools page-header-actions flex items-center gap-2">
       <div id="hdr-actions">
         <a id="btn-meet" href="https://meet.google.com" target="_blank" rel="noopener" class="hero-btn solid" title="Vào lớp Online" aria-label="Vào lớp Online"><i data-lucide="video" class="w-4 h-4"></i></a>
-        <a id="btn-drive" href="https://drive.google.com" target="_blank" rel="noopener" class="hero-btn ghost" title="Drive bài giảng" aria-label="Drive bài giảng"><i data-lucide="folder" class="w-4 h-4"></i></a>
+        <a id="btn-drive" href="#" hidden target="_blank" rel="noopener" class="hero-btn ghost" title="Drive bài giảng" aria-label="Drive bài giảng"><i data-lucide="folder" class="w-4 h-4"></i></a>
         <button type="button" id="edit-links" class="teacher-feature hidden hero-gear" title="Cập nhật link lớp online và Drive" aria-label="Cập nhật link"><i data-lucide="settings" class="w-4 h-4"></i></button>
       </div>
       <div id="wk-ctl" class="flex items-center gap-1.5 bg-sky-50 p-1 rounded-xl border border-slate-200">
@@ -408,7 +408,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
       $('class-title-text').textContent = 'Lớp ' + n;
       $('class-state').textContent = { active: 'Đang hoạt động', inactive: 'Tạm ngưng', archived: 'Lưu trữ' }[classState()]; $('class-state').dataset.st = classState();
       $('btn-meet').href = isHttp(S.meet) ? S.meet : 'https://meet.google.com';
-      $('btn-drive').href = S.set.drive_url || 'https://drive.google.com';
+      { const dv = S.set.drive_url; $('btn-drive').hidden = !isHttp(dv); if (isHttp(dv)) $('btn-drive').href = dv; }
     }
     const classState = () => (S.set && S.set.is_archived) ? 'archived' : (S.cls.is_active ? 'active' : 'inactive');
     function openDlg(id) { $(id).hidden = false; }

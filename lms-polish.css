@@ -954,3 +954,4 @@ main>section.rounded-2xl,main>.bg-white.rounded-2xl,.overview-finance,.overview-
 #grid td.day.today:hover{background:#fbf3d9!important}
 #grid tr.free td.today{background:#dcecdf!important}
 #grid tr.busy td.today{background:#f1dfdc!important}
+#btn-drive[hidden]{display:none!important}
