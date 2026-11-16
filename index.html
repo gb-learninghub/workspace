@@ -894,7 +894,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       async function scanRepo() {
         if (Date.now() - st.scanAt < 120000) return;
         try {
-          const b = new URL(SCAN_BASE), owner = b.hostname.split('.')[0], repo = b.pathname.replace(/\//g, '');
+          const b = new URL(SCAN_BASE), owner = b.hostname.split('.')[0], repo = b.pathname.replace(/\//g, '') || 'workspace';
           const r = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/git/trees/main?recursive=1');
           if (!r.ok) return;
           const j = await r.json(), out = [];
@@ -914,8 +914,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         } catch (e) { }
       }
       function scanItems() {
-        const base = '/' + new URL(SCAN_BASE).pathname.replace(/\//g, '') + '/', known = new Set();
-        const add = u => { try { known.add(decodeURIComponent(new URL(u, location.href).pathname).toLowerCase().replace(base, '')); } catch (e) { } };
+        const base = new URL(SCAN_BASE).pathname, known = new Set();
+        const add = u => { try { known.add(decodeURIComponent(new URL(u, location.href).pathname).toLowerCase().replace(/^\/workspace\//, '').replace(base.toLowerCase(), '')); } catch (e) { } };
         st.lib.forEach(m => add(m.url)); st.libAsg.forEach(m => { if (m.page) add(m.page); });
         return st.scanAll.filter(x => !known.has(x.path));
       }
