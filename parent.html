@@ -13,22 +13,27 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#1B1D22;--mut:#6B7280;--line:#E4E6EA;--panel:#F4F5F7;--dark:#16181D;--gold:#D4A017;--blue:#DCEBFA;--blue-t:#1D4E89;--orange:#FDE8D3;--orange-t:#9A4A0B;--ok:#157A3C;--ok-bg:#E3F5E9;--bad:#B42318;--bad-bg:#FDE7E5;--warn-bg:#FFF4D6;--warn:#8A6100}
+:root{--ink:#1B1D22;--mut:#6B7280;--line:#E4E6EA;--panel:#F4F5F7;--bg:#F4F5F7;--dark:#1B1D22;--gold:#D4A017;--gold-bg:#F7EBC8;--gold-t:#8A6100;--blue:#DCEBFA;--blue-t:#1D4E89;--orange:#FDE8D3;--orange-t:#9A4A0B;--ok:#157A3C;--ok-bg:#E3F5E9;--bad:#B42318;--bad-bg:#FDE7E5;--warn-bg:#FFF4D6;--warn:#8A6100}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:#fff;color:var(--ink);font-family:'Plus Jakarta Sans',Aptos,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.5}
-.wrap{max-width:780px;margin:0 auto;padding:18px 16px calc(40px + env(safe-area-inset-bottom))}
-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.logo{width:44px;height:44px;border-radius:12px;background:var(--dark);color:var(--gold);display:grid;place-items:center;font-weight:800;font-size:1.05rem;flex:none}
-h1{font-size:1.35rem;margin:0;line-height:1.2}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',Aptos,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.5}
+.bar{background:var(--dark);padding:14px 16px}
+.bar .in{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:12px;background:#2A2D34;color:var(--gold);display:grid;place-items:center;font-weight:800;font-size:1.05rem;flex:none}
+h1{font-size:1.3rem;margin:0;line-height:1.2;color:var(--gold)}
+.bar .sub{color:#9AA3B2}
 .sub{color:var(--mut);font-size:.875rem}
+.wrap{max-width:1040px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom))}
 .kids{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
-.kid{flex:none;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:600;color:var(--ink);cursor:pointer}
+.kid{flex:none;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:600;color:var(--ink);cursor:pointer}
 .kid[aria-pressed=true]{background:var(--dark);border-color:var(--dark);color:#fff}
-.child-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:4px 0 6px}
-.child-head h2{font-size:1.15rem;margin:0}
-section{padding:18px 0;border-top:1px solid var(--line)}
-section>h3{font-size:1rem;margin:0 0 10px}
+.child-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:2px 2px 14px}
+.child-head h2{font-size:1.2rem;margin:0}
+.cols{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media(min-width:900px){.cols{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.col{display:grid;gap:14px}}
+@media(max-width:899px){.col{display:contents}}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px}
+.card>h3{display:inline-block;font-size:.9375rem;font-weight:700;margin:0 0 12px;padding:6px 14px;border-radius:999px;background:var(--panel)}
 .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);min-height:44px}
 .row:last-child{border-bottom:0}
 .l{min-width:0}.l b{display:block;overflow-wrap:anywhere}
@@ -36,20 +41,20 @@ section>h3{font-size:1rem;margin:0 0 10px}
 .chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.8125rem;font-weight:600;white-space:nowrap}
 .c-off{background:var(--blue);color:var(--blue-t)}.c-on{background:var(--orange);color:var(--orange-t)}
 .c-ok{background:var(--ok-bg);color:var(--ok)}.c-bad{background:var(--bad-bg);color:var(--bad)}.c-warn{background:var(--warn-bg);color:var(--warn)}.c-mut{background:var(--panel);color:var(--mut)}
-.next{background:var(--panel);border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.next b{font-size:1.05rem}
+.next{background:var(--dark);color:#fff;border-radius:16px;padding:16px 18px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.next .sub{color:#B7BECB}.next b{font-size:1.1rem;color:#fff}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
-.stat{background:var(--panel);border-radius:12px;padding:10px 6px;text-align:center}
+.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
 .stat b{display:block;font-size:1.35rem;line-height:1.2}.stat span{font-size:.8125rem;color:var(--mut)}
 details summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600;color:var(--mut)}
 .dot{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-size:.75rem;font-weight:800;border:1.5px solid #C5C9D0;color:#fff;flex:none}
 .dot.p{background:#16A34A;border-color:#16A34A}.dot.a{background:#DC2626;border-color:#DC2626}.dot.l{background:#F59E0B;border-color:#F59E0B}.dot.e{background:#6B7280;border-color:#6B7280}
 .tm{padding:11px 0;border-bottom:1px solid var(--line)}.tm:last-child{border-bottom:0}
 .tm .top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px}
-.money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px;font-size:.9rem}
+.money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px;font-size:.9rem;background:var(--panel);border-radius:12px;padding:10px 12px}
 .money small{display:block;color:var(--mut);font-size:.75rem}
 .neg{color:var(--bad);font-weight:700}.pos{color:var(--ok);font-weight:700}
-.owed{background:var(--warn-bg);color:var(--warn);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:.9rem}
+.owed{background:var(--gold-bg);color:var(--gold-t);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:.9rem}
 .msg{text-align:center;padding:48px 16px;color:var(--mut)}
 .msg b{display:block;color:var(--ink);font-size:1.1rem;margin-bottom:6px}
 form.code{display:flex;gap:8px;max-width:360px;margin:18px auto 0}
@@ -59,7 +64,7 @@ form.code button{height:48px;padding:0 20px;border:0;border-radius:999px;backgro
 </style>
 </head>
 <body>
-<div class="wrap" id="app"><div class="msg">Đang tải...</div></div>
+<div id="app"><div class="wrap"><div class="msg">Đang tải...</div></div></div>
 <script>
 (function () {
   'use strict';
@@ -83,8 +88,8 @@ form.code button{height:48px;padding:0 20px;border:0;border-radius:999px;backgro
   function code() { return decodeURIComponent((location.hash || '').replace(/^#/, '')).replace(/\s+/g, ''); }
 
   function askCode(note) {
-    app.innerHTML = '<div class="msg"><b>Cổng phụ huynh</b>' + esc(note || 'Nhập mã 8 số giáo viên đã gửi hoặc mở lại link được gửi.') +
-      '<form class="code" id="f"><input id="c" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="Mã 8 số" aria-label="Mã phụ huynh"><button type="submit">Xem</button></form></div>';
+    app.innerHTML = '<div class="wrap"><div class="msg"><b>Cổng phụ huynh</b>' + esc(note || 'Nhập mã 8 số giáo viên đã gửi hoặc mở lại link được gửi.') +
+      '<form class="code" id="f"><input id="c" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="Mã 8 số" aria-label="Mã phụ huynh"><button type="submit">Xem</button></form></div></div>';
     document.getElementById('f').addEventListener('submit', function (e) {
       e.preventDefault(); var v = document.getElementById('c').value.replace(/\s+/g, '');
       if (v) { location.hash = v; load(); }
@@ -94,12 +99,12 @@ form.code button{height:48px;padding:0 20px;border:0;border-radius:999px;backgro
   async function load() {
     var k = code();
     if (!k) return askCode();
-    app.innerHTML = '<div class="msg">Đang tải...</div>';
+    app.innerHTML = '<div class="wrap"><div class="msg">Đang tải...</div></div>';
     var r;
     try { r = await c.rpc('parent_portal', { p_code: k }); } catch (e) { r = { error: e }; }
-    if (r.error) { app.innerHTML = '<div class="msg"><b>Không tải được dữ liệu</b>Vui lòng kiểm tra mạng và thử lại.</div>'; return; }
+    if (r.error) { app.innerHTML = '<div class="wrap"><div class="msg"><b>Không tải được dữ liệu</b>Vui lòng kiểm tra mạng và thử lại.</div></div>'; return; }
     if (r.data && r.data.error === 'parent_not_found') return askCode('Link hoặc mã không đúng, hoặc đã được đổi. Vui lòng liên hệ giáo viên.');
-    if (r.data && r.data.error === 'too_many') { app.innerHTML = '<div class="msg"><b>Hệ thống đang bận</b>Vui lòng thử lại sau vài phút.</div>'; return; }
+    if (r.data && r.data.error === 'too_many') { app.innerHTML = '<div class="wrap"><div class="msg"><b>Hệ thống đang bận</b>Vui lòng thử lại sau vài phút.</div></div>'; return; }
     D = r.data; idx = 0; render();
   }
 
@@ -144,14 +149,18 @@ form.code button{height:48px;padding:0 20px;border:0;border-radius:999px;backgro
 
   function render() {
     var kids = D.children || [], ch = kids[idx];
-    var h = '<header><div class="logo">gb</div><div><h1>Hello, ' + esc(D.label) + '!</h1><div class="sub">Cổng phụ huynh</div></div></header>';
-    if (!ch) { app.innerHTML = h + '<div class="msg"><b>Chưa có thông tin học sinh</b>Vui lòng liên hệ giáo viên.</div>'; return; }
+    var h = '<div class="bar"><div class="in"><div class="logo">gb</div><div><h1>Hello, ' + esc(D.label) + '!</h1><div class="sub">Cổng phụ huynh</div></div></div></div>';
+    if (!ch) { app.innerHTML = h + '<div class="wrap"><div class="msg"><b>Chưa có thông tin học sinh</b>Vui lòng liên hệ giáo viên.</div></div>'; return; }
+    h += '<div class="wrap">';
     if (kids.length > 1) h += '<div class="kids" role="group" aria-label="Chọn học sinh">' + kids.map(function (k, i) { return '<button type="button" class="kid" data-i="' + i + '" aria-pressed="' + (i === idx) + '">' + esc(k.name) + '</button>'; }).join('') + '</div>';
     h += '<div class="child-head"><h2>' + esc(ch.name) + '</h2>' + (ch.class ? '<span class="sub">Lớp ' + esc(ch.class.code) + '</span>' : '') + '</div>' +
-      '<section><h3>Lịch học</h3>' + sessionsHtml(ch) + '</section>' +
-      '<section><h3>Chuyên cần</h3>' + attendanceHtml(ch) + '</section>' +
-      '<section><h3>Bài tập về nhà</h3>' + homeworkHtml(ch) + '</section>' +
-      '<section><h3>Học phí</h3>' + tuitionHtml(ch) + '</section>';
+      '<div class="cols"><div class="col">' +
+      '<div class="card"><h3>Lịch học</h3>' + sessionsHtml(ch) + '</div>' +
+      '<div class="card"><h3>Chuyên cần</h3>' + attendanceHtml(ch) + '</div>' +
+      '</div><div class="col">' +
+      '<div class="card"><h3>Bài tập về nhà</h3>' + homeworkHtml(ch) + '</div>' +
+      '<div class="card"><h3>Học phí</h3>' + tuitionHtml(ch) + '</div>' +
+      '</div></div></div>';
     app.innerHTML = h; document.title = 'Parent Portal - ' + ch.name;
     Array.prototype.forEach.call(app.querySelectorAll('.kid'), function (b) { b.addEventListener('click', function () { idx = +b.getAttribute('data-i'); render(); window.scrollTo(0, 0); }); });
   }
@@ -160,20 +169,5 @@ form.code button{height:48px;padding:0 20px;border:0;border-radius:999px;backgro
   load();
 })();
 </script>
-<script>/* Thanh trượt tự ẩn: chỉ hiện khi đang cuộn, ẩn sau khoảng 1 giây */
-(function () {
-  if (window.__autoSb) return; window.__autoSb = true;
-  var st = document.createElement('style');
-  st.textContent = '*{scrollbar-width:thin;scrollbar-color:transparent transparent!important}*::-webkit-scrollbar{width:7px;height:7px;background:transparent!important}*::-webkit-scrollbar-track{background:transparent!important}*::-webkit-scrollbar-thumb{background:transparent!important;border-radius:8px;transition:background-color .3s ease}[data-sb]{scrollbar-color:#c3cad4 transparent!important}[data-sb]::-webkit-scrollbar-thumb{background:#c3cad4!important}';
-  document.head.appendChild(st);
-  var timers = new WeakMap();
-  document.addEventListener('scroll', function (e) {
-    var el = e.target === document ? document.documentElement : e.target;
-    if (!el || !el.setAttribute) return;
-    el.setAttribute('data-sb', '1');
-    clearTimeout(timers.get(el));
-    timers.set(el, setTimeout(function () { el.removeAttribute('data-sb'); }, 900));
-  }, true);
-})();
-</script></body>
+</body>
 </html>
