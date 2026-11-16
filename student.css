@@ -1333,3 +1333,6 @@ html body.student-dashboard-view .g-profile .profile-meta{flex-direction:row!imp
 html body.student-dashboard-view .g-profile .profile-class{font-size:.8125rem;min-height:26px;padding:2px 10px;border-radius:8px}
 html body.student-dashboard-view .g-profile .profile-code{font-size:.8125rem!important;font-weight:600;letter-spacing:.02em;color:#6B7585!important}
 html body.student-dashboard-view .g-profile .profile-meta{flex-direction:column!important;align-items:flex-start!important;gap:6px!important}
+html body.student-dashboard-view .g-profile .profile-info{gap:12px!important}
+html body.student-dashboard-view .g-profile .profile-meta{gap:12px!important}
+html body.student-dashboard-view .g-profile .profile-name,html body.student-dashboard-view .g-profile .profile-code{margin:0!important;line-height:1.2!important}
