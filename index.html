@@ -85,6 +85,7 @@
     .dlg label{display:block;font-size:.8125rem;font-weight:700;color:var(--t-ink);margin:12px 0 6px}
     .dlg .field{width:100%}
     .dlg .acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+    .fin-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 4px;border-top:1px solid #f0f2f5;font-size:.9rem}.fin-row:first-child{border-top:0}.fin-row small{color:#778597}.fin-row span{font-variant-numeric:tabular-nums;font-weight:700;min-width:96px;text-align:right}.fin-total{font-weight:800;border-top:2px solid #E4E6EA}
     .dlg .err{min-height:20px;margin-top:10px;font-size:.875rem;color:#be123c}
     .btn-danger{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:9999px;border:1px solid #fecdd3;background:#fff;color:#be123c;font-weight:700;font-size:.9375rem}
     .btn-danger:hover{background:#fff1f2}
@@ -285,6 +286,14 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         <button type="submit" class="btn-primary">Lưu</button>
         <button type="button" class="btn-soft" data-close>Hủy</button>
       </div>
+    </form>
+  </div>
+
+ <div id="dlg-fin" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dfin-title">
+    <form class="card" novalidate onsubmit="return false" style="width:min(520px,100%)">
+      <h2 id="dfin-title">Học phí</h2>
+      <div id="dfin-list" style="max-height:60vh;overflow:auto"></div>
+      <div class="acts"><button type="button" class="btn-soft" data-close>Đóng</button></div>
     </form>
   </div>
 
@@ -666,7 +675,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const now = new Date(), month = now.getFullYear() + '-' + pad(now.getMonth() + 1), defaultStart = '2026-11';
         const nextMonth = key => { const [y, m] = key.split('-').map(Number), d = new Date(y, m, 1); return d.getFullYear() + '-' + pad(d.getMonth() + 1); };
         const [sr, lr, rr] = await Promise.all([
-          st.c.from('students').select('id,class_id,is_active,monthly_tuition'),
+          st.c.from('students').select('id,class_id,student_name,is_active,monthly_tuition'),
           st.c.from('app_settings').select('value').eq('key', 'tuition_ledger').maybeSingle(),
           st.c.from('app_settings').select('value').eq('key', 'student_tuition_rules').maybeSingle()
         ]);
@@ -690,8 +699,22 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const oldBalance = s => Math.max(0, Number(ledger.opening[s.id] || 0) + monthsBetween(billingStart(s), month).slice(0, -1).reduce((n, m) => n + feeFor(s, m) - paidFor(s, m), 0));
         const active = students.filter(s => s.is_active), due = active.reduce((n, s) => n + feeFor(s, month), 0), paid = (ledger.payments || []).filter(x => x.month === month).reduce((n, x) => n + Number(x.amount || 0), 0);
         const debt = active.reduce((n, s) => n + Math.max(0, feeFor(s, month) - paidFor(s, month)), 0), arrears = students.reduce((n, s) => n + oldBalance(s), 0), expenses = (ledger.expenses || []).filter(x => x.month === month).reduce((n, x) => n + Number(x.amount || 0), 0);
-        st.overviewFinance = { month, due, paid, debt, arrears, expenses, net: paid - expenses };
+        const rows = active.map(s => ({ name: s.student_name, cls: s.class_id, due: feeFor(s, month), paid: paidFor(s, month), debt: Math.max(0, feeFor(s, month) - paidFor(s, month)), old: oldBalance(s) }));
+        const spend = (ledger.expenses || []).filter(x => x.month === month);
+        st.overviewFinance = { month, due, paid, debt, arrears, expenses, net: paid - expenses, rows, spend, oldRows: students.map(s => ({ name: s.student_name, cls: s.class_id, old: oldBalance(s) })) };
         } catch (_) { st.overviewFinance = null; }
+      }
+
+      function openFinList(key) {
+        const f = st.overviewFinance; if (!f) return;
+        const money = n => Number(n || 0).toLocaleString('vi-VN') + ' đ', code = id => { const c = st.classes.find(x => x.id === id); return c ? c.class_code : ''; };
+        const T = { due: ['Học phí', 'due', f.rows.filter(r => r.due > 0)], old: ['Nợ cũ', 'old', f.oldRows.filter(r => r.old > 0)], paid: ['Đã thu', 'paid', f.rows.filter(r => r.paid > 0)], debt: ['Còn lại', 'debt', f.rows.filter(r => r.debt > 0)] };
+        let items;
+        if (key === 'spend') { $('dfin-title').textContent = 'Đã chi · tháng ' + f.month; items = f.spend.map(x => [esc(x.note || x.name || x.title || 'Khoản chi'), '', money(x.amount)]); }
+        else { const t = T[key]; $('dfin-title').textContent = t[0] + ' · tháng ' + f.month; items = t[2].slice().sort((a, b) => natural(code(a.cls), code(b.cls)) || String(a.name).localeCompare(String(b.name), 'vi')).map(r => [esc(r.name), esc(code(r.cls)), money(r[t[1]])]); }
+        const total = key === 'spend' ? f.expenses : key === 'old' ? f.arrears : f[key];
+        $('dfin-list').innerHTML = items.length ? items.map(i => `<div class="fin-row"><b>${i[0]}</b><small>${i[1]}</small><span>${i[2]}</span></div>`).join('') + `<div class="fin-row fin-total"><b>Tổng · ${items.length}${key === 'spend' ? ' khoản' : ' học viên'}</b><small></small><span>${money(total)}</span></div>` : '<p class="overview-empty">Chưa có mục nào.</p>';
+        openDlg('dlg-fin');
       }
 
       function renderOverview() {
@@ -708,8 +731,9 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('overview-stats').innerHTML = stats.map((x, i) => `<a class="overview-stat overview-stat-${i + 1}" ${x.href ? `href="${x.href}"` : `href="#schedule" data-home-view="schedule"`}><span class="overview-stat-icon"><i data-lucide="${x.icon}"></i></span><span class="overview-stat-label">${x.label}</span><b>${x.value}</b><small>${x.note}</small></a>`).join('');
         const f = st.overviewFinance;
         $('overview-finance').innerHTML = `<div class="overview-section-title"><div><h2>Học phí tháng ${f ? f.month : 'này'}</h2><p>Tổng hợp từ tab Học phí</p></div><a href="tuition.html">Chi tiết <i data-lucide="arrow-right"></i></a></div><div class="overview-money-grid">${[
-          ['Học phí', f && fmtMoney(f.due), 'wallet'], ['Nợ cũ', f && fmtMoney(f.arrears), 'history'], ['Đã thu', f && fmtMoney(f.paid), 'circle-dollar-sign'], ['Còn lại', f && fmtMoney(f.debt), 'clock-3'], ['Đã chi', f && fmtMoney(f.expenses), 'receipt']
-        ].map(x => `<div class="overview-money"><i data-lucide="${x[2]}"></i><span>${x[0]}</span>${x[1] ? `<b class="money-hidden" role="button" tabindex="0" data-money="${x[1]}" aria-label="Bấm để hiện số tiền"><i data-lucide="eye-off"></i></b>` : '<b>–</b>'}</div>`).join('')}</div>`;
+          ['Học phí', f && fmtMoney(f.due), 'wallet', 'due'], ['Nợ cũ', f && fmtMoney(f.arrears), 'history', 'old'], ['Đã thu', f && fmtMoney(f.paid), 'circle-dollar-sign', 'paid'], ['Còn lại', f && fmtMoney(f.debt), 'clock-3', 'debt'], ['Đã chi', f && fmtMoney(f.expenses), 'receipt', 'spend']
+        ].map(x => `<div class="overview-money"${f ? ` data-fin="${x[3]}" role="button" tabindex="0"` : ''}><i data-lucide="${x[2]}"></i><span>${x[0]}</span>${x[1] ? `<b class="money-hidden" role="button" tabindex="0" data-money="${x[1]}" aria-label="Bấm để hiện số tiền"><i data-lucide="eye-off"></i></b>` : '<b>–</b>'}</div>`).join('')}</div>`;
+        if (!window.__finOpen) { window.__finOpen = true; const op = e => { const it = e.target.closest('.overview-money[data-fin]'); if (!it || e.target.closest('b[data-money]')) return; if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return; e.preventDefault(); openFinList(it.dataset.fin); }; document.addEventListener('click', op); document.addEventListener('keydown', op); }
         if (!window.__moneyToggle) { window.__moneyToggle = true; const tg = e => { const b = e.target.closest('.overview-money > b[data-money]'); if (!b) return; if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return; e.preventDefault(); const hide = !b.classList.contains('money-hidden'); b.classList.toggle('money-hidden', hide); b.innerHTML = hide ? '<i data-lucide="eye-off"></i>' : b.dataset.money; b.setAttribute('aria-label', hide ? 'Bấm để hiện số tiền' : 'Bấm để ẩn số tiền'); if (hide) icons(); }; document.addEventListener('click', tg); document.addEventListener('keydown', tg); }
         const dates = weekDates(st.week), first = dates[0], last = dates[6];
         $('overview-week-label').textContent = pad(first.getDate()) + '/' + pad(first.getMonth() + 1) + ' – ' + pad(last.getDate()) + '/' + pad(last.getMonth() + 1);
