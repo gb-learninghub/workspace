@@ -230,23 +230,38 @@ html.gb-ready body{opacity:1;transition:opacity .15s ease-out}
 .mh:not(.m-show){font-size:0!important;line-height:0!important;display:inline-flex;align-items:center;min-height:24px}
 .mh:not(.m-show)::after{content:"";display:inline-block;width:22px;height:22px;background:#818999;-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M10.733%205.076a10.744%2010.744%200%200%201%2011.205%206.575%201%201%200%200%201%200%20.696%2010.747%2010.747%200%200%201-1.444%202.49'/%3E%3Cpath%20d='M14.084%2014.158a3%203%200%200%201-4.242-4.242'/%3E%3Cpath%20d='M17.479%2017.499a10.75%2010.75%200%200%201-15.417-5.151%201%201%200%200%201%200-.696%2010.75%2010.75%200%200%201%204.446-5.143'/%3E%3Cpath%20d='m2%202%2020%2020'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M10.733%205.076a10.744%2010.744%200%200%201%2011.205%206.575%201%201%200%200%201%200%20.696%2010.747%2010.747%200%200%201-1.444%202.49'/%3E%3Cpath%20d='M14.084%2014.158a3%203%200%200%201-4.242-4.242'/%3E%3Cpath%20d='M17.479%2017.499a10.75%2010.75%200%200%201-15.417-5.151%201%201%200%200%201%200-.696%2010.75%2010.75%200%200%201%204.446-5.143'/%3E%3Cpath%20d='m2%202%2020%2020'/%3E%3C/svg%3E") center/contain no-repeat}
 .stat-n.mh:not(.m-show){display:flex;min-height:36px}
-/* Icon mắt trong vùng dữ liệu: nhỏ hơn, canh cùng phía với số khi hiện (cột tiền canh phải) */
+/* Icon mắt trong vùng dữ liệu: nhỏ hơn */
 .tuition-row .mh:not(.m-show),td .mh:not(.m-show),#payments .mh:not(.m-show),#expenses .mh:not(.m-show){min-height:20px}
 .tuition-row .mh:not(.m-show)::after,td .mh:not(.m-show)::after,#payments .mh:not(.m-show)::after,#expenses .mh:not(.m-show)::after{width:16px;height:16px}
+@media(min-width:641px){
 .money.mh:not(.m-show){display:flex;justify-content:flex-end}
 .tuition-row .status-cell .money.mh:not(.m-show){display:inline-flex}
+}
 
-/* Học phí trên điện thoại: icon mắt nằm dưới nhãn (không cùng dòng), ô tổng không lộ số khi đang ẩn */
+/* Học phí trên điện thoại */
+@media(max-width:640px){
+/* 6 ô tổng: lưới 3 x 2 (thắng rule 5 cột của lms-polish.css) */
+html body.tuition-page .tuition-main>section:first-child{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+html body.tuition-page .tuition-main>section:first-child .stat-tile{width:auto!important;min-width:0!important;margin:0!important}
 body.tuition-page .tuition-main>section:first-child .stat-n.mh:not(.m-show){font-size:0!important;min-height:22px;justify-content:center}
 body.tuition-page .tuition-main>section:first-child .stat-n.mh:not(.m-show)::after{width:18px;height:18px}
+/* dòng học sinh: khung ô dữ liệu cố định (nhãn trên, giá trị/icon dưới cùng một hàng 20px) nên ẩn/hiện không nhảy */
+body.tuition-page .tuition-row:not(.tuition-head){gap:12px 16px!important;padding:18px 0!important}
+body.tuition-page .tuition-row>div[data-label].mh,body.tuition-page .tuition-row .status-cell .money.mh{display:grid!important;grid-template-rows:auto 20px;grid-template-columns:minmax(0,max-content);justify-content:start!important;justify-items:start;align-content:start;align-items:center;row-gap:0;min-height:0!important;text-align:left!important;line-height:20px!important}
+body.tuition-page .tuition-row .mh::before{grid-row:1;grid-column:1;display:block;line-height:20px;margin:0 0 5px!important}
+body.tuition-page .tuition-row>div[data-label].mh:not(.m-show),body.tuition-page .tuition-row .status-cell .money.mh:not(.m-show){grid-template-rows:auto 0 20px}
+body.tuition-page .tuition-row .mh:not(.m-show)::after{grid-row:3;grid-column:1;display:block;width:16px;height:20px;margin:0;-webkit-mask-size:16px 16px;mask-size:16px 16px;-webkit-mask-position:left center;mask-position:left center}
+/* ngày đóng luôn chiếm 1 dòng cố định, bấm hoàn thành không làm ô giãn ra */
+html body.tuition-page .tuition-row>.tuition-paid-date.is-empty{display:block}
+body.tuition-page .tuition-row>.tuition-paid-date{min-height:18px;line-height:18px}
+}
+
+/* Học phí (điện thoại): tiêu đề, Chốt tháng, Cách thu, nút tìm nằm cùng một hàng, cùng cỡ chữ */
 @media(max-width:640px){
-body.tuition-page .tuition-row>div[data-label].mh:not(.m-show),body.tuition-page .tuition-row .status-cell .money.mh:not(.m-show){display:block!important;min-height:0;text-align:left!important}
-body.tuition-page .tuition-row .mh:not(.m-show)::after{display:block;width:100%;height:20px;margin:0;-webkit-mask-size:16px 16px;mask-size:16px 16px;-webkit-mask-position:left center;mask-position:left center}
-body.tuition-page .tuition-row:not(.tuition-head){gap:12px 16px!important;padding:18px 2px!important}
-body.tuition-page .tuition-row>div[data-label]::before,body.tuition-page .tuition-row .status-cell .money::before{margin-bottom:5px!important}
-body.tuition-page .tuition-row .mh{line-height:20px!important;min-height:20px}
-body.tuition-page .tuition-main>section:first-child{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
-body.tuition-page .tuition-main>section:first-child .stat-tile{width:auto!important;min-width:0!important;margin:0!important}
-body.tuition-page .tuition-row>div[data-label].mh,body.tuition-page .tuition-row .status-cell .money.mh,body.tuition-page .tuition-row>div[data-label].mh:not(.m-show),body.tuition-page .tuition-row .status-cell .money.mh:not(.m-show){display:grid!important;grid-template-rows:auto 20px;row-gap:0;align-content:start;align-items:center;justify-items:start;min-height:45px}
-body.tuition-page .tuition-row .mh::before{display:block;line-height:20px;margin:0!important}
+body.tuition-page .tuition-head-bar{flex-wrap:wrap!important;align-items:center!important;gap:8px!important}
+body.tuition-page .tuition-head-bar>div:first-child{flex:0 0 auto!important;min-width:0}
+body.tuition-page .tuition-head-bar>div:last-child:not(.m-fold-open){flex:1 1 0!important;min-width:0!important;margin-left:0!important;display:flex!important;flex-wrap:nowrap!important;justify-content:flex-end;gap:6px!important}
+body.tuition-page .tuition-head-bar>div:last-child:not(.m-fold-open)>:not(.m-fold-toggle):not(.m-fold){flex:0 0 auto!important}
+body.tuition-page .tuition-head-bar h2,body.tuition-page .tuition-head-bar .btn-soft{font-size:.875rem!important;font-weight:700!important;line-height:1.2!important}
+body.tuition-page .tuition-head-bar .btn-soft{padding:0 12px!important;white-space:nowrap}
 }
