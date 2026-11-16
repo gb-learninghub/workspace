@@ -30,7 +30,6 @@ h1{font-size:1.3rem;margin:0;line-height:1.2;color:var(--gold)}
 @media(min-width:900px){.cols{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.col{display:grid;gap:14px}}
 @media(max-width:899px){.col{display:contents}}
 .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px}
-.card>h3{display:inline-block;font-size:.9375rem;font-weight:700;margin:0 0 12px;padding:6px 14px;border-radius:999px;background:var(--panel)}
 .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);min-height:44px}
 .row:last-child{border-bottom:0}
 .l{min-width:0}.l b{display:block;overflow-wrap:anywhere}
@@ -38,11 +37,12 @@ h1{font-size:1.3rem;margin:0;line-height:1.2;color:var(--gold)}
 .chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.8125rem;font-weight:600;white-space:nowrap}
 .c-off{background:var(--blue);color:var(--blue-t)}.c-on{background:var(--orange);color:var(--orange-t)}
 .c-ok{background:var(--ok-bg);color:var(--ok)}.c-bad{background:var(--bad-bg);color:var(--bad)}.c-warn{background:var(--warn-bg);color:var(--warn)}.c-mut{background:var(--panel);color:var(--mut)}
-.next{background:var(--dark);color:#fff;border-radius:16px;padding:16px 18px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.next .sub{color:#B7BECB}.next b{font-size:1.1rem;color:#fff}
+.tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.8125rem;font-weight:700;background:var(--gold);color:#fff;white-space:nowrap}
+.rt{display:flex;align-items:center;gap:6px;flex:none}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
-.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
-.stat b{display:block;font-size:1.35rem;line-height:1.2}.stat span{font-size:.8125rem;color:var(--mut)}
+.stat{border-radius:14px;padding:10px 6px;text-align:center}
+.stat.s-p{background:var(--ok-bg);color:var(--ok)}.stat.s-a{background:var(--bad-bg);color:var(--bad)}.stat.s-l{background:var(--warn-bg);color:var(--warn)}.stat.s-e{background:var(--blue);color:var(--blue-t)}
+.stat b{display:block;font-size:1.35rem;line-height:1.2}.stat span{font-size:.8125rem;font-weight:600;opacity:.85}
 details summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600;color:var(--mut)}
 .tm{padding:11px 0;border-bottom:1px solid var(--line)}.tm:last-child{border-bottom:0}
 .tm .top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px}
@@ -55,16 +55,28 @@ details summary{cursor:pointer;min-height:44px;display:flex;align-items:center;f
 form.code{display:flex;gap:8px;max-width:360px;margin:18px auto 0}
 form.code input{flex:1;min-width:0;height:48px;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;font-size:16px;letter-spacing:.12em;text-align:center}
 form.code button{height:48px;padding:0 20px;border:0;border-radius:999px;background:var(--dark);color:#fff;font:inherit;font-weight:700;cursor:pointer}
-button.more{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;margin-top:8px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit;font-weight:600;color:var(--ink);cursor:pointer}
-button.more.head{margin:0;border:0;padding:0;min-height:36px;background:none}.pill{padding:6px 14px;border-radius:999px;background:var(--panel);font-size:.9375rem;font-weight:700}
-button.more .chev{transition:transform .15s}button.more[aria-expanded=true] .chev{transform:rotate(180deg)}
-#tui-hist{margin-top:6px}#hist{margin-top:8px}
-.next .chip{flex:none}
-@media(max-width:520px){.stat b{font-size:1.2rem}}
+/*hw*/.hw{display:grid;grid-template-columns:minmax(0,1fr) auto 86px;gap:10px}.hw b{overflow-wrap:anywhere}.hw .due{color:var(--mut);font-size:.8125rem;white-space:nowrap}.hw .chip{justify-self:end;text-align:center}
+@media(max-width:520px){.hw b{font-size:.9375rem}.hw{grid-template-columns:minmax(0,1fr) auto 76px;gap:8px}.stat b{font-size:1.2rem}}
+.pill{display:inline-block;padding:6px 14px;border-radius:999px;font-family:inherit;font-size:.9375rem;font-weight:700;line-height:1.5;border:0;margin:0}
+.card>h3.pill{margin:0 0 12px}
+.ph{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.ph .pill{margin:0}
+.pl-att{background:var(--ok-bg);color:var(--ok)}.pl-week{background:var(--gold-bg);color:var(--gold-t)}.pl-hw{background:var(--blue);color:var(--blue-t)}.pl-fee{background:var(--orange);color:var(--orange-t)}
+.pb{background:var(--panel);color:var(--ink);cursor:pointer;min-height:36px}.pb:hover{background:#E9EBEF}
+.fr{padding:11px 0;border-bottom:1px solid var(--line)}.fr:last-of-type{border-bottom:0}
+.fr .top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px}
+.mh2{font-weight:700;color:var(--mut);font-size:.875rem;margin:14px 0 0}
+.modal{position:fixed;inset:0;background:rgba(27,29,34,.45);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:0}
+.modal[hidden]{display:none}
+.sheet{background:#fff;width:100%;max-width:560px;max-height:85vh;max-height:85dvh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden}
+.sheet .mhd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 16px 8px}
+.sheet .mx{width:44px;height:44px;border:0;border-radius:50%;background:var(--panel);font-size:1.4rem;line-height:1;cursor:pointer;color:var(--ink)}
+.sheet .mbd{overflow-y:auto;padding:0 16px calc(20px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+@media(min-width:700px){.modal{align-items:center;padding:20px}.sheet{border-radius:20px}}
 </style>
 </head>
 <body>
 <div id="app"><div class="wrap"><div class="msg">Đang tải...</div></div></div>
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true"><div class="sheet"><div class="mhd"><h3 class="pill"></h3><button type="button" class="mx" aria-label="Đóng">×</button></div><div class="mbd"></div></div></div>
 <script>
 (function () {
   'use strict';
@@ -124,33 +136,29 @@ button.more .chev{transition:transform .15s}button.more[aria-expanded=true] .che
     if (x.status === 'planned' || x.status === 'makeup') return modeChip(x);
     var st = STAT[x.status]; return st ? '<span class="chip ' + st[1] + '">' + st[0] + '</span>' : '';
   }
+  function sessRow(x, hot) {
+    return '<div class="row' + (hot ? ' hot' : '') + '"><div class="l"><b>' + esc(dayLabel(x.date)) + '</b><span>' + esc(timeRange(x)) + '</span></div><div class="rt">' + (hot ? '<span class="tag">Sắp tới</span>' : '') + sessState(x) + '</div></div>';
+  }
   function weekHtml(ch) {
     var w = weekRange(), nx = nextSession(ch), h = '';
     var list = (ch.sessions || []).filter(function (x) { return x.date >= w[0] && x.date <= w[1]; })
       .sort(function (p, q) { return (p.date + (p.start || '')) < (q.date + (q.start || '')) ? -1 : 1; });
     var inWeek = nx && nx.date >= w[0] && nx.date <= w[1];
-    if (nx && !inWeek) h += '<div class="next"><div><div class="sub">Buổi sắp tới</div><b>' + esc(dayLabel(nx.date)) + '</b><div class="sub">' + esc(timeRange(nx)) + '</div></div>' + modeChip(nx) + '</div>';
+    if (nx && !inWeek) h += sessRow(nx, true);
     if (!list.length) return h + '<div class="sub">Tuần này không có buổi học.</div>';
-    return h + list.map(function (x) {
-      var hot = nx && x.date === nx.date && x.start === nx.start;
-      if (hot) return '<div class="next"><div><div class="sub">Buổi sắp tới</div><b>' + esc(dayLabel(x.date)) + '</b><div class="sub">' + esc(timeRange(x)) + '</div></div>' + sessState(x) + '</div>';
-      return '<div class="row"><div class="l"><b>' + esc(dayLabel(x.date)) + '</b><span>' + esc(timeRange(x)) + '</span></div><div>' + sessState(x) + '</div></div>';
-    }).join('');
+    return h + list.map(function (x) { return sessRow(x, nx && x.date === nx.date && x.start === nx.start); }).join('');
   }
 
   function historyHtml(ch) {
     var today = ymd(new Date()), past = (ch.sessions || []).filter(function (x) { return x.date >= '2026-10-01' && (x.date < today || (x.date === today && x.attendance)); })
       .sort(function (p, q) { return p.date < q.date ? 1 : -1; });
     if (!past.length) return '<div class="sub">Chưa có buổi học nào.</div>';
-    function row(x) { return '<div class="row"><div class="l"><b>' + esc(dayLabel(x.date)) + '</b><span>' + esc(timeRange(x)) + '</span></div><div>' + sessState(x) + '</div></div>'; }
-    var h = past.slice(0, 6).map(row).join('');
-    if (past.length > 6) h += '<details><summary>Xem thêm ' + (past.length - 6) + ' buổi</summary>' + past.slice(6).map(row).join('') + '</details>';
-    return h;
+    return past.map(function (x) { return '<div class="row"><div class="l"><b>' + esc(dayLabel(x.date)) + '</b><span>' + esc(timeRange(x)) + '</span></div><div>' + sessState(x) + '</div></div>'; }).join('');
   }
 
   function attendanceHtml(ch) {
     var a = ch.attendance || {}, t = ch.tuition || {}, owed = t.mode !== 'session' ? Number(t.owed_sessions) || 0 : null;
-    return '<div class="stats"><div class="stat"><b>' + (a.present || 0) + '</b><span>Có mặt</span></div><div class="stat"><b>' + (a.absent || 0) + '</b><span>Vắng</span></div><div class="stat"><b>' + (a.late || 0) + '</b><span>Trễ</span></div><div class="stat"><b>' + (a.excused || 0) + '</b><span>Có phép</span></div></div>' +
+    return '<div class="stats"><div class="stat s-p"><b>' + (a.present || 0) + '</b><span>Có mặt</span></div><div class="stat s-a"><b>' + (a.absent || 0) + '</b><span>Vắng</span></div><div class="stat s-l"><b>' + (a.late || 0) + '</b><span>Trễ</span></div><div class="stat s-e"><b>' + (a.excused || 0) + '</b><span>Có phép</span></div></div>' +
       (owed === null ? '' : '<div class="owed"><span>Số buổi nghỉ chưa học bù</span><b>' + owed + '</b></div>');
   }
 
@@ -160,27 +168,45 @@ button.more .chev{transition:transform .15s}button.more[aria-expanded=true] .che
     return l.map(function (x) {
       var s = HW[x.state] || HW.pending, due = x.due_at ? new Date(x.due_at) : null;
       var d = due ? 'Hạn ' + pad(due.getDate()) + '/' + pad(due.getMonth() + 1) + ' ' + pad(due.getHours()) + ':' + pad(due.getMinutes()) : 'Chưa đặt hạn';
-      return '<div class="row"><div class="l"><b>' + esc(x.name) + '</b><span>' + esc(d) + '</span></div><span class="chip ' + s[1] + '">' + s[0] + '</span></div>';
+      return '<div class="row hw"><b>' + esc(x.name) + '</b><span class="due">' + esc(d) + '</span><span class="chip ' + s[1] + '">' + s[0] + '</span></div>';
     }).join('');
   }
 
-  function tuitionMonth(m) {
-    var known = m.status !== 'Chưa có thông tin' && m.fee != null, tone = TUI[m.status] || 'c-mut';
-    var left = '<div class="l"><b>' + esc(monthLabel(m.month)) + '</b>' + (m.paid_on ? '<span>Ngày đóng ' + esc(pd(m.paid_on).toLocaleDateString('vi-VN')) + '</span>' : '') + '</div>';
+  function feeRow(name, m) {
+    var known = m && m.status !== 'Chưa có thông tin' && m.fee != null, tone = m ? (TUI[m.status] || 'c-mut') : 'c-mut';
     var money = known ? '<div class="money"><div><small>Học phí</small>' + vnd(m.fee) + '</div><div><small>Đã đóng</small>' + vnd(m.paid) + '</div><div><small>Còn lại</small><span class="' + (Number(m.rest) > 0 ? 'neg' : 'pos') + '">' + vnd(m.rest) + '</span></div></div>' : '';
-    return '<div class="tm"><div class="top">' + left + '<span class="chip ' + tone + '">' + esc(m.status) + '</span></div>' + money + '</div>';
+    return '<div class="fr"><div class="top"><div class="l"><b>' + esc(name) + '</b>' + (m && m.paid_on ? '<span>Ngày đóng ' + esc(pd(m.paid_on).toLocaleDateString('vi-VN')) + '</span>' : '') + '</div><span class="chip ' + tone + '">' + esc(m ? m.status : 'Chưa có thông tin') + '</span></div>' + money + '</div>';
   }
-  function tuitionHtml(ch) {
-    var t = ch.tuition || {}, ms = (t.months || []).slice().sort(function (p, q) { return p.month < q.month ? 1 : -1; }), h = '';
-    var cur = ymd(new Date()).slice(0, 7);
-    if (!ms.length) return h + '<div class="sub">Chưa có thông tin học phí.</div>';
-    var now = ms.filter(function (m) { return m.month === cur; })[0] || null;
-    var before = ms.filter(function (m) { return m.month < cur; });
-    if (!now && !before.length) now = ms[0], before = ms.slice(1);
-    h += now ? tuitionMonth(now) : '<div class="sub">Tháng ' + Number(cur.slice(5)) + '/' + cur.slice(0, 4) + ': chưa có thông tin học phí.</div>';
-    if (before.length) h += '<button type="button" class="more" id="tui-more" aria-expanded="false">Lịch sử các tháng trước (' + before.length + ')<span class="chev" aria-hidden="true">▾</span></button><div id="tui-hist" hidden>' + before.map(tuitionMonth).join('') + '</div>';
-    return h;
+  function kidMonths(k) {
+    return ((k.tuition && k.tuition.months) || []).slice().sort(function (p, q) { return p.month < q.month ? 1 : -1; });
   }
+  function feeHtml() {
+    var kids = D.children || [], cur = ymd(new Date()).slice(0, 7), total = 0;
+    var rows = kids.map(function (k) {
+      var ms = kidMonths(k); total += ms.reduce(function (a, m) { return a + (m.fee != null ? Number(m.rest) || 0 : 0); }, 0);
+      var now = ms.filter(function (m) { return m.month === cur; })[0] || null;
+      return feeRow(k.name, now);
+    }).join('');
+    var h = '<div class="card"><div class="ph"><h3 class="pill pl-fee">Học phí ' + esc(monthLabel(cur).toLowerCase()) + '</h3><button type="button" class="pill pb" data-pop="fee" aria-haspopup="dialog">Lịch sử</button></div>' + rows;
+    if (kids.length > 1) h += '<div class="owed" style="margin-top:10px"><span>Tổng còn lại (tất cả các tháng)</span><b>' + vnd(total) + '</b></div>';
+    return h + '</div>';
+  }
+  function feeHistoryHtml() {
+    var kids = D.children || [], cur = ymd(new Date()).slice(0, 7), by = {};
+    kids.forEach(function (k) { kidMonths(k).forEach(function (m) { if (m.month < cur) (by[m.month] = by[m.month] || []).push(feeRow(k.name, m)); }); });
+    var keys = Object.keys(by).sort().reverse();
+    if (!keys.length) return '<div class="sub">Chưa có lịch sử học phí.</div>';
+    return keys.map(function (k) { return '<div class="mh2">' + esc(monthLabel(k)) + '</div>' + by[k].join(''); }).join('');
+  }
+
+  var modal = document.getElementById('modal');
+  function closePop() { modal.hidden = true; document.body.style.overflow = ''; }
+  function openPop(title, cls, html) {
+    modal.querySelector('.mhd h3').className = 'pill ' + cls; modal.querySelector('.mhd h3').textContent = title;
+    modal.querySelector('.mbd').innerHTML = html; modal.hidden = false; document.body.style.overflow = 'hidden'; modal.querySelector('.mx').focus();
+  }
+  modal.addEventListener('click', function (e) { if (e.target === modal || e.target.closest('.mx')) closePop(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) closePop(); });
 
   function render() {
     var kids = D.children || [], ch = kids[idx];
@@ -189,16 +215,16 @@ button.more .chev{transition:transform .15s}button.more[aria-expanded=true] .che
     h += '<div class="wrap">';
     if (kids.length > 1) h += '<div class="kids" role="group" aria-label="Chọn học sinh">' + kids.map(function (k, i) { return '<button type="button" class="kid" data-i="' + i + '" aria-pressed="' + (i === idx) + '">' + esc(k.name) + '</button>'; }).join('') + '</div>';
     h += '<div class="cols"><div class="col">' +
-      '<div class="card"><h3>Tổng quan chuyên cần</h3>' + attendanceHtml(ch) + '</div>' +
-      '<div class="card"><h3>Lịch tuần này</h3>' + weekHtml(ch) + '</div>' +
-      '<div class="card"><button type="button" class="more head" id="hist-t" aria-expanded="false"><span class="pill">Lịch sử buổi học</span><span class="chev" aria-hidden="true">▾</span></button><div id="hist" hidden>' + historyHtml(ch) + '</div></div>' +
+      '<div class="card"><h3 class="pill pl-att">Tổng quan chuyên cần</h3>' + attendanceHtml(ch) + '</div>' +
+      '<div class="card"><div class="ph"><h3 class="pill pl-week">Lịch tuần này</h3><button type="button" class="pill pb" data-pop="hist" aria-haspopup="dialog">Lịch sử</button></div>' + weekHtml(ch) + '</div>' +
       '</div><div class="col">' +
-      '<div class="card"><h3>Bài tập về nhà</h3>' + homeworkHtml(ch) + '</div>' +
-      '<div class="card"><h3>Học phí</h3>' + tuitionHtml(ch) + '</div>' +
+      '<div class="card"><h3 class="pill pl-hw">Bài tập về nhà</h3>' + homeworkHtml(ch) + '</div>' +
+      feeHtml() +
       '</div></div></div>';
     app.innerHTML = h; document.title = 'Parent Portal';
-    var ht = document.getElementById('hist-t'); if (ht) ht.addEventListener('click', function () { var o = ht.getAttribute('aria-expanded') !== 'true'; ht.setAttribute('aria-expanded', o); document.getElementById('hist').hidden = !o; });
-    var tm = document.getElementById('tui-more'); if (tm) tm.addEventListener('click', function () { var o = tm.getAttribute('aria-expanded') !== 'true'; tm.setAttribute('aria-expanded', o); document.getElementById('tui-hist').hidden = !o; });
+    Array.prototype.forEach.call(app.querySelectorAll('[data-pop]'), function (b) { b.addEventListener('click', function () {
+      if (b.getAttribute('data-pop') === 'hist') openPop('Lịch sử buổi học', 'pl-week', historyHtml(ch)); else openPop('Lịch sử đóng học phí', 'pl-fee', feeHistoryHtml());
+    }); });
     Array.prototype.forEach.call(app.querySelectorAll('.kid'), function (b) { b.addEventListener('click', function () { idx = +b.getAttribute('data-i'); render(); window.scrollTo(0, 0); }); });
   }
 
