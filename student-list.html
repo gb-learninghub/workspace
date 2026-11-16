@@ -60,7 +60,6 @@
           <input id="search" type="search" class="field m-fold w-full sm:w-56" placeholder="Tìm tên, mã hoặc lớp" aria-label="Tìm học viên">
           <select id="filter-class" class="field m-fold w-full sm:w-52" aria-label="Lọc theo lớp"></select>
           <button id="btn-add" type="button" class="btn-primary m-ico" aria-label="Thêm học viên" title="Thêm học viên"><i data-lucide="plus" class="w-4 h-4"></i><span>Thêm học viên</span></button>
-          <button id="btn-export" type="button" class="btn-soft m-hide" aria-label="Xuất CSV"><i data-lucide="download" class="w-4 h-4"></i><span>Xuất CSV</span></button>
         </div>
       </div>
       <div class="overflow-x-auto student-table-scroll">
@@ -504,7 +503,6 @@
         $('search').addEventListener('input', e => { state.q = e.target.value; render(); });
         $('filter-class').addEventListener('change', render);
         $('btn-add').addEventListener('click', () => { resetForm(); openEditor(); });
-        $('btn-export').addEventListener('click', exportCsv);
         $('btn-cancel').addEventListener('click', closeEditor);
         $('editor').addEventListener('mousedown', e => { if (e.target === $('editor')) closeEditor(); });
         document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('editor').hidden) closeEditor(); });
