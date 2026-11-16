@@ -271,3 +271,10 @@ body.tuition-page .tuition-head-bar .btn-soft{padding:0 12px!important;white-spa
 ::view-transition-group(lms-nav){animation:none}
 ::view-transition-old(lms-nav){display:none}
 ::view-transition-new(lms-nav){animation:none}
+
+/* Ô tổng quan Học phí: chiều cao cố định cho số tiền / icon mắt, nhãn không nhảy khi bấm hiện */
+@media(min-width:641px){
+html body.tuition-page .tuition-main>section:first-child .stat-tile{container-type:inline-size}
+html body.tuition-page .tuition-main>section:first-child .stat-n{display:flex;align-items:center;height:36px;min-height:36px;white-space:nowrap;line-height:1.1}
+html body.tuition-page .tuition-main>section:first-child .stat-n:not(.mh),html body.tuition-page .tuition-main>section:first-child .stat-n.mh.m-show{font-size:min(1.65rem,13.8cqw)!important}
+}
