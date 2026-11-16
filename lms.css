@@ -245,4 +245,8 @@ body.tuition-page .tuition-row .mh:not(.m-show)::after{display:block;width:100%;
 body.tuition-page .tuition-row:not(.tuition-head){gap:12px 16px!important;padding:18px 2px!important}
 body.tuition-page .tuition-row>div[data-label]::before,body.tuition-page .tuition-row .status-cell .money::before{margin-bottom:5px!important}
 body.tuition-page .tuition-row .mh{line-height:20px!important;min-height:20px}
+body.tuition-page .tuition-main>section:first-child{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+body.tuition-page .tuition-main>section:first-child .stat-tile{width:auto!important;min-width:0!important;margin:0!important}
+body.tuition-page .tuition-row>div[data-label].mh,body.tuition-page .tuition-row .status-cell .money.mh,body.tuition-page .tuition-row>div[data-label].mh:not(.m-show),body.tuition-page .tuition-row .status-cell .money.mh:not(.m-show){display:grid!important;grid-template-rows:auto 20px;row-gap:0;align-content:start;align-items:center;justify-items:start;min-height:45px}
+body.tuition-page .tuition-row .mh::before{display:block;line-height:20px;margin:0!important}
 }
