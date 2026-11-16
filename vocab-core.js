@@ -40,7 +40,7 @@
   }
 
   /* Phát âm: ưu tiên file thu sẵn nếu đã có, không thì dùng giọng đọc của thiết bị. */
-  function speak(word) {
+  function speak(word, url) {
     var k = key(word), c = cache[k];
     function tts() {
       if (!('speechSynthesis' in w)) return;
@@ -48,6 +48,7 @@
       var u = new SpeechSynthesisUtterance(norm(word)); u.lang = 'en-US'; u.rate = 0.9; speechSynthesis.speak(u);
     }
     try { if (cur) cur.pause(); } catch (e) { /* bỏ qua */ }
+    if (url) { cur = new Audio(url); cur.play().catch(tts); return; }
     if (c && c.audio) { cur = new Audio(c.audio); cur.play().catch(tts); return; }
     tts();
     dict(word);
@@ -64,6 +65,11 @@
       add: function (o) { return call('student_vocab_add', { p_word: o.word, p_pos: o.pos || '', p_kind: o.kind || null, p_ipa: o.ipa || null, p_meaning: o.meaning || null, p_definition: o.definition || null, p_file_key: o.file || null }); },
       set: function (id, o) { return call('student_vocab_set', { p_id: id, p_learned: o.learned == null ? null : o.learned, p_meaning: o.meaning == null ? null : o.meaning, p_note: o.note == null ? null : o.note, p_clear_meaning: !!o.clearMeaning }); },
       remove: function (id) { return call('student_vocab_remove', { p_id: id }); },
+      audio: function (word) {
+        var k = key(word);
+        if (!c.functions || !k || k.length > 40 || !/^[a-z][a-z' -]*$/.test(k)) return Promise.resolve(null);
+        return c.functions.invoke('vocab-audio', { body: { word: k, student_code: code } }).then(function (r) { return (r && !r.error && r.data && r.data.audio) || null; });
+      },
       lookup: function (word, count) { return call('student_vocab_lookup', { p_word: word, p_count: !!count }); }
     };
   }
@@ -88,7 +94,12 @@
 
   /* Bộ gọi rpc tối giản cho trang làm bài (không nạp supabase-js): trả { data, error } giống client chuẩn. */
   function rpcClient(url, key) {
-    return { rpc: function (fn, args) {
+    function post(path, body) {
+      return fetch(url + path, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key, Authorization: 'Bearer ' + key }, body: JSON.stringify(body || {}) })
+        .then(function (r) { return r.json().catch(function () { return null; }).then(function (j) { return r.ok ? { data: j, error: null } : { data: null, error: { message: (j && (j.error || j.message)) || ('HTTP ' + r.status) } }; }); })
+        .catch(function (e) { return { data: null, error: { message: String(e && e.message || e) } }; });
+    }
+    return { functions: { invoke: function (name, o) { return post('/functions/v1/' + name, o && o.body); } }, rpc: function (fn, args) {
       return fetch(url + '/rest/v1/rpc/' + fn, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key }, body: JSON.stringify(args || {}) })
         .then(function (r) { return r.json().catch(function () { return null; }).then(function (j) { return r.ok ? { data: j, error: null } : { data: null, error: { message: (j && (j.message || j.hint)) || ('HTTP ' + r.status) } }; }); })
         .catch(function (e) { return { data: null, error: { message: String(e && e.message || e) } }; });

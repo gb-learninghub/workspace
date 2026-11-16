@@ -19,7 +19,23 @@
     '.vnb-pa{display:flex;gap:8px;justify-content:flex-end;align-items:center}.vnb-btn{min-height:44px;padding:0 18px;border-radius:22px;border:1px solid var(--t-border,#D5D8DE);background:#fff;font-weight:600;color:#1B1D22}.vnb-btn.pri{background:#16181D;border-color:#16181D;color:#fff}' +
     '.vnb-hint{font-size:.875rem;color:#454B57}.vnb-err{font-size:.875rem;color:#B42318}.vnb-empty{padding:28px 4px;text-align:center;color:var(--t-muted,#818999);font-size:.9375rem;line-height:1.6}';
 
-  function injectCss() { if (document.getElementById('vnb-css')) return; var s = document.createElement('style'); s.id = 'vnb-css'; s.textContent = CSS; document.head.appendChild(s); }
+
+  var CSS2 = '.vnb-book{position:relative;perspective:1800px}.vnb-2{display:grid;grid-template-columns:1fr 1fr}' +
+    '.vnb-pg{position:relative;box-sizing:border-box;height:100%;background:#FFFEFA;border:1px solid #E4E6EA;border-radius:10px;padding:8px 6px 26px 14px;overflow:hidden}' +
+    '.vnb-pg::before{content:"";position:absolute;top:0;bottom:0;left:59px;width:1px;background:#F2B8B5}' +
+    '.vnb-pg::after{content:"";position:absolute;left:3px;top:0;bottom:0;width:8px;background:radial-gradient(circle at 4px 50%,#D5D8DE 3px,transparent 3.5px) 0 0/8px 52px repeat-y}' +
+    '.vnb-2 .vnb-pg:first-child{border-radius:10px 0 0 10px;border-right:2px solid #C9CED8}.vnb-2 .vnb-pg:first-child::after{display:none}.vnb-2 .vnb-pg:last-child{border-radius:0 10px 10px 0;border-left:0}' +
+    '.vnb-pg .vnb-row{border-top:0;border-bottom:1px solid #D6E2F3;padding:6px 6px 6px 8px;min-height:52px;box-sizing:border-box;align-items:center}' +
+    '.vnb-pg .vnb-grp{display:flex;align-items:center;min-height:52px;box-sizing:border-box;padding:0 8px;border-bottom:1px solid #D6E2F3;color:#596579}' +
+    '.vnb-blank{height:52px;border-bottom:1px solid #D6E2F3}.vnb-pno{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:.75rem;color:#818999}' +
+    '.vnb-leaf{position:absolute;top:0;bottom:0;left:0;right:0;transform-origin:left center;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,.1,.2,1);pointer-events:none}.vnb-leaf.sp{left:50%}' +
+    '.vnb-leaf.bwd{transform:rotateY(-180deg)}.vnb-leaf.fwd.go{transform:rotateY(-180deg)}.vnb-leaf.bwd.go{transform:none}' +
+    '.vnb-face{position:absolute;top:0;bottom:0;left:0;right:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}.vnb-face.b{transform:rotateY(180deg)}.vnb-leaf .vnb-pg{border-radius:0}' +
+    '.vnb-nav{display:flex;align-items:center;justify-content:center;gap:14px;margin:10px 0}.vnb-pi{font-size:.875rem;color:#596579;min-width:90px;text-align:center}.vnb-nav .vnb-sm[disabled]{opacity:.35}' +
+    '.vnb-lv{font-size:.6875rem;font-weight:700;padding:0 6px;line-height:18px;border-radius:9px;border:1px solid #D5D8DE;color:#596579}' +
+    '@media (prefers-reduced-motion:reduce){.vnb-leaf{transition:none}}';
+  var LV = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5, C2: 6 };
+  function injectCss() { if (document.getElementById('vnb-css')) return; var s = document.createElement('style'); s.id = 'vnb-css'; s.textContent = CSS + CSS2; document.head.appendChild(s); }
   function icons() { if (w.lucide) w.lucide.createIcons(); }
   function toast(m) { if (w.LMS && w.LMS.toast) w.LMS.toast(m); }
   function err(e) { return (w.LMS && w.LMS.friendlyError) ? w.LMS.friendlyError(e) : ((e && e.message) || 'Có lỗi xảy ra'); }
@@ -29,7 +45,7 @@
     if (!root) return;
     injectCss();
     var st = ST[o.code] || (ST[o.code] = { items: null, q: '', f: 'all', sort: 'new', group: 'week', hide: 'off', reveal: {}, open: {}, edit: null, panel: null, busy: false, msg: '' });
-    var api = V.api(o.c, o.code), hintTimer = null;
+    var api = V.api(o.c, o.code), hintTimer = null, flipping = false;
 
     root.innerHTML = '<div class="vnb"><div class="vnb-bar"></div><div class="vnb-pn-wrap"></div><div class="vnb-list"></div></div>';
     var bar = root.querySelector('.vnb-bar'), pnw = root.querySelector('.vnb-pn-wrap'), list = root.querySelector('.vnb-list');
@@ -43,13 +59,14 @@
         return !q || V.key(x.word).indexOf(q) > -1 || V.key(x.meaning || '').indexOf(q) > -1;
       });
       var cmp = st.sort === 'az' ? function (a, b) { return V.key(a.word) < V.key(b.word) ? -1 : 1; }
+        : st.sort === 'lv' ? function (a, b) { return (LV[a.level] || 9) - (LV[b.level] || 9) || (V.key(a.word) < V.key(b.word) ? -1 : 1); }
         : st.sort === 'seen' ? function (a, b) { return (b.seen - a.seen) || (V.key(a.word) < V.key(b.word) ? -1 : 1); }
         : function (a, b) { return (a.week < b.week ? 1 : a.week > b.week ? -1 : 0) || (b.id - a.id); };
       return L.sort(cmp);
     }
 
     function statText() {
-      return (st.items ? view().length + ' từ · ' : '') + (st.group === 'week' ? 'Nhóm theo tuần' : st.group === 'topic' ? 'Nhóm theo chủ đề' : 'Không nhóm') + ' · ' + (st.sort === 'az' ? 'A đến Z' : st.sort === 'seen' ? 'Gặp lại nhiều nhất' : 'Mới nhất') + (st.hide === 'meaning' ? ' · Đang ẩn nghĩa' : st.hide === 'word' ? ' · Đang ẩn từ' : '');
+      return (st.items ? view().length + ' từ · ' : '') + (st.group === 'week' ? 'Nhóm theo tuần' : st.group === 'topic' ? 'Nhóm theo chủ đề' : 'Không nhóm') + ' · ' + (st.sort === 'az' ? 'A đến Z' : st.sort === 'seen' ? 'Gặp lại nhiều nhất' : st.sort === 'lv' ? 'Cấp độ dễ đến khó' : 'Mới nhất') + (st.hide === 'meaning' ? ' · Đang ẩn nghĩa' : st.hide === 'word' ? ' · Đang ẩn từ' : '');
     }
 
     function renderBar() {
@@ -76,7 +93,7 @@
         : hiddenMean ? '<button type="button" class="vnb-hid" data-vnb="reveal" data-id="' + x.id + '">Chạm để hiện nghĩa</button>'
           : esc(x.meaning) + (x.status === 'typed' ? '<span class="vnb-tag">tự gõ</span>' : '');
       var head = hiddenWord ? '<button type="button" class="vnb-hid" data-vnb="reveal" data-id="' + x.id + '">Chạm để hiện từ</button>'
-        : '<button type="button" class="vnb-head" data-vnb="open" data-id="' + x.id + '" aria-expanded="' + (st.open[x.id] ? 'true' : 'false') + '"><span class="vnb-w">' + esc(x.word) + '</span>' + (x.pos ? '<span class="vnb-m">' + esc(x.pos) + '</span>' : '') + (x.ipa ? '<span class="vnb-m">' + esc(x.ipa) + '</span>' : '') + '</button>';
+        : '<button type="button" class="vnb-head" data-vnb="open" data-id="' + x.id + '" aria-expanded="' + (st.open[x.id] ? 'true' : 'false') + '"><span class="vnb-w">' + esc(x.word) + '</span>' + (x.pos ? '<span class="vnb-m">' + esc(x.pos) + '</span>' : '') + (x.ipa ? '<span class="vnb-m">' + esc(x.ipa) + '</span>' : '') + (x.level ? '<span class="vnb-lv">' + esc(x.level) + '</span>' : '') + '</button>';
       var det = '';
       if (st.open[x.id] && !hiddenWord) {
         var ed = st.edit && st.edit.id === x.id;
@@ -91,19 +108,87 @@
         '<button type="button" class="vnb-sm" style="border:0" data-vnb="say" data-id="' + x.id + '" aria-label="Phát âm"><i data-lucide="volume-2"></i></button></div>';
     }
 
+    function spread() { return root.clientWidth >= 820; }
+    function perPage() { return spread() ? 10 : 8; }
+    function grpOf(x) { return st.group === 'week' ? weekLabel(x.week) : st.group === 'topic' ? (x.topic || 'Chưa có chủ đề') : ''; }
+    function paginate(L) {
+      var N = perPage(), pages = [], cur = null, lastG = null;
+      function np() { cur = { units: 0, parts: [] }; pages.push(cur); lastG = null; }
+      np();
+      L.forEach(function (x) {
+        var g = grpOf(x), needH = !!g && g !== lastG;
+        if (cur.units + (needH ? 2 : 1) > N && cur.parts.length) { np(); needH = !!g; }
+        if (needH) { cur.parts.push({ h: g }); cur.units++; lastG = g; }
+        cur.parts.push({ x: x }); cur.units++;
+      });
+      return pages;
+    }
+    function pageHtml(p, no) {
+      var h = p.parts.map(function (t) { return t.h ? '<div class="vnb-grp">' + esc(t.h) + '</div>' : rowHtml(t.x); }).join('');
+      for (var i = p.units; i < perPage(); i++) h += '<div class="vnb-blank"></div>';
+      return '<div class="vnb-pg">' + h + '<div class="vnb-pno">' + no + '</div></div>';
+    }
+    function blankPage() { var h = ''; for (var i = 0; i < perPage(); i++) h += '<div class="vnb-blank"></div>'; return '<div class="vnb-pg">' + h + '</div>'; }
+    function pg(i) { return st.pages[i] ? pageHtml(st.pages[i], i + 1) : blankPage(); }
+    function steps() { return spread() ? Math.ceil(st.pages.length / 2) : st.pages.length; }
+    function drawBook(L) {
+      L = L || view();
+      var sig = [st.f, st.q, st.sort, st.group, perPage(), spread()].join('|');
+      if (st._sig !== sig) { st._sig = sig; st.page = 0; }
+      st.pages = paginate(L);
+      var n = steps(); st.page = Math.max(0, Math.min(st.page || 0, n - 1));
+      var P = st.pages.length, t = st.page, body, label;
+      if (spread()) { body = '<div class="vnb-2">' + pg(2 * t) + pg(2 * t + 1) + '</div>'; label = (2 * t + 2 > P) ? (2 * t + 1) : ((2 * t + 1) + '–' + (2 * t + 2)); }
+      else { body = pg(t); label = String(t + 1); }
+      var nav = n > 1 ? '<div class="vnb-nav"><button type="button" class="vnb-sm" data-vnb-go="-1" aria-label="Trang trước"' + (t === 0 ? ' disabled' : '') + '><i data-lucide="chevron-left"></i></button><span class="vnb-pi">Trang ' + label + '/' + P + '</span><button type="button" class="vnb-sm" data-vnb-go="1" aria-label="Trang sau"' + (t >= n - 1 ? ' disabled' : '') + '><i data-lucide="chevron-right"></i></button></div>' : '';
+      list.innerHTML = '<div class="vnb-book">' + body + '</div>' + nav; icons();
+    }
+    function go(d) {
+      if (flipping || !st.pages) return;
+      var n = steps(), old = st.page, t = old + d;
+      if (t < 0 || t >= n) return;
+      var bookEl = list.querySelector('.vnb-book'), sp = spread(), fwd = d > 0;
+      var reduce = w.matchMedia && w.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      st.page = t;
+      if (reduce || !bookEl) { drawBook(); return; }
+      var under, front, back;
+      if (!sp) { under = pg(fwd ? t : old); front = pg(fwd ? old : t); back = blankPage(); }
+      else if (fwd) { under = '<div class="vnb-2">' + pg(2 * old) + pg(2 * t + 1) + '</div>'; front = pg(2 * old + 1); back = pg(2 * t); }
+      else { under = '<div class="vnb-2">' + pg(2 * t) + pg(2 * old + 1) + '</div>'; front = pg(2 * t + 1); back = pg(2 * old); }
+      flipping = true;
+      bookEl.innerHTML = under + '<div class="vnb-leaf ' + (fwd ? 'fwd' : 'bwd') + (sp ? ' sp' : '') + '"><div class="vnb-face f">' + front + '</div><div class="vnb-face b">' + back + '</div></div>';
+      icons();
+      var leaf = bookEl.querySelector('.vnb-leaf'); void leaf.offsetWidth; leaf.classList.add('go');
+      var done = function () { if (!flipping) return; flipping = false; drawBook(); };
+      leaf.addEventListener('transitionend', done); setTimeout(done, 800);
+    }
+    list.addEventListener('click', function (e) { var b = e.target.closest('[data-vnb-go]'); if (b && !b.disabled) go(Number(b.getAttribute('data-vnb-go'))); });
+    var tx = null, ty = 0;
+    list.addEventListener('touchstart', function (e) { var t = e.touches[0]; tx = t.clientX; ty = t.clientY; }, { passive: true });
+    list.addEventListener('touchend', function (e) {
+      if (tx === null) return; var t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty; tx = null;
+      if (Math.abs(dx) > 60 && Math.abs(dy) < 50) go(dx < 0 ? 1 : -1);
+    }, { passive: true });
+    var lastW = root.clientWidth, rzT = null;
+    if (w._vnbRz) w.removeEventListener('resize', w._vnbRz);
+    w._vnbRz = function () { clearTimeout(rzT); rzT = setTimeout(function () { if (!document.body.contains(list) || root.clientWidth === lastW) return; lastW = root.clientWidth; if (st.items && !flipping) renderList(); }, 200); };
+    w.addEventListener('resize', w._vnbRz);
+
+    function say(x, btn) {
+      if (x.audio) { V.speak(x.word, x.audio); return; }
+      if (x._sayBusy) return; x._sayBusy = true; if (btn) btn.disabled = true;
+      api.audio(x.word).then(function (u) { if (u) x.audio = u; V.speak(x.word, u || null); })
+        .catch(function () { V.speak(x.word); })
+        .then(function () { x._sayBusy = false; if (btn) btn.disabled = false; });
+    }
+
     function renderList() {
       var s = bar.querySelector('.vnb-st'); if (s) s.textContent = statText();
       if (st.items === null) { list.innerHTML = '<div class="vnb-empty">' + (st.msg ? esc(st.msg) : 'Đang tải sổ từ vựng...') + '</div>'; return; }
       var L = view();
       if (!st.items.length) { list.innerHTML = '<div class="vnb-empty">Sổ chưa có từ nào.<br>Từ trong bài học sẽ tự vào sổ khi giáo viên giao bài. Em cũng có thể thêm từ bằng nút dấu cộng.</div>'; return; }
       if (!L.length) { list.innerHTML = '<div class="vnb-empty">Không có từ nào khớp.</div>'; return; }
-      var html = '', last = null;
-      L.forEach(function (x) {
-        var g = st.group === 'week' ? weekLabel(x.week) : st.group === 'topic' ? (x.topic || 'Chưa có chủ đề') : '';
-        if (g !== last) { if (g) html += '<div class="vnb-grp">' + esc(g) + '</div>'; last = g; }
-        html += rowHtml(x);
-      });
-      list.innerHTML = html; icons();
+      drawBook(L);
     }
 
     function renderPanel() {
@@ -181,7 +266,7 @@
       var a = b.getAttribute('data-vnb'), x = b.dataset.id ? byId(b.dataset.id) : null;
       if (a === 'chip') { st.f = b.dataset.f; renderBar(); renderList(); }
       else if (a === 'hide') { st.hide = st.hide === 'off' ? 'meaning' : st.hide === 'meaning' ? 'word' : 'off'; st.reveal = {}; renderBar(); renderList(); }
-      else if (a === 'sort') { st.sort = st.sort === 'new' ? 'az' : st.sort === 'az' ? 'seen' : 'new'; renderBar(); renderList(); }
+      else if (a === 'sort') { st.sort = st.sort === 'new' ? 'az' : st.sort === 'az' ? 'seen' : st.sort === 'seen' ? 'lv' : 'new'; renderBar(); renderList(); }
       else if (a === 'group') { st.group = st.group === 'week' ? 'topic' : st.group === 'topic' ? 'none' : 'week'; renderBar(); renderList(); }
       else if (a === 'add' || a === 'import') { st.panel = st.panel === a ? null : a; renderBar(); renderPanel(); }
       else if (a === 'close') { st.panel = null; renderBar(); renderPanel(); }
@@ -190,7 +275,7 @@
       else if (a === 'export') exportList();
       else if (a === 'reveal' && x) { st.reveal[x.id] = true; renderList(); }
       else if (a === 'open' && x) { st.open[x.id] = !st.open[x.id]; if (!st.open[x.id] && st.edit && st.edit.id === x.id) st.edit = null; renderList(); }
-      else if (a === 'say' && x) V.speak(x.word);
+      else if (a === 'say' && x) say(x, b);
       else if (a === 'learn' && x) {
         var prev = x.learned; x.learned = !prev; renderBar(); renderList();
         api.set(x.id, { learned: x.learned }).catch(function (er) { x.learned = prev; renderBar(); renderList(); toast(err(er)); });
@@ -266,7 +351,7 @@
       var b = e.target.closest('[data-wotd]'); if (!b || !st.d) return;
       var a = b.getAttribute('data-wotd');
       if (a === 'reveal') { st.show = true; draw(); }
-      else if (a === 'say') V.speak(st.d.word);
+      else if (a === 'say') { var d0 = st.d; if (d0.audio) V.speak(d0.word, d0.audio); else api.audio(d0.word).then(function (u) { if (u) d0.audio = u; V.speak(d0.word, u || null); }).catch(function () { V.speak(d0.word); }); }
       else if (a === 'open') { var nav = document.querySelector('[data-student-view="vocab"]'); if (nav) nav.click(); }
       else if (a === 'learn') {
         var prev = st.d.learned; st.d.learned = !prev; st.d.done += prev ? -1 : 1; draw();
