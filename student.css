@@ -1325,3 +1325,11 @@ html body.student-dashboard-view .g-prog .sk-grid{display:grid!important;grid-te
 html body.student-dashboard-view .g-prog .sk{padding:5px 4px!important;min-width:0}
 html body.student-dashboard-view .g-prog .sk .sl{font-size:9.5px!important;white-space:nowrap;letter-spacing:-.2px}
 }
+
+/* profile card: tidy meta */
+html body.student-dashboard-view .g-profile .profile-info{gap:10px!important}
+html body.student-dashboard-view .g-profile .profile-name{font-size:1.125rem!important;line-height:1.2}
+html body.student-dashboard-view .g-profile .profile-meta{flex-direction:row!important;flex-wrap:wrap;align-items:center!important;gap:8px!important}
+html body.student-dashboard-view .g-profile .profile-class{font-size:.8125rem;min-height:26px;padding:2px 10px;border-radius:8px}
+html body.student-dashboard-view .g-profile .profile-code{font-size:.8125rem!important;font-weight:600;letter-spacing:.02em;color:#6B7585!important}
+html body.student-dashboard-view .g-profile .profile-meta{flex-direction:column!important;align-items:flex-start!important;gap:6px!important}
