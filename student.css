@@ -1239,3 +1239,10 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
 .student-rail #student-tuition #tuition-tag{grid-column:1;grid-row:2;justify-self:start;margin-left:42px}
 .student-rail #student-tuition .tuition-amts.compact b{grid-column:2;grid-row:1;justify-self:end;margin:0;font-size:1rem}
 .student-rail #student-tuition .ta-date{grid-column:2;grid-row:2;justify-self:end;font-size:.75rem;color:#818999}
+
+/* Tổng quan: hàng tuần chia 3 ô (bài học, bài tập, sổ từ vựng) */
+.student-overview-view .student-materials{grid-template-columns:repeat(3,minmax(0,1fr))}
+.student-overview-view .student-materials>#wotd-root{display:contents}
+.student-overview-view .student-materials>#wotd-root>.card{height:100%;min-height:0;max-height:none;overflow:auto;box-sizing:border-box}
+@media(max-width:780px){.student-overview-view .student-materials{grid-template-columns:1fr}
+.student-overview-view .student-materials>#wotd-root>.card{height:auto;min-height:196px}}
