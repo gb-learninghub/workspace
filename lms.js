@@ -554,3 +554,12 @@
   var ready = function () { fr.then(function () { if (document.body) start(); else document.addEventListener('DOMContentLoaded', start); }, go); };
   if (document.readyState === 'complete') ready(); else window.addEventListener('load', ready);
 })();
+
+/* Số tiền ẩn mặc định: phần tử .mh hiện icon mắt, bấm vào để hiện số (bấm lại để ẩn) */
+(function () {
+  document.addEventListener('click', function (e) {
+    var m = e.target.closest('.mh'); if (!m) return;
+    e.preventDefault(); e.stopPropagation();
+    m.classList.toggle('m-show');
+  }, true);
+})();
