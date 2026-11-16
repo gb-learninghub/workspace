@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="lms.css">
-  <script src="lms.js"></script>
+  <script src="lms.js"></script><script src="lms-tiles.js"></script>
   <style>
     .edlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(22,24,29,.35)}
     .edlg[hidden]{display:none}
@@ -145,6 +145,8 @@
         $('total-count').textContent = state.parents.length;
         $('linked-count').textContent = [...linked].filter(id => activeIds.has(id)).length;
         $('unlinked-count').textContent = [...activeIds].filter(id => !linked.has(id)).length;
+        if (!window.__tileBound) { window.__tileBound = true; const kidRows = fn => state.students.filter(fn).slice().sort((a, b) => natural((classOf(a) || { class_code: 'zz' }).class_code, (classOf(b) || { class_code: 'zz' }).class_code) || natural(a.student_name, b.student_name)).map(s => { const l = state.links.find(x => x.student_id === s.id), p = l && state.parents.find(x => x.id === l.parent_id); return { name: s.student_name, sub: classOf(s) ? classOf(s).class_code : 'Chưa xếp lớp', val: p ? p.label : '–', acts: p ? [{ icon: 'link', title: 'Sao chép link phụ huynh', fn: () => act('copylink', p.id) }] : [] }; });
+          LMSTile.bind({ 'total-count': () => ({ title: 'Tổng phụ huynh', rows: state.parents.slice().sort((a, b) => natural(a.label, b.label)).map(p => ({ name: p.label, sub: kidsOf(p).length + ' học sinh', val: p.code, acts: [{ icon: 'copy', title: 'Sao chép mã', fn: () => act('copy', p.id) }, { icon: 'link', title: 'Sao chép link', fn: () => act('copylink', p.id) }, { icon: 'pencil', title: 'Sửa phụ huynh', close: true, fn: () => act('edit', p.id) }] })), opt: { unit: 'phụ huynh' } }), 'linked-count': () => ({ title: 'Học sinh đã nối', rows: kidRows(s => s.is_active && state.links.some(l => l.student_id === s.id)), opt: { unit: 'học sinh' } }), 'unlinked-count': () => ({ title: 'Chưa có phụ huynh', rows: kidRows(s => s.is_active && !state.links.some(l => l.student_id === s.id)), opt: { unit: 'học sinh' } }) }); }
         const list = visible();
         if (!list.length) {
           $('rows').innerHTML = `<tr><td colspan="4" class="py-6 px-2 text-center text-slate-400 text-sm">${state.parents.length ? 'Không có phụ huynh phù hợp.' : 'Chưa có phụ huynh nào. Bấm “Thêm phụ huynh” để tạo.'}</td></tr>`;

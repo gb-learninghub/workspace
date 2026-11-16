@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="lms.css">
-  <script src="lms.js"></script>
+  <script src="lms.js"></script><script src="lms-tiles.js"></script>
   <script>document.documentElement.dataset.lmsView=location.hash==='#schedule'?'schedule':location.hash==='#lib'?'lib':'overview';</script>
   <style>
     html[data-lms-view="schedule"] #view-overview,html[data-lms-view="lib"] #view-overview,html[data-lms-view="lib"] #view-schedule{display:none!important}
@@ -729,6 +729,17 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           { icon: 'library', label: 'Học liệu tuần này', value: st.mats.length, note: 'bài học và bài tập', href: 'index.html#lib' }
         ];
         $('overview-stats').innerHTML = stats.map((x, i) => `<a class="overview-stat overview-stat-${i + 1}" ${x.href ? `href="${x.href}"` : `href="#schedule" data-home-view="schedule"`}><span class="overview-stat-icon"><i data-lucide="${x.icon}"></i></span><span class="overview-stat-label">${x.label}</span><b>${x.value}</b><small>${x.note}</small></a>`).join('');
+        if (!window.__statList) { window.__statList = true; document.addEventListener('click', e => {
+          const a = e.target.closest('.overview-stat'); if (!a) return; const n = [...document.querySelectorAll('.overview-stat')].indexOf(a) + 1, code = id => (st.classes.find(x => x.id === id) || {}).class_code || '';
+          const day = d => { const x = new Date(d + 'T00:00:00'); return pad(x.getDate()) + '/' + pad(x.getMonth() + 1); };
+          const stuRows = fn => { const out = []; st.classes.filter(fn).forEach(c => (st.roster[c.id] || []).forEach(nm => out.push({ name: nm.student_name || nm, sub: c.class_code, val: '' }))); return out; };
+          let r;
+          if (n === 1) r = ['Lớp đang hoạt động', st.classes.filter(c => classState(c) === 'active').sort((a, b) => natural(a.class_code, b.class_code)).map(c => ({ name: c.class_code, sub: c.class_name || '', val: (st.counts[c.id] || 0) + ' HV', href: c.page_url || 'class.html?class=' + encodeURIComponent(c.class_code), acts: [{ icon: 'users', title: 'Xem học viên', close: true, fn: () => openRoster(c.id) }, { icon: 'settings', title: 'Sửa lớp', close: true, fn: () => openClass(c.id) }] })), 'lớp'];
+          else if (n === 2) r = ['Học viên đang học', stuRows(() => true), 'học viên'];
+          else if (n === 3) r = ['Buổi học trong tuần', st.sessions.filter(s => !['cancel', 'holiday'].includes(s.status)).sort((a, b) => a.session_date.localeCompare(b.session_date) || a.start_time.localeCompare(b.start_time)).map(s => ({ name: code(s.class_id), sub: day(s.session_date) + ' · ' + t5(s.start_time), val: s.status === 'done' || s.status === 'makeup' ? 'Đã học' : '', acts: [{ icon: 'pencil', title: 'Sửa buổi học', close: true, fn: () => openSession(s.id, s.class_id, s.session_date) }] })), 'buổi'];
+          else if (n === 4) r = ['Học liệu tuần này', st.mats.map(m => ({ name: m.title, sub: m.kind === 'slide' ? 'Slide' : m.kind === 'homework' ? 'Bài tập' : 'Bài học', val: '', href: m.url, acts: [{ icon: 'pencil', title: 'Sửa học liệu', close: true, fn: () => openMat(m.id) }] })), 'mục'];
+          if (!r) return; e.preventDefault(); LMSTile.show(r[0], r[1], { unit: r[2] });
+        }); }
         const f = st.overviewFinance;
         $('overview-finance').innerHTML = `<div class="overview-section-title"><div><h2>Học phí tháng ${f ? f.month : 'này'}</h2><p>Tổng hợp từ tab Học phí</p></div><a href="tuition.html">Chi tiết <i data-lucide="arrow-right"></i></a></div><div class="overview-money-grid">${[
           ['Học phí', f && fmtMoney(f.due), 'wallet', 'due'], ['Nợ cũ', f && fmtMoney(f.arrears), 'history', 'old'], ['Đã thu', f && fmtMoney(f.paid), 'circle-dollar-sign', 'paid'], ['Còn lại', f && fmtMoney(f.debt), 'clock-3', 'debt'], ['Đã chi', f && fmtMoney(f.expenses), 'receipt', 'spend']

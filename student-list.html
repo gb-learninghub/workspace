@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="lms.css">
-  <script src="lms.js"></script>
+  <script src="lms.js"></script><script src="lms-tiles.js"></script>
   <style>
     .edlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(22,24,29,.35)}
     .edlg[hidden]{display:none}
@@ -280,6 +280,8 @@
         $('total-count').textContent = all.length;
         $('assigned-count').textContent = all.filter(s => s.class_id).length;
         $('unassigned-count').textContent = all.filter(s => !s.class_id).length;
+        if (!window.__tileBound) { window.__tileBound = true; const rowsOf = fn => state.students.filter(fn).slice().sort((a, b) => natural((classOf(a) || { class_code: 'zz' }).class_code, (classOf(b) || { class_code: 'zz' }).class_code) || natural(a.student_name, b.student_name)).map(s => ({ name: s.student_name, sub: classOf(s) ? classOf(s).class_code : 'Chưa xếp lớp', val: s.is_active ? 'Đang học' : 'Tạm ngưng', href: 'student.html#' + encodeURIComponent(s.student_code), acts: [{ icon: s.is_active ? 'pause' : 'play', title: s.is_active ? 'Chuyển sang Tạm ngưng' : 'Chuyển sang Đang học', fn: () => toggleStatus(s.id) }, { icon: 'pencil', title: 'Sửa học viên', close: true, fn: () => edit(s.id) }] }));
+          LMSTile.bind({ 'total-count': () => ({ title: 'Tổng học viên', rows: rowsOf(() => true), opt: { unit: 'học viên' } }), 'assigned-count': () => ({ title: 'Đã xếp lớp', rows: rowsOf(s => s.class_id), opt: { unit: 'học viên' } }), 'unassigned-count': () => ({ title: 'Chưa xếp lớp', rows: rowsOf(s => !s.class_id), opt: { unit: 'học viên' } }) }); }
         const list = visible();
         if (!list.length) {
           $('rows').innerHTML = '<tr><td colspan="6" class="py-6 px-2 text-center text-slate-400 text-sm">Không có học viên phù hợp.</td></tr>';
