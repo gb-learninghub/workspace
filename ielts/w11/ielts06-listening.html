@@ -376,11 +376,13 @@ table.tb input.gap.ok{background:var(--ok)}table.tb input.gap.bad{background:var
   document.addEventListener("click", function (e) { var m = e.target.closest && e.target.closest("#pw .mq"); if (m) { var q = m.querySelector(".qn"); if (q) { state.fq = +q.textContent; setTimeout(markFq, 0); } } }, true);
 
   function notesEl() {
-    var k = "gbnote_" + D.code + "_" + state.pi, v = "";
-    try { v = localStorage.getItem(k) || ""; } catch (e) { v = ""; }
+    var pi = state.pi, k = "gbnote_" + D.code + "_" + pi, v = "";
+    state.notes = state.notes || {};
+    if (state.notes[pi] != null) v = state.notes[pi];
+    else { try { v = localStorage.getItem(k) || ""; } catch (e) { v = ""; } }
     var ta = h("textarea", { cls: "nta", placeholder: "Write your notes here while you listen", spellcheck: "false", autocapitalize: "off", autocomplete: "off" });
     ta.value = v;
-    ta.addEventListener("input", function () { try { localStorage.setItem(k, ta.value); } catch (e) {} });
+    ta.addEventListener("input", function () { state.notes[pi] = ta.value; try { localStorage.setItem(k, ta.value); } catch (e) {} scheduleSave(); });
     return h("div", { cls: "nt" }, h("div", { cls: "nth", text: "Student's notes" }), ta);
   }
 
@@ -474,7 +476,7 @@ table.tb input.gap.ok{background:var(--ok)}table.tb input.gap.bad{background:var
   }
 
   /* ---------- progress, save, submit ---------- */
-  function draftBody() { return { ans: state.ans, open: state.open }; }
+  function draftBody() { return { ans: state.ans, open: state.open, notes: state.notes || {} }; }
   function scheduleSave() {
     if (!state.code || state.loading) return;
     var cur = JSON.stringify(draftBody()); if (cur === state.saved) return;
@@ -491,7 +493,7 @@ table.tb input.gap.ok{background:var(--ok)}table.tb input.gap.bad{background:var
   window.addEventListener("pagehide", function () { saveNow(true); });
   function loadProgress(pg) {
     state.loading = true;
-    var d = pg.answers || {}; state.ans = d.ans || {}; state.open = d.open || [];
+    var d = pg.answers || {}; state.notes = d.notes || {}; state.ans = d.ans || {}; state.open = d.open || [];
     state.lock = {}; state.byId = {}; state.pres = {};
     (pg.parts || []).forEach(function (x) {
       var pi = x.part - 1; if (state.open.indexOf(pi) > -1 || !D.parts[pi]) return;
