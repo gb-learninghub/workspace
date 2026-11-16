@@ -27,6 +27,7 @@
 #lms-tile-dlg .lmt-act{width:36px;height:36px;flex:none;display:inline-flex;align-items:center;justify-content:center;border:1px solid #E4E6EA;border-radius:10px;background:#fff;color:#1B1D22;font-weight:800;cursor:pointer;transition:transform .12s ease,background-color .15s ease,border-color .15s ease}
 #lms-tile-dlg .lmt-act:hover{background:#F4F5F7}#lms-tile-dlg .lmt-act:active{transform:scale(.88)}#lms-tile-dlg .lmt-act:disabled{opacity:.5;cursor:default}
 #lms-tile-dlg .lmt-act svg{width:16px;height:16px}
+#lms-tile-dlg .lmt-sel{height:36px;padding:0 28px 0 10px;border:1px solid #E4E6EA;border-radius:10px;background:#fff;color:#1B1D22;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23778597' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}#lms-tile-dlg .lmt-sel:hover{background-color:#F4F5F7}#lms-tile-dlg .lmt-sel:disabled{opacity:.5}
 #lms-tile-dlg .lmt-act[data-st=done]{background:#e7f6ec;border-color:#9bd3ad;color:#1d7a3e}#lms-tile-dlg .lmt-act[data-st=skip]{background:#f4f5f7;color:#6b7686}
 #lms-tile-dlg .lmt-act.lmt-busy{animation:lmtPulse .7s ease infinite}
 #lms-tile-dlg .lmt-total{font-weight:800;border-top:1px solid #d5d9e0!important}
@@ -43,6 +44,7 @@
     box = document.createElement('div'); box.id = 'lms-tile-dlg'; box.hidden = true; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true');
     box.innerHTML = '<div class="lmt-card"><h2 id="lmt-title"></h2><div class="lmt-list" id="lmt-list"></div><div class="lmt-foot"><button type="button" class="lmt-close">Đóng</button></div></div>';
     document.body.appendChild(box);
+    box.addEventListener('change', async e => { const s = e.target.closest('.lmt-sel'); if (!s || !cur) return; const r = cur.rows[+s.dataset.r], a = r && (r.acts || [])[+s.dataset.a]; if (!a) return; s.disabled = true; try { await a.fn(r, s.value); } catch (er) { console.error(er); } const re = cur.opt && cur.opt.reload; if (re) { const n = re(); if (n) return paint(n.title, n.rows, Object.assign({ reload: re }, n.opt), false); } s.disabled = false; });
     box.addEventListener('click', e => { if (e.target === box || e.target.closest('.lmt-close')) hide(); const b = e.target.closest('.lmt-act'); if (b) run(b); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !box.hidden) hide(); });
   }
@@ -50,13 +52,13 @@
   function paint(title, rows, opt, animate) {
     cur = { title, rows, opt };
     document.getElementById('lmt-title').textContent = title;
-    const list = document.getElementById('lmt-list'), maxActs = rows.reduce((n, r) => Math.max(n, (r.acts || []).length), 0);
+    const list = document.getElementById('lmt-list'), widthOf = r => (r.acts || []).reduce((n, a, i) => n + (a.options ? (a.w || 96) : 36) + (i ? 6 : 0), 0), maxW = rows.reduce((n, r) => Math.max(n, widthOf(r)), 0), maxActs = maxW ? 1 : 0;
     if (opt.cols) list.style.setProperty('--cols', opt.cols); else list.style.removeProperty('--cols');
-    list.style.setProperty('--c4', maxActs ? (maxActs * 36 + (maxActs - 1) * 6) + 'px' : '0px');
+    list.style.setProperty('--c4', maxW + 'px');
     const scroll = list.scrollTop;
     const row = (r, i) => {
       const nm = r.href ? `<a class="lmt-name" href="${esc(r.href)}">${esc(r.name)}</a>` : `<b class="lmt-name">${esc(r.name)}</b>`;
-      const acts = maxActs ? `<span class="lmt-acts-cell">${(r.acts || []).map((a, k) => `<button type="button" class="lmt-act" data-r="${i}" data-a="${k}"${a.state != null ? ` data-st="${esc(a.state)}"` : ''} title="${esc(a.title || '')}" aria-label="${esc(a.title || '')}">${a.icon ? `<i data-lucide="${esc(a.icon)}"></i>` : esc(a.text || '')}</button>`).join('')}</span>` : '';
+      const acts = maxActs ? `<span class="lmt-acts-cell">${(r.acts || []).map((a, k) => a.options ? `<select class="lmt-sel" data-r="${i}" data-a="${k}" title="${esc(a.title || '')}" aria-label="${esc(a.title || '')}" style="width:${a.w || 96}px">${a.options.map(o => `<option value="${esc(o[0])}"${String(o[0]) === String(a.value) ? ' selected' : ''}>${esc(o[1])}</option>`).join('')}</select>` : `<button type="button" class="lmt-act" data-r="${i}" data-a="${k}"${a.state != null ? ` data-st="${esc(a.state)}"` : ''} title="${esc(a.title || '')}" aria-label="${esc(a.title || '')}">${a.icon ? `<i data-lucide="${esc(a.icon)}"></i>` : esc(a.text || '')}</button>`).join('')}</span>` : '';
       return `<div class="lmt-row${animate ? ' lmt-in' : ''}" style="--i:${Math.min(i, 14)}">${nm}<small class="lmt-sub">${esc(r.sub || '')}</small><span class="lmt-val">${esc(r.val || '')}</span>${acts}</div>`;
     };
     let h = rows.length ? rows.map(row).join('') : '<div class="lmt-empty">Chưa có mục nào.</div>';
