@@ -48,7 +48,7 @@
       const joinOpen = s => s.mode === 'online' && isHttp(d.meet_url) && s.status !== 'cancel' && s.status !== 'holiday' && s.date === todayKey
         && nowHM >= hm(toMin(s.start) - 15) && nowHM < s.end;
       const joinBtn = k => k === 'solid'
-        ? `<a class="hero-btn solid" href="${esc(d.meet_url)}" target="_blank" rel="noopener" aria-label="Mở Google Meet"><i data-lucide="video" class="w-4 h-4"></i><span>Meet</span></a>`
+        ? `<a class="hero-btn solid" href="${esc(d.meet_url)}" target="_blank" rel="noopener" aria-label="Mở Google Meet" title="Vào lớp online"><i data-lucide="video" class="w-4 h-4"></i><span>Meet</span></a>`
         : `<a class="tag bg-sky-600 text-white" href="${esc(d.meet_url)}" target="_blank" rel="noopener" aria-label="Mở Google Meet" style="text-decoration:none;min-height:36px;display:inline-flex;align-items:center;gap:6px;font-weight:700"><i data-lucide="video" class="w-3.5 h-3.5"></i><span>Meet</span></a>`;
       const next = sess.find(s => (s.status === 'planned' || s.status === 'makeup') && (s.date > todayKey || (s.date === todayKey && s.end > nowHM)));
       if (!S.calendarMonth) S.calendarMonth = `${now.getFullYear()}-${pad(now.getMonth()+1)}`;
@@ -69,8 +69,8 @@
         <div class="hero-next-time"><div class="text-xl font-extrabold">${next ? fmtDay(next.date) : 'Chưa có lịch'}</div>
         <div class="text-sm mt-2" style="opacity:.9;display:flex;align-items:center;gap:6px">${next ? '<i data-lucide="clock" class="w-4 h-4"></i>' + tmr(next) : ''}</div></div>
         <div class="hero-actions">
-          ${next ? (next.mode === 'online' ? (joinOpen(next) ? joinBtn('solid') : `<span class="hero-btn ghost" title="Link mở trước 15 phút" style="opacity:.9;white-space:nowrap"><i data-lucide="video" class="w-4 h-4"></i><span>Meet</span></span>`) : `<span class="hero-btn ghost" style="opacity:.9"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Học trực tiếp</span></span>`) : ''}
-          <a class="hero-btn ghost" href="${esc(isHttp(cls.drive_url) ? cls.drive_url : 'https://drive.google.com')}" target="_blank" rel="noopener"><i data-lucide="folder" class="w-4 h-4"></i><span>Drive</span></a>
+          ${next ? (next.mode === 'online' ? (joinOpen(next) ? joinBtn('solid') : `<span class="hero-btn ghost" title="Link mở trước 15 phút" style="opacity:.9;white-space:nowrap"><i data-lucide="video" class="w-4 h-4"></i><span>Meet</span></span>`) : `<span class="hero-btn ghost" style="opacity:.9" title="Học trực tiếp" aria-label="Học trực tiếp"><i data-lucide="map-pin" class="w-4 h-4"></i><span>Học trực tiếp</span></span>`) : ''}
+          <a class="hero-btn ghost" href="${esc(isHttp(cls.drive_url) ? cls.drive_url : 'https://drive.google.com')}" target="_blank" rel="noopener" title="Drive bài giảng" aria-label="Drive bài giảng"><i data-lucide="folder" class="w-4 h-4"></i><span>Drive</span></a>
         </div></section>`;
 
       const selWk = S.materialWeek || mondayKey(now), selWkEnd = (() => { const x = dOf(selWk); x.setDate(x.getDate() + 6); return ymd(x); })(), selMonth = selWkEnd.slice(0, 7);

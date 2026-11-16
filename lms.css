@@ -281,3 +281,10 @@ html body.tuition-page .tuition-main>section:first-child .stat-n:not(.mh),html b
 @media(max-width:640px){
 html body.tuition-page .tuition-main>section:first-child .stat-n{display:flex;align-items:center;justify-content:center;height:22px;min-height:22px;white-space:nowrap}
 }
+
+/* Bảng học phí (màn hình rộng): vừa khít khung, không còn bắt cuộn ngang làm mất cột Hoàn thành / Ngày đóng */
+@media(min-width:901px){
+html body.tuition-page .tuition-debt-scroll>div{min-width:0!important}
+html body.tuition-page .tuition-row{grid-template-columns:minmax(0,1.7fr) repeat(3,minmax(0,1fr)) minmax(0,1.15fr) minmax(0,.8fr)!important}
+html body.tuition-page .tuition-row>*{min-width:0!important}
+}

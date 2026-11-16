@@ -1273,3 +1273,16 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
 .student-overview-view .g-wotd .wotd-pill{background:#FFFFFF!important}
 @media(max-width:780px){.student-overview-view .student-materials{grid-template-columns:1fr}
 .student-overview-view .student-materials>#wotd-root>.card{height:auto;min-height:196px}}
+
+/* Tablet (iPad): gom nhỏ trang Tổng quan cho vừa màn hình, nút Học trực tiếp / Drive chỉ còn icon, nằm ngang */
+@media(min-width:781px) and (max-width:1199px){
+.student-overview-top{gap:10px!important}
+.student-overview-top>*{min-height:0!important;height:172px!important}
+.student-overview-highlight,.student-overview-content,.student-overview-view .student-materials{gap:10px!important}
+.student-overview-highlight .g-week-sched,.student-overview-highlight .g-tuition,.student-overview-highlight .g-prog{height:236px!important;min-height:0!important;overflow:hidden}
+.student-overview-view .student-materials>.card,.student-overview-view .student-materials>#wotd-root>.card{height:auto!important;min-height:0!important;max-height:198px!important;overflow:auto}
+.student-overview-view .student-week-only-date span{display:none}
+}
+.student-overview-view .g-hero .hero-actions{display:flex!important;flex-direction:row!important;flex-wrap:nowrap;gap:8px!important}
+.student-overview-view .g-hero .hero-btn{width:40px;height:40px;min-width:40px;padding:0!important;justify-content:center}
+.student-overview-view .g-hero .hero-btn>span{display:none!important}
