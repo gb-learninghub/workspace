@@ -133,7 +133,7 @@ table.stack thead{display:none!important}
         ]);
         [cl, st, pa, li].forEach(r => { if (r.error) throw r.error; });
         state.classes = (cl.data || []).slice().sort((a, b) => natural(a.class_code, b.class_code));
-        state.students = st.data || []; state.parents = pa.data || []; state.links = li.data || [];
+        const tIds = new Set(state.classes.filter(c => /teacher/i.test(c.class_code + ' ' + c.class_name)).map(c => c.id)); state.students = (st.data || []).filter(x => !tIds.has(x.class_id)); state.parents = pa.data || []; state.links = li.data || [];
       }
 
       function fillClassSelect() {
