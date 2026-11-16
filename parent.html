@@ -21,14 +21,11 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sa
 .bar .in{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:12px}
 .logo{width:44px;height:44px;border-radius:12px;background:#2A2D34;color:var(--gold);display:grid;place-items:center;font-weight:800;font-size:1.05rem;flex:none}
 h1{font-size:1.3rem;margin:0;line-height:1.2;color:var(--gold)}
-.bar .sub{color:#9AA3B2}
 .sub{color:var(--mut);font-size:.875rem}
 .wrap{max-width:1040px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom))}
-.kids{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+.kids{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding-bottom:4px;margin-bottom:14px}
 .kid{flex:none;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:600;color:var(--ink);cursor:pointer}
 .kid[aria-pressed=true]{background:var(--dark);border-color:var(--dark);color:#fff}
-.child-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:2px 2px 14px}
-.child-head h2{font-size:1.2rem;margin:0}
 .cols{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
 @media(min-width:900px){.cols{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.col{display:grid;gap:14px}}
 @media(max-width:899px){.col{display:contents}}
@@ -47,19 +44,22 @@ h1{font-size:1.3rem;margin:0;line-height:1.2;color:var(--gold)}
 .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
 .stat b{display:block;font-size:1.35rem;line-height:1.2}.stat span{font-size:.8125rem;color:var(--mut)}
 details summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600;color:var(--mut)}
-.dot{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-size:.75rem;font-weight:800;border:1.5px solid #C5C9D0;color:#fff;flex:none}
-.dot.p{background:#16A34A;border-color:#16A34A}.dot.a{background:#DC2626;border-color:#DC2626}.dot.l{background:#F59E0B;border-color:#F59E0B}.dot.e{background:#6B7280;border-color:#6B7280}
 .tm{padding:11px 0;border-bottom:1px solid var(--line)}.tm:last-child{border-bottom:0}
 .tm .top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px}
 .money{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px;font-size:.9rem;background:var(--panel);border-radius:12px;padding:10px 12px}
 .money small{display:block;color:var(--mut);font-size:.75rem}
 .neg{color:var(--bad);font-weight:700}.pos{color:var(--ok);font-weight:700}
-.owed{background:var(--gold-bg);color:var(--gold-t);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:.9rem}
+.owed{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--gold-bg);color:var(--gold-t);border-radius:12px;padding:10px 14px;font-size:.9rem}.owed b{font-size:1.1rem}
 .msg{text-align:center;padding:48px 16px;color:var(--mut)}
 .msg b{display:block;color:var(--ink);font-size:1.1rem;margin-bottom:6px}
 form.code{display:flex;gap:8px;max-width:360px;margin:18px auto 0}
 form.code input{flex:1;min-width:0;height:48px;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;font-size:16px;letter-spacing:.12em;text-align:center}
 form.code button{height:48px;padding:0 20px;border:0;border-radius:999px;background:var(--dark);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+button.more{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;margin-top:8px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit;font-weight:600;color:var(--ink);cursor:pointer}
+button.more.head{margin:0;border:0;padding:0;min-height:36px;background:none}.pill{padding:6px 14px;border-radius:999px;background:var(--panel);font-size:.9375rem;font-weight:700}
+button.more .chev{transition:transform .15s}button.more[aria-expanded=true] .chev{transform:rotate(180deg)}
+#tui-hist{margin-top:6px}#hist{margin-top:8px}
+.next .chip{flex:none}
 @media(max-width:520px){.stat b{font-size:1.2rem}}
 </style>
 </head>
@@ -108,21 +108,50 @@ form.code button{height:48px;padding:0 20px;border:0;border-radius:999px;backgro
     D = r.data; idx = 0; render();
   }
 
-  function sessionsHtml(ch) {
-    var today = ymd(new Date()), up = (ch.sessions || []).filter(function (x) { return x.date >= today && (x.status === 'planned' || x.status === 'makeup'); }).slice(0, 8);
-    if (!up.length) return '<div class="sub">Chưa có buổi học sắp tới.</div>';
-    var n = up[0], h = '<div class="next"><div><div class="sub">Buổi tiếp theo</div><b>' + esc(dayLabel(n.date)) + '</b><div class="sub">' + esc(timeRange(n)) + '</div></div>' + modeChip(n) + '</div>';
-    return h + up.slice(1).map(function (x) { return '<div class="row"><div class="l"><b>' + esc(dayLabel(x.date)) + '</b><span>' + esc(timeRange(x)) + '</span></div><div>' + modeChip(x) + '</div></div>'; }).join('');
+  var LAB = { present: 'Có mặt', absent: 'Vắng', late: 'Trễ', excused: 'Có phép' };
+  var ACLS = { present: ['p', '✓', 'c-ok'], absent: ['a', '×', 'c-bad'], late: ['l', 'T', 'c-warn'], excused: ['e', 'P', 'c-mut'] };
+  function weekRange() {
+    var t = new Date(), d = (t.getDay() + 6) % 7, mon = new Date(t.getFullYear(), t.getMonth(), t.getDate() - d), sun = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + 6);
+    return [ymd(mon), ymd(sun)];
+  }
+  function nextSession(ch) {
+    var today = ymd(new Date());
+    return (ch.sessions || []).filter(function (x) { return x.date >= today && (x.status === 'planned' || x.status === 'makeup'); })
+      .sort(function (p, q) { return (p.date + (p.start || '')) < (q.date + (q.start || '')) ? -1 : 1; })[0] || null;
+  }
+  function sessState(x) {
+    if (x.attendance && ACLS[x.attendance]) return '<span class="chip ' + ACLS[x.attendance][2] + '">' + LAB[x.attendance] + '</span>';
+    if (x.status === 'planned' || x.status === 'makeup') return modeChip(x);
+    var st = STAT[x.status]; return st ? '<span class="chip ' + st[1] + '">' + st[0] + '</span>' : '';
+  }
+  function weekHtml(ch) {
+    var w = weekRange(), nx = nextSession(ch), h = '';
+    var list = (ch.sessions || []).filter(function (x) { return x.date >= w[0] && x.date <= w[1]; })
+      .sort(function (p, q) { return (p.date + (p.start || '')) < (q.date + (q.start || '')) ? -1 : 1; });
+    var inWeek = nx && nx.date >= w[0] && nx.date <= w[1];
+    if (nx && !inWeek) h += '<div class="next"><div><div class="sub">Buổi sắp tới</div><b>' + esc(dayLabel(nx.date)) + '</b><div class="sub">' + esc(timeRange(nx)) + '</div></div>' + modeChip(nx) + '</div>';
+    if (!list.length) return h + '<div class="sub">Tuần này không có buổi học.</div>';
+    return h + list.map(function (x) {
+      var hot = nx && x.date === nx.date && x.start === nx.start;
+      if (hot) return '<div class="next"><div><div class="sub">Buổi sắp tới</div><b>' + esc(dayLabel(x.date)) + '</b><div class="sub">' + esc(timeRange(x)) + '</div></div>' + sessState(x) + '</div>';
+      return '<div class="row"><div class="l"><b>' + esc(dayLabel(x.date)) + '</b><span>' + esc(timeRange(x)) + '</span></div><div>' + sessState(x) + '</div></div>';
+    }).join('');
+  }
+
+  function historyHtml(ch) {
+    var today = ymd(new Date()), past = (ch.sessions || []).filter(function (x) { return x.date >= '2026-10-01' && (x.date < today || (x.date === today && x.attendance)); })
+      .sort(function (p, q) { return p.date < q.date ? 1 : -1; });
+    if (!past.length) return '<div class="sub">Chưa có buổi học nào.</div>';
+    function row(x) { return '<div class="row"><div class="l"><b>' + esc(dayLabel(x.date)) + '</b><span>' + esc(timeRange(x)) + '</span></div><div>' + sessState(x) + '</div></div>'; }
+    var h = past.slice(0, 6).map(row).join('');
+    if (past.length > 6) h += '<details><summary>Xem thêm ' + (past.length - 6) + ' buổi</summary>' + past.slice(6).map(row).join('') + '</details>';
+    return h;
   }
 
   function attendanceHtml(ch) {
-    var a = ch.attendance || {}, past = (ch.sessions || []).filter(function (x) { return x.date <= ymd(new Date()) && x.attendance; }).reverse();
-    var cls = { present: ['p', '✓'], absent: ['a', '×'], late: ['l', 'T'], excused: ['e', 'P'] }, lab = { present: 'Có mặt', absent: 'Vắng', late: 'Trễ', excused: 'Có phép' };
-    var h = '<div class="stats"><div class="stat"><b>' + (a.present || 0) + '</b><span>Có mặt</span></div><div class="stat"><b>' + (a.absent || 0) + '</b><span>Vắng</span></div><div class="stat"><b>' + (a.late || 0) + '</b><span>Trễ</span></div><div class="stat"><b>' + (a.excused || 0) + '</b><span>Có phép</span></div></div>';
-    if (!past.length) return h;
-    return h + '<details><summary>Lịch sử các buổi</summary>' + past.map(function (x) {
-      var m = cls[x.attendance] || ['', '']; return '<div class="row"><div class="l"><b>' + esc(dayLabel(x.date)) + '</b><span>' + esc(lab[x.attendance] || '') + '</span></div><span class="dot ' + m[0] + '" aria-hidden="true">' + m[1] + '</span></div>';
-    }).join('') + '</details>';
+    var a = ch.attendance || {}, t = ch.tuition || {}, owed = t.mode !== 'session' ? Number(t.owed_sessions) || 0 : null;
+    return '<div class="stats"><div class="stat"><b>' + (a.present || 0) + '</b><span>Có mặt</span></div><div class="stat"><b>' + (a.absent || 0) + '</b><span>Vắng</span></div><div class="stat"><b>' + (a.late || 0) + '</b><span>Trễ</span></div><div class="stat"><b>' + (a.excused || 0) + '</b><span>Có phép</span></div></div>' +
+      (owed === null ? '' : '<div class="owed"><span>Số buổi nghỉ chưa học bù</span><b>' + owed + '</b></div>');
   }
 
   function homeworkHtml(ch) {
@@ -135,33 +164,41 @@ form.code button{height:48px;padding:0 20px;border:0;border-radius:999px;backgro
     }).join('');
   }
 
+  function tuitionMonth(m) {
+    var known = m.status !== 'Chưa có thông tin' && m.fee != null, tone = TUI[m.status] || 'c-mut';
+    var left = '<div class="l"><b>' + esc(monthLabel(m.month)) + '</b>' + (m.paid_on ? '<span>Ngày đóng ' + esc(pd(m.paid_on).toLocaleDateString('vi-VN')) + '</span>' : '') + '</div>';
+    var money = known ? '<div class="money"><div><small>Học phí</small>' + vnd(m.fee) + '</div><div><small>Đã đóng</small>' + vnd(m.paid) + '</div><div><small>Còn lại</small><span class="' + (Number(m.rest) > 0 ? 'neg' : 'pos') + '">' + vnd(m.rest) + '</span></div></div>' : '';
+    return '<div class="tm"><div class="top">' + left + '<span class="chip ' + tone + '">' + esc(m.status) + '</span></div>' + money + '</div>';
+  }
   function tuitionHtml(ch) {
-    var t = ch.tuition || {}, ms = (t.months || []).slice().reverse(), h = '';
-    if (t.mode !== 'session' && Number(t.owed_sessions) > 0) h += '<div class="owed">Số buổi nghỉ chưa học bù: <b>' + Number(t.owed_sessions) + '</b></div>';
+    var t = ch.tuition || {}, ms = (t.months || []).slice().sort(function (p, q) { return p.month < q.month ? 1 : -1; }), h = '';
+    var cur = ymd(new Date()).slice(0, 7);
     if (!ms.length) return h + '<div class="sub">Chưa có thông tin học phí.</div>';
-    return h + ms.map(function (m) {
-      var known = m.status !== 'Chưa có thông tin' && m.fee != null, tone = TUI[m.status] || 'c-mut';
-      var left = '<div class="l"><b>' + esc(monthLabel(m.month)) + '</b>' + (m.paid_on ? '<span>Ngày đóng ' + esc(pd(m.paid_on).toLocaleDateString('vi-VN')) + '</span>' : '') + '</div>';
-      var money = known ? '<div class="money"><div><small>Học phí</small>' + vnd(m.fee) + '</div><div><small>Đã đóng</small>' + vnd(m.paid) + '</div><div><small>Còn lại</small><span class="' + (Number(m.rest) > 0 ? 'neg' : 'pos') + '">' + vnd(m.rest) + '</span></div></div>' : '';
-      return '<div class="tm"><div class="top">' + left + '<span class="chip ' + tone + '">' + esc(m.status) + '</span></div>' + money + '</div>';
-    }).join('');
+    var now = ms.filter(function (m) { return m.month === cur; })[0] || null;
+    var before = ms.filter(function (m) { return m.month < cur; });
+    if (!now && !before.length) now = ms[0], before = ms.slice(1);
+    h += now ? tuitionMonth(now) : '<div class="sub">Tháng ' + Number(cur.slice(5)) + '/' + cur.slice(0, 4) + ': chưa có thông tin học phí.</div>';
+    if (before.length) h += '<button type="button" class="more" id="tui-more" aria-expanded="false">Lịch sử các tháng trước (' + before.length + ')<span class="chev" aria-hidden="true">▾</span></button><div id="tui-hist" hidden>' + before.map(tuitionMonth).join('') + '</div>';
+    return h;
   }
 
   function render() {
     var kids = D.children || [], ch = kids[idx];
-    var h = '<div class="bar"><div class="in"><div class="logo">gb</div><div><h1>Hello, ' + esc(D.label) + '!</h1><div class="sub">Cổng phụ huynh</div></div></div></div>';
+    var h = '<div class="bar"><div class="in"><div class="logo">gb</div><h1>Cổng phụ huynh</h1></div></div>';
     if (!ch) { app.innerHTML = h + '<div class="wrap"><div class="msg"><b>Chưa có thông tin học sinh</b>Vui lòng liên hệ giáo viên.</div></div>'; return; }
     h += '<div class="wrap">';
     if (kids.length > 1) h += '<div class="kids" role="group" aria-label="Chọn học sinh">' + kids.map(function (k, i) { return '<button type="button" class="kid" data-i="' + i + '" aria-pressed="' + (i === idx) + '">' + esc(k.name) + '</button>'; }).join('') + '</div>';
-    h += '<div class="child-head"><h2>' + esc(ch.name) + '</h2>' + (ch.class ? '<span class="sub">Lớp ' + esc(ch.class.code) + '</span>' : '') + '</div>' +
-      '<div class="cols"><div class="col">' +
-      '<div class="card"><h3>Lịch học</h3>' + sessionsHtml(ch) + '</div>' +
-      '<div class="card"><h3>Chuyên cần</h3>' + attendanceHtml(ch) + '</div>' +
+    h += '<div class="cols"><div class="col">' +
+      '<div class="card"><h3>Tổng quan chuyên cần</h3>' + attendanceHtml(ch) + '</div>' +
+      '<div class="card"><h3>Lịch tuần này</h3>' + weekHtml(ch) + '</div>' +
+      '<div class="card"><button type="button" class="more head" id="hist-t" aria-expanded="false"><span class="pill">Lịch sử buổi học</span><span class="chev" aria-hidden="true">▾</span></button><div id="hist" hidden>' + historyHtml(ch) + '</div></div>' +
       '</div><div class="col">' +
       '<div class="card"><h3>Bài tập về nhà</h3>' + homeworkHtml(ch) + '</div>' +
       '<div class="card"><h3>Học phí</h3>' + tuitionHtml(ch) + '</div>' +
       '</div></div></div>';
-    app.innerHTML = h; document.title = 'Parent Portal - ' + ch.name;
+    app.innerHTML = h; document.title = 'Parent Portal';
+    var ht = document.getElementById('hist-t'); if (ht) ht.addEventListener('click', function () { var o = ht.getAttribute('aria-expanded') !== 'true'; ht.setAttribute('aria-expanded', o); document.getElementById('hist').hidden = !o; });
+    var tm = document.getElementById('tui-more'); if (tm) tm.addEventListener('click', function () { var o = tm.getAttribute('aria-expanded') !== 'true'; tm.setAttribute('aria-expanded', o); document.getElementById('tui-hist').hidden = !o; });
     Array.prototype.forEach.call(app.querySelectorAll('.kid'), function (b) { b.addEventListener('click', function () { idx = +b.getAttribute('data-i'); render(); window.scrollTo(0, 0); }); });
   }
 
