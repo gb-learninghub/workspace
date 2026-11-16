@@ -32,7 +32,8 @@
 #lms-tile-dlg .lmt-act.lmt-busy{animation:lmtPulse .7s ease infinite}
 #lms-tile-dlg .lmt-total{font-weight:800;border-top:1px solid #d5d9e0!important}
 #lms-tile-dlg .lmt-empty{padding:18px 4px;text-align:center;color:#8692a1;font-size:.9rem}
-#lms-tile-dlg .lmt-foot{margin-top:16px}
+#lms-tile-dlg .lmt-foot{margin-top:16px;display:flex;gap:8px}#lms-tile-dlg .lmt-backb{min-height:44px;padding:0 18px;border:0;border-radius:12px;background:#F4F5F7;color:#1B1D22;font-weight:700;cursor:pointer}#lms-tile-dlg .lmt-backb[hidden]{display:none}#lms-tile-dlg .lmt-row[data-go]{cursor:pointer}
+#lms-tile-dlg .lmt-act[data-st=present]{background:#e7f6ec;border-color:#9bd3ad;color:#1d7a3e}#lms-tile-dlg .lmt-act[data-st=late]{background:#fdf3dc;border-color:#e6c46f;color:#8a6410}#lms-tile-dlg .lmt-act[data-st=absent]{background:#fde8e6;border-color:#eba39d;color:#b42318}
 #lms-tile-dlg .lmt-close{min-height:44px;padding:0 18px;border:0;border-radius:12px;background:#F4F5F7;color:#1B1D22;font-weight:700;cursor:pointer;transition:transform .12s ease}#lms-tile-dlg .lmt-close:active{transform:scale(.96)}
 [data-tile-list]{cursor:pointer;transition:transform .15s ease,background-color .15s ease}[data-tile-list]:hover{transform:translateY(-1px)}[data-tile-list]:active{transform:scale(.97)}
 @media(max-width:520px){#lms-tile-dlg .lmt-list{--c2:64px;--c3:84px}#lms-tile-dlg .lmt-card{padding:16px;border-radius:20px}}
@@ -42,15 +43,16 @@
 @media(prefers-reduced-motion:reduce){#lms-tile-dlg,#lms-tile-dlg *{animation:none!important;transition:none!important}}`;
     document.head.appendChild(st);
     box = document.createElement('div'); box.id = 'lms-tile-dlg'; box.hidden = true; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true');
-    box.innerHTML = '<div class="lmt-card"><h2 id="lmt-title"></h2><div class="lmt-list" id="lmt-list"></div><div class="lmt-foot"><button type="button" class="lmt-close">Đóng</button></div></div>';
+    box.innerHTML = '<div class="lmt-card"><h2 id="lmt-title"></h2><div class="lmt-list" id="lmt-list"></div><div class="lmt-foot"><button type="button" class="lmt-backb" hidden>Quay lại</button><button type="button" class="lmt-close">Đóng</button></div></div>';
     document.body.appendChild(box);
     box.addEventListener('change', async e => { const s = e.target.closest('.lmt-sel'); if (!s || !cur) return; const r = cur.rows[+s.dataset.r], a = r && (r.acts || [])[+s.dataset.a]; if (!a) return; s.disabled = true; try { await a.fn(r, s.value); } catch (er) { console.error(er); } const re = cur.opt && cur.opt.reload; if (re) { const n = re(); if (n) return paint(n.title, n.rows, Object.assign({ reload: re }, n.opt), false); } s.disabled = false; });
-    box.addEventListener('click', e => { if (e.target === box || e.target.closest('.lmt-close')) hide(); const b = e.target.closest('.lmt-act'); if (b) run(b); });
+    box.addEventListener('click', e => { if (e.target === box || e.target.closest('.lmt-close')) hide(); if (e.target.closest('.lmt-backb')) { if (cur && cur.opt && cur.opt.back) cur.opt.back(); return; } const b = e.target.closest('.lmt-act'); if (b) { run(b); return; } const rw = e.target.closest('.lmt-row[data-go]'); if (rw && !e.target.closest('a,.lmt-sel') && cur) { const rr = cur.rows[+rw.dataset.i]; if (rr && rr.go) rr.go(); } });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !box.hidden) hide(); });
   }
   function hide() { if (!box || box.hidden) return; box.classList.add('out'); setTimeout(() => { box.hidden = true; box.classList.remove('out'); }, 150); }
   function paint(title, rows, opt, animate) {
     cur = { title, rows, opt };
+    const bb = box.querySelector('.lmt-backb'); if (bb) bb.hidden = !opt.back;
     document.getElementById('lmt-title').textContent = title;
     const list = document.getElementById('lmt-list'), widthOf = r => (r.acts || []).reduce((n, a, i) => n + (a.options ? (a.w || 96) : 36) + (i ? 6 : 0), 0), maxW = rows.reduce((n, r) => Math.max(n, widthOf(r)), 0), maxActs = maxW ? 1 : 0;
     if (opt.cols) list.style.setProperty('--cols', opt.cols); else list.style.removeProperty('--cols');
@@ -59,7 +61,7 @@
     const row = (r, i) => {
       const nm = r.href ? `<a class="lmt-name" href="${esc(r.href)}">${esc(r.name)}</a>` : `<b class="lmt-name">${esc(r.name)}</b>`;
       const acts = maxActs ? `<span class="lmt-acts-cell">${(r.acts || []).map((a, k) => a.options ? `<select class="lmt-sel" data-r="${i}" data-a="${k}" title="${esc(a.title || '')}" aria-label="${esc(a.title || '')}" style="width:${a.w || 96}px">${a.options.map(o => `<option value="${esc(o[0])}"${String(o[0]) === String(a.value) ? ' selected' : ''}>${esc(o[1])}</option>`).join('')}</select>` : `<button type="button" class="lmt-act" data-r="${i}" data-a="${k}"${a.state != null ? ` data-st="${esc(a.state)}"` : ''} title="${esc(a.title || '')}" aria-label="${esc(a.title || '')}">${a.icon ? `<i data-lucide="${esc(a.icon)}"></i>` : esc(a.text || '')}</button>`).join('')}</span>` : '';
-      return `<div class="lmt-row${animate ? ' lmt-in' : ''}" style="--i:${Math.min(i, 14)}">${nm}<small class="lmt-sub">${esc(r.sub || '')}</small><span class="lmt-val">${esc(r.val || '')}</span>${acts}</div>`;
+      return `<div class="lmt-row${animate ? ' lmt-in' : ''}" style="--i:${Math.min(i, 14)}" data-i="${i}"${r.go ? ' data-go' : ''}>${nm}<small class="lmt-sub">${esc(r.sub || '')}</small><span class="lmt-val">${esc(r.val || '')}</span>${acts}</div>`;
     };
     let h = rows.length ? rows.map(row).join('') : '<div class="lmt-empty">Chưa có mục nào.</div>';
     if (rows.length && opt.total != null) h += `<div class="lmt-row lmt-total"><b>Tổng · ${rows.length} ${esc(opt.unit || 'mục')}</b><small></small><span class="lmt-val">${esc(opt.total)}</span>${maxActs ? '<span></span>' : ''}</div>`;
