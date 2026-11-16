@@ -547,6 +547,8 @@
     mo.observe(document.body, { childList: true, subtree: true });
     quiet();
   }
+  try { if (sessionStorage.getItem('gb-seen')) { root.classList.add('gb-ready'); done = true; } else sessionStorage.setItem('gb-seen', '1'); } catch (e) {}
+  if (done) return;
   hard = setTimeout(go, 1200);
   var fr = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
   var ready = function () { fr.then(function () { if (document.body) start(); else document.addEventListener('DOMContentLoaded', start); }, go); };

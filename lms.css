@@ -218,3 +218,9 @@
 html:not(.gb-ready) body{opacity:0;animation:gb-show 0s 1.4s forwards}
 html.gb-ready body{opacity:1;transition:opacity .15s ease-out}
 @media(prefers-reduced-motion:reduce){html.gb-ready body{transition:none}}
+
+/* Chuyển trang: giữ trang cũ tới khi trang mới sẵn sàng, chỉ fade rất nhẹ (không co/bung) */
+@view-transition{navigation:auto}
+::view-transition-group(root){animation-duration:.12s}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.12s;animation-timing-function:ease-out;mix-blend-mode:normal}
+@media(prefers-reduced-motion:reduce){::view-transition-group(root),::view-transition-old(root),::view-transition-new(root){animation:none}}
