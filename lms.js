@@ -508,12 +508,15 @@
     setTimeout(function () { busy = false; }, 0);
   }
   function later() { if (busy) return; clearTimeout(tmr); tmr = setTimeout(apply, 80); }
+  /* Chạy ngay trong cùng khung hình (trước khi vẽ) để trang không bị nhảy: co lại rồi bung ra */
+  var pending = false;
+  function soon() { if (pending || busy) return; pending = true; Promise.resolve().then(function () { pending = false; apply(); }); }
   window.addEventListener('resize', later);
   if (mq.addEventListener) mq.addEventListener('change', later);
   document.addEventListener('DOMContentLoaded', function () {
-    later(); setTimeout(apply, 600); setTimeout(apply, 1800);
+    apply(); setTimeout(apply, 600); setTimeout(apply, 1800);
     var m = document.querySelector('body>main');
-    if (m && window.MutationObserver) new MutationObserver(later).observe(m, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class'] });
+    if (m && window.MutationObserver) new MutationObserver(soon).observe(m, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class'] });
   });
 })();
 /* Thanh trượt tự ẩn: chỉ hiện khi đang cuộn, ẩn sau khoảng 1 giây */
