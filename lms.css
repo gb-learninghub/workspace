@@ -212,3 +212,9 @@
     #lms-newpass .lg-error{min-height:20px;margin-top:12px;font-size:.875rem;color:#be123c}
     #lms-newpass .lg-btn{width:100%;min-height:48px;margin-top:8px;border-radius:9999px;background:var(--t-primary);color:#fff;font-weight:700;font-size:1rem}
     #lms-newpass .lg-btn[disabled]{opacity:.6}
+
+/* Chống chớp lúc tải: giữ trang ẩn tới khi font + nội dung ổn định (lms.js thêm .gb-ready); tự hiện sau 1.4s nếu JS lỗi */
+@keyframes gb-show{to{opacity:1}}
+html:not(.gb-ready) body{opacity:0;animation:gb-show 0s 1.4s forwards}
+html.gb-ready body{opacity:1;transition:opacity .15s ease-out}
+@media(prefers-reduced-motion:reduce){html.gb-ready body{transition:none}}

@@ -534,3 +534,21 @@
     timers.set(el, setTimeout(function () { el.removeAttribute('data-sb'); }, 900));
   }, true);
 })();
+
+/* Hiện trang một lần sau khi font tải xong và DOM ngừng thay đổi 220ms (tối đa 1.2s) */
+(function () {
+  var root = document.documentElement, done = false, t, hard;
+  function go() { if (done) return; done = true; if (mo) mo.disconnect(); clearTimeout(t); clearTimeout(hard); root.classList.add('gb-ready'); }
+  var mo = null;
+  function quiet() { clearTimeout(t); t = setTimeout(go, 220); }
+  function start() {
+    if (done) return;
+    mo = new MutationObserver(quiet);
+    mo.observe(document.body, { childList: true, subtree: true });
+    quiet();
+  }
+  hard = setTimeout(go, 1200);
+  var fr = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+  var ready = function () { fr.then(function () { if (document.body) start(); else document.addEventListener('DOMContentLoaded', start); }, go); };
+  if (document.readyState === 'complete') ready(); else window.addEventListener('load', ready);
+})();
