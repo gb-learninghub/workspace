@@ -276,5 +276,8 @@ body.tuition-page .tuition-head-bar .btn-soft{padding:0 12px!important;white-spa
 @media(min-width:641px){
 html body.tuition-page .tuition-main>section:first-child .stat-tile{container-type:inline-size}
 html body.tuition-page .tuition-main>section:first-child .stat-n{display:flex;align-items:center;height:36px;min-height:36px;white-space:nowrap;line-height:1.1}
-html body.tuition-page .tuition-main>section:first-child .stat-n:not(.mh),html body.tuition-page .tuition-main>section:first-child .stat-n.mh.m-show{font-size:min(1.65rem,13.8cqw)!important}
+html body.tuition-page .tuition-main>section:first-child .stat-n:not(.mh),html body.tuition-page .tuition-main>section:first-child .stat-n.mh.m-show{font-size:min(1.65rem,14.5cqw)!important}
+}
+@media(max-width:640px){
+html body.tuition-page .tuition-main>section:first-child .stat-n{display:flex;align-items:center;justify-content:center;height:22px;min-height:22px;white-space:nowrap}
 }
