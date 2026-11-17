@@ -468,7 +468,16 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     }
     if (ic.stu) send(); else icFetch(pw).then(function (res) { icMap(Array.isArray(res) ? res : res.students); send(); }).catch(function () { delete icRel[n]; });
   }
-  function icFill(n) { if (val(n) === "" && icAns(n) !== "") { state.ans[n] = String(icAns(n)); try { updateTiles(); } catch (e) { } return true; } return false; }
+  function icFill(n) {
+    if (val(n) !== "" || icAns(n) === "") return false; var a = String(icAns(n)); state.ans[n] = a;
+    var qn = null; [].forEach.call(document.querySelectorAll("#pw .qn"), function (x) { if (x.textContent.trim() === String(n)) qn = x; });
+    if (qn) {
+      var box = qn.closest(".mq,.mrow"), gi = box ? null : qn.parentElement.querySelector("input.gap");
+      if (gi) gi.value = a;
+      else if (box) [].forEach.call(box.querySelectorAll(".opt,.cb"), function (b) { var t = b.querySelector("b") ? b.querySelector("b").textContent : b.textContent; b.classList.toggle("sel", t === a); });
+    }
+    try { updateTiles(); } catch (e) { } return true;
+  }
   function icClosePop() { ic.pop = null; [].forEach.call(document.querySelectorAll(".icpop"), function (e) { e.remove(); }); }
   document.addEventListener("pointerdown", function (e) { if (!ic.pop) return; var p = document.querySelector(".icpop"); if (p && p.contains(e.target)) return; if (e.target.closest && e.target.closest(".ick")) return; icClosePop(); });
   function icPop(n, tick) {
@@ -492,10 +501,11 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       var on = !!ic.chk[n], st = on ? icState(n) : "";
       var b = h("button", { cls: "ick" + (on ? " on" + (st ? " " + st : "") : ""), title: on ? (ic.pop === n ? "Hide answer" : "Show answer") : "Check", "data-n": String(n), onclick: function (ev) {
         ev.stopPropagation(); if (!LK || !LK["q" + n]) return;
-        if (!ic.chk[n]) { ic.chk[n] = true; ic.pop = null; icRelease(n); if (icFill(n)) { ic.sel = n; paintPage(false); return; } }
+        if (!ic.chk[n]) { ic.chk[n] = true; ic.pop = null; icRelease(n); icFill(n); }
         else if (ic.pop !== n) ic.pop = n; else ic.pop = null;
         ic.sel = n; icPaint();
       } });
+      var gi = host.querySelector("input.gap"); if (gi) { if (on && gi.value) { gi.style.width = Math.max(6, gi.value.length + 2) + "ch"; gi.style.flex = "none"; } else { gi.style.width = ""; gi.style.flex = ""; } }
       b.innerHTML = on && st === "bad" ? IC_X : (ICON.check || "&#10003;");
       var old = host.querySelector(".ick"); if (old) old.remove(); var oldf = host.querySelector(".icf"); if (oldf) oldf.remove();
       host.appendChild(b); if (ic.pop === n) popTick = b;
