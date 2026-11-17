@@ -423,7 +423,7 @@ table.tb input.gap.ok{background:var(--ok)}table.tb input.gap.bad{background:var
       var qn = null; [].forEach.call(document.querySelectorAll("#pw .qn"), function (x) { if (x.textContent.trim() === String(n)) qn = x; });
       if (!qn) return;
       var host = qn.parentElement; if (!host) return;
-      var b = h("button", { cls: "ick", title: "Check", onclick: function (ev) { ev.stopPropagation(); ic.chk[n] = true; icPaint(); icSelect(n, "script"); } });
+      var b = h("button", { cls: "ick", title: "Check", onclick: function (ev) { ev.stopPropagation(); ic.chk[n] = true; icPaint(); ic.sel = n; icPanels(); } });
       b.innerHTML = ICON.check || "&#10003;";
       var host2 = host.classList.contains("stem") ? host : host;
       var old = host2.querySelector(".ick"); if (old) old.remove(); var oldf = host2.querySelector(".icf"); if (oldf) oldf.remove();
@@ -475,9 +475,9 @@ table.tb input.gap.ok{background:var(--ok)}table.tb input.gap.bad{background:var
         var grid = h("div", { cls: "icg" });
         ic.stu.forEach(function (s) {
           var col = h("div", { cls: "icgc" }); col.appendChild(h("div", { cls: "icgn", text: s.name }));
-          var a = s.ans(pi), items = h("div", { cls: "icgl" });
-          icNums(pi).forEach(function (n) { var g = a["q" + n] || ""; items.appendChild(h("div", { cls: "icr", text: n + ". " + (g === "" ? "—" : g) })); });
-          col.appendChild(items);
+          var a = s.ans(pi), items = h("div", { cls: "icgl" }), ck = 0, cc = 0;
+          icNums(pi).forEach(function (n) { var g = a["q" + n] || "", mk = ic.chk[n] && g !== "" ? (icOk(n, g) ? " ok" : " bad") : ""; if (ic.chk[n]) { ck++; if (mk === " ok") cc++; } items.appendChild(h("div", { cls: "icr" + mk, text: n + ". " + (g === "" ? "—" : g) })); });
+          if (ck) col.appendChild(h("div", { cls: "icgs", text: cc + " / " + ck })); col.appendChild(items);
           col.appendChild(h("div", { cls: "icgt", text: s.notes(pi) || (s.has ? "(chưa có ghi chú)" : "(chưa làm)") }));
           grid.appendChild(col);
         });
@@ -519,6 +519,13 @@ table.tb input.gap.ok{background:var(--ok)}table.tb input.gap.bad{background:var
     icFetch(ic.pw || "0000").then(function (res) { icMap(Array.isArray(res) ? res : res.students); icPanels(); })
       .catch(function (e) { ic.stu = null; ic.stuMsg = "Chưa nối được dữ liệu học sinh (" + String(e && e.message || e) + ")."; icPanels(); });
   }
+  var icBusy = false;
+  function icPoll() {
+    if (icBusy || document.hidden || !ic.pw || !(ic.tab === "stu" || ic.ov)) return;
+    icBusy = true;
+    icFetch(ic.pw).then(function (res) { icMap(Array.isArray(res) ? res : res.students); if (ic.tab === "stu" || ic.ov) icPanels(); }).catch(function () { }).then(function () { icBusy = false; });
+  }
+  setInterval(icPoll, 10000);
   function icGate() {
     var pw = ""; try { pw = sessionStorage.getItem("gbic_pw") || ""; } catch (e) { }
     function go(p, msg) {
