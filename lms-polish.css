@@ -962,3 +962,14 @@ main>section.rounded-2xl,main>.bg-white.rounded-2xl,.overview-finance,.overview-
 #lib-list .mt-grid .mt-row .mt-name{overflow-wrap:anywhere}
 @media(max-width:900px){#lib-list .mt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){#lib-list .mt-grid{grid-template-columns:1fr}}
+
+/* Học liệu: bảng theo bài */
+#lib-list .mt-tbl{display:flex;flex-direction:column}
+#lib-list .mt-th,#lib-list .mt-tr{display:grid;grid-template-columns:minmax(0,1fr) 110px 90px 90px 90px;gap:8px;align-items:center;padding:6px 6px}
+#lib-list .mt-th{font-size:.75rem;font-weight:700;color:#6b7280;border-bottom:1px solid #E4E6EA;padding-bottom:8px}
+#lib-list .mt-tr{border-bottom:1px solid #EEF0F3;min-height:48px}
+#lib-list .mt-tr:last-child{border-bottom:0}
+#lib-list .mt-tn{font-weight:700;color:#1B1D22;overflow-wrap:anywhere}
+#lib-list .mt-td{font-size:.9rem;color:#1B1D22}
+#lib-list .mt-link{border:0;background:transparent;padding:0 8px;min-height:44px;font-weight:700;color:#8a6414;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+@media(max-width:640px){#lib-list .mt-th{display:none}#lib-list .mt-tr{grid-template-columns:1fr 1fr}#lib-list .mt-tn{grid-column:1/-1}#lib-list .mt-td[data-l]::before{content:attr(data-l) ": ";font-size:.75rem;color:#6b7280;font-weight:600}}
