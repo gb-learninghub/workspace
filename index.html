@@ -439,7 +439,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
     <form class="card" novalidate>
       <h2 id="da-title">Giao bài cho nhiều lớp</h2>
       <div class="dlg-body">
-      <div id="da-blk"><div id="da-blk-list"></div></div>
+      <div id="da-blk"><label for="da-blk-name">Tên hiển thị (học sinh thấy tên này)</label><input id="da-blk-name" class="field" autocomplete="off" style="margin-bottom:10px"><div id="da-blk-list"></div></div>
       <div id="da-reg" class="sgl">
         <label for="da-file">Đăng ký bài mới từ file HTML (file có khối key)</label>
         <input id="da-file" type="file" accept=".html,text/html" class="field">
@@ -1365,7 +1365,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const first = slots.hw || slots.ls || slots.sl, ids = new Set();
         list.forEach(t => (slots[t].m.class_ids || []).forEach(c => ids.add(c)));
         const baseT = String(first.title).replace(/\s*\((lesson|in[- ]?class|homework)\)\s*$/i, '').replace(/\s+lesson\s*$/i, '');
-        st.blk = { stem, slots, name: baseT };
+        st.blk = { stem, slots, name: baseT }; $('da-blk-name').value = baseT;
         $('dlg-asg').classList.add('blk-mode'); $('da-err').textContent = ''; $('da-title').textContent = 'Giao theo khối · ' + baseT;
         const cls = matClasses();
         $('da-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${esc(c.class_code)}" data-id="${c.id}"${ids.has(c.id) ? ' checked' : ''}><span>${esc(c.class_code)}</span></label>`).join('');
@@ -1402,7 +1402,22 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const boxes = [...document.querySelectorAll('#da-classes input')];
         const codes = boxes.filter(i => i.checked).map(i => i.value), ids = boxes.filter(i => i.checked).map(i => Number(i.dataset.id));
         const drop = boxes.filter(i => !i.checked && st.asgHave && st.asgHave.has(Number(i.dataset.id)) && !/^00\./.test(classLabel(i.dataset.id))).map(i => Number(i.dataset.id));
-        if (!codes.length && !drop.length) { closeDlgs(); return; }
+        const newName = ($('da-blk-name').value || '').trim(); let renamed = false;
+        if (newName && newName !== B.name) {
+          st.busy = true; err.textContent = '';
+          try {
+            for (const t of ['ls', 'hw']) {
+              const o = B.slots[t]; if (!o || !o.code) continue;
+              const nm = t === 'ls' ? newName + ' Lesson' : newName;
+              const rn = await st.c.from('assignments').update({ assignment_name: nm }).eq('assignment_code', o.code);
+              if (rn.error) throw rn.error;
+              o.title = nm;
+            }
+            B.name = newName; renamed = true;
+          } catch (e) { st.busy = false; err.textContent = LMS.friendlyError(e); return; }
+          st.busy = false;
+        }
+        if (!codes.length && !drop.length) { closeDlgs(); if (renamed) await refresh('Đã đổi tên thành ' + newName + '.'); return; }
         const need = ['ls', 'hw'].filter(t => B.slots[t] && !B.slots[t].code);
         if (codes.length && need.length) { err.textContent = 'Còn thiếu key cho: ' + need.map(t => BLK_L[t]).join(', ') + '. Chọn file có key ở mục trên.'; return; }
         const wk = $('da-week').value || null, due = $('da-due').value ? new Date($('da-due').value).toISOString() : null;
