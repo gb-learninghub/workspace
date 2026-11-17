@@ -958,7 +958,7 @@ main>section.rounded-2xl,main>.bg-white.rounded-2xl,.overview-finance,.overview-
 
 /* Học liệu: mỗi tuần hiển thị 3 cột ngang */
 #lib-list .mt-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
-#lib-list .mt-grid>.mt-sect{margin:0;padding:10px 14px 8px;border:1px solid #E4E6EA;border-radius:14px;background:#fff;min-width:0}
+#lib-list .mt-grid>.mt-sect{margin:0;padding:0;border:0;border-radius:0;background:transparent;min-width:0}
 #lib-list .mt-grid .mt-row .mt-name{overflow-wrap:anywhere}
 @media(max-width:900px){#lib-list .mt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){#lib-list .mt-grid{grid-template-columns:1fr}}
