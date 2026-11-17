@@ -179,6 +179,9 @@ mark.evd{background:#ffd9a0;color:inherit;border-radius:3px;padding:0 1px}
 .ict td{max-width:none;vertical-align:top}.ict td span{display:block;overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere}
 .ica.ok,.ica.bad,.ica.blank{background:none}.ica.ok{color:#1f6b3f;font-weight:700}.ica.bad{color:#a32626;font-weight:700}.ica.blank{color:#888}
 .icvs{padding:0;border-radius:0;background:none!important;font-weight:700;overflow-wrap:anywhere}.icvs.ok{color:#1f6b3f}.icvs.bad{color:#a32626}.icvs.blank{color:#888;font-weight:400}
+#qs .gap:not(.big){background:none;border-radius:0;border-bottom:1.5px solid #999;padding:2px 4px;margin:0 4px;min-width:60px;max-width:100%}
+#qs .gap:not(.big):focus{background:none;border-bottom-color:#111}
+#qs .gap.icok,#qs .gap.icbad{border-bottom-color:transparent;font-weight:700}#qs .gap.icok{color:#1f6b3f}#qs .gap.icbad{color:#a32626}
 </style><style id="fitfix">
 html,body{max-width:100%;overflow-x:hidden}
 img,svg,video,canvas{max-width:100%}
@@ -1181,9 +1184,11 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       var n = parseInt((t.id || "").slice(1), 10); if (!n || !QMAP[n]) return;
       var m = QMAP[n], key = chkKey(n), host = t.closest(".qt,.hrow,.qcell"); if (!host) return;
       var on = !!IC.chk[key];
+      var gi = host.querySelector("input.gap");
+      if (gi) { gi.classList.remove("icok", "icbad"); if (on && icK(n)) gi.classList.add(icEq(icK(n), gi.value) ? "icok" : "icbad"); gi.style.width = Math.max(6, gi.value.length + 2) + "ch"; }
       host.appendChild(ibtn("tick", on ? "Hide answer" : "Check", function () {
         if (!icK(n)) { IC.err = "The answer key is not loaded yet."; renderNotes(); return; }
-        var qc = host.classList.contains("qcell");
+        var qc = host.classList.contains("qcell") || !!host.querySelector("input.gap"); IC.hov = false;
         if (IC.chk[key] && !(qc && IC.pop !== n)) { delete IC.chk[key]; delete IC.ev[key]; if (IC.pop === n) IC.pop = null; } else { IC.chk[key] = true; if (qc) IC.pop = n; }
         icRefresh(true);
       }, "bare icc" + (on ? " on" : "")));
@@ -1194,13 +1199,32 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       ns.forEach(function (q) { var e = kEv(icK(q)); if (e) ex.appendChild(h("div", { cls: "icev", text: (ns.length > 1 ? q + ". " : "") + e })); });
       ex.appendChild(h("button", { cls: "ib bare ice" + (IC.ev[key] ? " on" : ""), title: IC.ev[key] ? "Hide evidence" : "Show evidence", "aria-label": "Evidence", html: ICON.evid + "<span>Evidence</span>",
         onclick: function () { IC.ev[key] = !IC.ev[key]; icRefresh(false); if (IC.ev[key]) { var f = document.querySelector("#passage mark.evd"); if (f) f.scrollIntoView({ block: "center", behavior: "smooth" }); } } }));
-      if (host.classList.contains("qcell")) { if (IC.pop === n) { ex.classList.add("icpop"); ex.insertBefore(h("b", { cls: "icn", text: "Q" + n }), ex.firstChild); document.body.appendChild(ex); icPlace(ex, host.querySelector(".icc") || host); } }
+      if (host.classList.contains("qcell") || gi) { if (IC.pop === n) { ex.classList.add("icpop"); ex.addEventListener("mouseleave", function (e) { if (!IC.hov) return; var to = e.relatedTarget; if (!(to && to.closest && to.closest(".qt,.qcell"))) icClosePop(); IC.hov = false; }); ex.insertBefore(h("b", { cls: "icn", text: "Q" + n }), ex.firstChild); document.body.appendChild(ex); icPlace(ex, host.querySelector(".icc") || host); } }
       else if (host.classList.contains("hrow")) host.parentNode.insertBefore(ex, host.nextSibling);
       else { var qi = t.closest(".qi"); (qi || host.parentNode).appendChild(ex); }
     });
     applyQHl(); icVerdicts();
     if (!icMo) icMo = new MutationObserver(function () { if (icBusy) return; clearTimeout(icMo.t); icMo.t = setTimeout(icDecorate, 30); });
     icMo.observe(qs, { childList: true, subtree: true });
+    if (!qs._ichv) { qs._ichv = 1;
+      qs.addEventListener("mouseover", function (e) {
+        var g = e.target.closest && e.target.closest(".qt,.qcell"); if (!g || !g.querySelector("input.gap")) return;
+        var qn = g.querySelector(".qn"), n = qn ? parseInt((qn.id || "").slice(1), 10) : 0;
+        if (!n || !QMAP[n] || !IC.chk[chkKey(n)] || IC.pop === n) return; IC.pop = n; IC.hov = true; icDecorate();
+      });
+      qs.addEventListener("mouseout", function (e) {
+        if (!IC.hov || !IC.pop) return; var to = e.relatedTarget, q = document.getElementById("q" + IC.pop), g = q && q.closest(".qt,.qcell");
+        if (to && to.closest && (to.closest(".icpop") || (g && g.contains(to)))) return; icClosePop(); IC.hov = false;
+      });
+    }
+    if (!qs._icen) { qs._icen = 1; qs.addEventListener("keydown", function (e) {
+      var g = e.target; if (e.key !== "Enter" || !g || !g.classList || !g.classList.contains("gap")) return;
+      var host = g.closest(".qt,.qcell"), qn = host && host.querySelector(".qn"), n = qn ? parseInt((qn.id || "").slice(1), 10) : 0;
+      if (!n || !QMAP[n]) return; e.preventDefault();
+      if (!icK(n)) { IC.err = "The answer key is not loaded yet."; renderNotes(); return; }
+      IC.chk[chkKey(n)] = true; IC.pop = n; IC.hov = false; icRefresh(true);
+    }); }
+    if (!qs._icin) { qs._icin = 1; qs.addEventListener("input", function (e) { var g = e.target; if (g && g.classList && g.classList.contains("gap")) { g.style.width = Math.max(6, g.value.length + 2) + "ch"; if (g.classList.contains("icok") || g.classList.contains("icbad")) icDecorate(); } }); }
     icBusy = false;
   }
   function icVerdict(el) {
