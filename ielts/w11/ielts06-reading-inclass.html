@@ -140,7 +140,7 @@ body.np-open #main{margin-right:360px}
 #selb{position:fixed;z-index:60;display:flex;gap:4px;padding:4px;border-radius:22px;background:#111}#selb[hidden]{display:none}#selb button{height:32px;padding:0 14px;border:0;border-radius:16px;background:none;color:#fff;font:600 14px Aptos,-apple-system,sans-serif}#selb button+button{border-left:1px solid #444}mark.hl{background:#ffe14d;color:inherit;border-radius:3px}#fcard{position:fixed;z-index:60;width:300px;max-height:60dvh;overflow:auto;background:#fff;border:1.5px solid #111;border-radius:14px;padding:6px 10px}#fcard[hidden]{display:none}#fcard .vc{border:0;padding:4px 0;margin:2px 0}#fcard .vw{font-weight:700;font-size:16px}#fcard>.vb{margin-top:6px;border:0;border-radius:16px;background:#111;color:#fff;height:34px;padding:0 14px;font-size:14px}#fcard>input{width:100%;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:6px 8px;margin-top:6px}#fcard>.npm{margin:2px 0}.wl{flex:1 1 0;min-height:0;overflow:auto;margin:0 0 8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.npb.nn textarea{flex:1 1 0!important;min-height:0!important}.wl .none{color:var(--mut);font-size:14px;padding:10px 0}.wr{display:grid;grid-template-columns:30px minmax(0,1fr) 112px 26px 26px;column-gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:15px}.wr .ww{font-weight:700;overflow-wrap:anywhere}.wr .wp{color:var(--mut)}.wr .wi{color:var(--mut);font-size:14px}.wr select{font:inherit;font-size:14px;border:0;border-bottom:1.5px solid var(--line);background:none;color:var(--mut);width:100%;min-width:0;height:30px}.wr .wi{grid-column:2;white-space:nowrap}.wr .wmi{grid-column:3 / 6;font:inherit;font-size:15px;border:0;border-bottom:1.5px solid var(--line);background:none;height:30px;min-width:0;margin-top:2px}.wr .wmi:focus,.wr select:focus{outline:none;border-bottom-color:#111}.wr .ib.bare{min-width:26px;height:26px;padding:0}.wr .wx{font-size:18px;color:var(--mut)}#np{width:420px}body.np-open #main{margin-right:420px}
 .ib[title="Submit this passage"],.ib[title="Retake the whole test"]{display:none!important}
 .icc{margin-left:auto;flex:none}.icc.on{color:#111}.icc.on.ok{color:#2e7d4f}.icc.on.bad{color:#a32626}
-.qcell .icc{margin-left:6px}
+.qcell .icc{margin-left:0;padding:0;min-width:24px;width:24px}.icu{margin-left:8px}
 .icx{margin-top:8px;background:var(--panel);color:var(--ink);display:block}
 .icx .icev{margin-top:4px;color:#3a3d44}
 .icx .icn{margin-right:6px}
@@ -1187,10 +1187,9 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       var on = !!IC.chk[key], st = on ? icState(n) : "";
       var gi = host.querySelector("input.gap");
       if (gi) { gi.classList.remove("icok", "icbad"); if (on && icK(n)) gi.classList.add(icEq(icK(n), gi.value) ? "icok" : "icbad"); gi.style.width = Math.max(6, gi.value.length + 2) + "ch"; }
-      var tb = ibtn(on && st === "bad" ? "cross" : "tick", on ? "Hide answer" : "Check", function () {
+      var tb = ibtn(on && st === "bad" ? "cross" : "tick", on ? (IC.pop === n ? "Hide answer" : "Show answer") : "Check", function () {
         if (!icK(n)) { IC.err = "The answer key is not loaded yet."; renderNotes(); return; }
-        var qc = true; IC.hov = false;
-        if (IC.chk[key] && !(qc && IC.pop !== n)) { delete IC.chk[key]; delete IC.ev[key]; if (IC.pop === n) IC.pop = null; } else { IC.chk[key] = true; if (qc) IC.pop = n; }
+        if (!IC.chk[key]) { IC.chk[key] = true; IC.pop = null; } else if (IC.pop !== n) IC.pop = n; else IC.pop = null;
         icRefresh(true);
       }, "bare icc" + (on ? " on" + (st ? " " + st : "") : "")); tb.setAttribute("data-n", String(n)); host.appendChild(tb);
       if (!on) return;
@@ -1200,28 +1199,19 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       ns.forEach(function (q) { var e = kEv(icK(q)); if (e) ex.appendChild(h("div", { cls: "icev", text: (ns.length > 1 ? q + ". " : "") + e })); });
       ex.appendChild(h("button", { cls: "ib bare ice" + (IC.ev[key] ? " on" : ""), title: IC.ev[key] ? "Hide evidence" : "Show evidence", "aria-label": "Evidence", html: ICON.evid + "<span>Evidence</span>",
         onclick: function () { IC.ev[key] = !IC.ev[key]; icRefresh(false); if (IC.ev[key]) { var f = document.querySelector("#passage mark.evd"); if (f) f.scrollIntoView({ block: "center", behavior: "smooth" }); } } }));
-      { if (IC.pop === n) { ex.classList.add("icpop"); ex.addEventListener("mouseleave", function (e) { if (!IC.hov) return; var to = e.relatedTarget; if (!(to && to.closest && to.closest(".qt,.qcell,.hrow"))) icClosePop(); IC.hov = false; }); ex.insertBefore(h("b", { cls: "icn", text: "Q" + n }), ex.firstChild); document.body.appendChild(ex); icPlace(ex, host.querySelector(".icc") || host); } }
+      ex.appendChild(h("button", { cls: "ib bare ice icu", title: "Uncheck", "aria-label": "Uncheck", html: ICON.reset + "<span>Uncheck</span>",
+        onclick: function () { delete IC.chk[key]; delete IC.ev[key]; IC.pop = null; icRefresh(true); } }));
+      { if (IC.pop === n) { ex.classList.add("icpop"); ex.insertBefore(h("b", { cls: "icn", text: "Q" + n }), ex.firstChild); document.body.appendChild(ex); icPlace(ex, host.querySelector(".icc") || host); } }
     });
     applyQHl(); icVerdicts();
     if (!icMo) icMo = new MutationObserver(function () { if (icBusy) return; clearTimeout(icMo.t); icMo.t = setTimeout(icDecorate, 30); });
     icMo.observe(qs, { childList: true, subtree: true });
-    if (!qs._ichv) { qs._ichv = 1;
-      qs.addEventListener("mouseover", function (e) {
-        var g = e.target.closest && e.target.closest(".qt,.qcell,.hrow"); if (!g) return;
-        var qn = g.querySelector(".qn"), n = qn ? parseInt((qn.id || "").slice(1), 10) : 0;
-        if (!n || !QMAP[n] || !IC.chk[chkKey(n)] || IC.pop === n) return; IC.pop = n; IC.hov = true; icDecorate();
-      });
-      qs.addEventListener("mouseout", function (e) {
-        if (!IC.hov || !IC.pop) return; var to = e.relatedTarget, q = document.getElementById("q" + IC.pop), g = q && q.closest(".qt,.qcell,.hrow");
-        if (to && to.closest && (to.closest(".icpop") || (g && g.contains(to)))) return; icClosePop(); IC.hov = false;
-      });
-    }
     if (!qs._icen) { qs._icen = 1; qs.addEventListener("keydown", function (e) {
       var g = e.target; if (e.key !== "Enter" || !g || !g.classList || !g.classList.contains("gap")) return;
       var host = g.closest(".qt,.qcell"), qn = host && host.querySelector(".qn"), n = qn ? parseInt((qn.id || "").slice(1), 10) : 0;
       if (!n || !QMAP[n]) return; e.preventDefault();
       if (!icK(n)) { IC.err = "The answer key is not loaded yet."; renderNotes(); return; }
-      IC.chk[chkKey(n)] = true; IC.pop = n; IC.hov = false; icRefresh(true);
+      IC.chk[chkKey(n)] = true; icRefresh(true);
     }); }
     if (!qs._icin) { qs._icin = 1; qs.addEventListener("input", function (e) { var g = e.target; if (g && g.classList && g.classList.contains("gap")) { g.style.width = Math.max(6, g.value.length + 2) + "ch"; if (g.classList.contains("icok") || g.classList.contains("icbad")) icDecorate(); } }); }
     icBusy = false;
