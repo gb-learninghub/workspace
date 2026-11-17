@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="lms.css">
-  <script src="lms.js"></script><script src="lms-tiles.js"></script>
+  <script src="lms.js"></script><script src="lms-tiles.js"></script><script src="lms-att.js"></script>
   <script>document.documentElement.dataset.lmsView=location.hash==='#schedule'?'schedule':location.hash==='#lib'?'lib':'overview';</script>
   <style>
     html[data-lms-view="schedule"] #view-overview,html[data-lms-view="lib"] #view-overview,html[data-lms-view="lib"] #view-schedule{display:none!important}
@@ -574,65 +574,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('dr-list').innerHTML = names.length ? names.map(n => '<li>' + esc(n) + '</li>').join('') : '<li class="text-slate-400" style="list-style:none">Chưa có học viên.</li>';
         openDlg('dlg-roster');
       }
-      /* Điểm danh nhanh: danh sách lớp -> danh sách học viên, không cần vào trang lớp. */
-      const ATT_DAY = s => { const d = new Date(s.session_date + 'T00:00:00'); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1); };
-      async function openQuickAtt() {
-        if (!st.c || !window.LMSTile) return;
-        const today = ymd(new Date());
-        const r0 = await st.c.from('sessions').select('id,class_id,start_time,status').eq('session_date', today);
-        if (r0.error) { LMS.toast(LMS.friendlyError(r0.error)); return; }
-        const tod = {}; (r0.data || []).filter(s => !['cancel', 'holiday'].includes(s.status)).forEach(s => { (tod[s.class_id] = tod[s.class_id] || []).push(s); });
-        const list = () => ({
-          title: 'Điểm danh · Chọn lớp',
-          rows: st.classes.filter(c => !c.is_archived && c.is_active).sort((a, b) => (!!tod[b.id] - !!tod[a.id]) || natural(a.class_code, b.class_code))
-            .map(c => ({ name: c.class_code, sub: tod[c.id] ? 'Hôm nay ' + t5(tod[c.id][0].start_time) : '', val: (st.counts[c.id] || 0) + ' HV', go: () => openClassAtt(c, tod[c.id] && tod[c.id][0].id, list) })),
-          opt: { unit: 'lớp' }
-        });
-        const v = list(); LMSTile.show(v.title, v.rows, v.opt);
-      }
-      async function openClassAtt(c, presetSid, backList) {
-        const [rs, rt] = await Promise.all([
-          st.c.from('students').select('id,student_name').eq('class_id', c.id).eq('is_active', true),
-          st.c.from('sessions').select('id,session_no,session_date,start_time,status').eq('class_id', c.id).order('session_date', { ascending: false })
-        ]);
-        if (rs.error || rt.error) { LMS.toast(LMS.friendlyError(rs.error || rt.error)); return; }
-        const stu = (rs.data || []).slice().sort((a, b) => String(a.student_name).localeCompare(String(b.student_name), 'vi'));
-        const today = ymd(new Date());
-        const ses = (rt.data || []).filter(s => !['cancel', 'holiday'].includes(s.status)).filter(s => s.session_date <= today || s.id === presetSid).slice(0, 12);
-        if (!ses.length) { LMS.toast('Lớp này chưa có buổi học để điểm danh.'); return; }
-        let sid = presetSid && ses.some(s => s.id === presetSid) ? presetSid : ses[0].id;
-        let att = {};
-        const loadAtt = async () => {
-          att = {};
-          if (!stu.length) return;
-          const r = await st.c.from('attendance').select('student_id,status').eq('session_id', sid).in('student_id', stu.map(x => x.id));
-          if (r.error) { LMS.toast(LMS.friendlyError(r.error)); return; }
-          (r.data || []).forEach(x => { att[x.student_id] = x.status; });
-        };
-        const save = async (s, val) => {
-          const prev = att[s.id] || null;
-          if (val) att[s.id] = val; else delete att[s.id];
-          const r = val ? await st.c.from('attendance').upsert({ session_id: sid, student_id: s.id, status: val, updated_at: new Date().toISOString() })
-            : await st.c.from('attendance').delete().eq('session_id', sid).eq('student_id', s.id);
-          if (r.error) { if (prev) att[s.id] = prev; else delete att[s.id]; LMS.toast(LMS.friendlyError(r.error)); }
-        };
-        const view = () => ({
-          title: c.class_code + ' · Điểm danh',
-          rows: [
-            { name: 'Buổi học', sub: '', val: '', acts: [{ options: ses.map(s => [s.id, ATT_DAY(s) + ' · ' + t5(s.start_time)]), value: sid, title: 'Chọn buổi học', w: 130, fn: async (_r, val) => { sid = Number(val); await loadAtt(); } }] },
-            { name: 'Cả lớp', sub: '', val: '', acts: [{ icon: 'check-check', title: 'Đánh dấu có mặt cho những bạn chưa điểm danh', fn: async () => { for (const s of stu) if (!att[s.id]) await save(s, 'present'); } }] },
-            ...stu.map(s => {
-              const v = att[s.id], on = v === 'excused' ? 'present' : v;
-              const mk = (val, icon, title) => ({ icon, title, state: on === val ? val : '', fn: () => save(s, on === val ? null : val) });
-              return { name: s.student_name, sub: '', val: '', acts: [mk('present', 'check', 'Có mặt'), mk('late', 'clock', 'Trễ'), mk('absent', 'x', 'Vắng')] };
-            })
-          ],
-          opt: { unit: 'học viên', cols: 'minmax(0,1fr) 0px 0px var(--c4)', reload: view, back: () => { const b = backList(); LMSTile.show(b.title, b.rows, b.opt); } }
-        });
-        await loadAtt();
-        const v = view(); LMSTile.show(v.title, v.rows, v.opt);
-      }
-      document.addEventListener('click', e => { const a = e.target.closest('[data-quick-att]'); if (!a) return; e.preventDefault(); openQuickAtt(); });
+      document.addEventListener('click', e => { const a = e.target.closest('[data-quick-att]'); if (!a) return; e.preventDefault(); if (st.c && window.LMSAtt) LMSAtt.open({ c: st.c, classes: st.classes }); });
       async function loadBlocked() {
         const r = await st.c.from('app_settings').select('value').eq('key', 'blocked_weekly').maybeSingle();
         if (!r.error && r.data && Array.isArray(r.data.value) && r.data.value.length === 7) st.blocked = r.data.value.map(String);
