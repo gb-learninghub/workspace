@@ -139,7 +139,7 @@ body.np-open #main{margin-right:360px}
 @media (max-width:700px){#np{left:0;width:auto}body.np-open #main{margin-right:0}}
 #selb{position:fixed;z-index:60;display:flex;gap:4px;padding:4px;border-radius:22px;background:#111}#selb[hidden]{display:none}#selb button{height:32px;padding:0 14px;border:0;border-radius:16px;background:none;color:#fff;font:600 14px Aptos,-apple-system,sans-serif}#selb button+button{border-left:1px solid #444}mark.hl{background:#ffe14d;color:inherit;border-radius:3px}#fcard{position:fixed;z-index:60;width:300px;max-height:60dvh;overflow:auto;background:#fff;border:1.5px solid #111;border-radius:14px;padding:6px 10px}#fcard[hidden]{display:none}#fcard .vc{border:0;padding:4px 0;margin:2px 0}#fcard .vw{font-weight:700;font-size:16px}#fcard>.vb{margin-top:6px;border:0;border-radius:16px;background:#111;color:#fff;height:34px;padding:0 14px;font-size:14px}#fcard>input{width:100%;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:6px 8px;margin-top:6px}#fcard>.npm{margin:2px 0}.wl{flex:1 1 0;min-height:0;overflow:auto;margin:0 0 8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.npb.nn textarea{flex:1 1 0!important;min-height:0!important}.wl .none{color:var(--mut);font-size:14px;padding:10px 0}.wr{display:grid;grid-template-columns:30px minmax(0,1fr) 112px 26px 26px;column-gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:15px}.wr .ww{font-weight:700;overflow-wrap:anywhere}.wr .wp{color:var(--mut)}.wr .wi{color:var(--mut);font-size:14px}.wr select{font:inherit;font-size:14px;border:0;border-bottom:1.5px solid var(--line);background:none;color:var(--mut);width:100%;min-width:0;height:30px}.wr .wi{grid-column:2;white-space:nowrap}.wr .wmi{grid-column:3 / 6;font:inherit;font-size:15px;border:0;border-bottom:1.5px solid var(--line);background:none;height:30px;min-width:0;margin-top:2px}.wr .wmi:focus,.wr select:focus{outline:none;border-bottom-color:#111}.wr .ib.bare{min-width:26px;height:26px;padding:0}.wr .wx{font-size:18px;color:var(--mut)}#np{width:420px}body.np-open #main{margin-right:420px}
 .ib[title="Submit this passage"],.ib[title="Retake the whole test"]{display:none!important}
-.icc{margin-left:auto;flex:none}.icc.on{color:#2e7d4f}
+.icc{margin-left:auto;flex:none}.icc.on{color:#111}.icc.on.ok{color:#2e7d4f}.icc.on.bad{color:#a32626}
 .qcell .icc{margin-left:6px}
 .icx{margin-top:8px;background:var(--panel);color:var(--ink);display:block}
 .icx .icev{margin-top:4px;color:#3a3d44}
@@ -229,6 +229,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     tick: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
     full: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
     book: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/></svg>',
+    cross: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
     reset: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5"/></svg>'
   };
   function ibtn(name, title, fn, cls) { return h("button", { cls: "ib " + (cls || ""), title: title, "aria-label": title, html: ICON[name], onclick: fn }); }
@@ -1183,15 +1184,15 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     [].forEach.call(qs.querySelectorAll(".qn"), function (t) {
       var n = parseInt((t.id || "").slice(1), 10); if (!n || !QMAP[n]) return;
       var m = QMAP[n], key = chkKey(n), host = t.closest(".qt,.hrow,.qcell"); if (!host) return;
-      var on = !!IC.chk[key];
+      var on = !!IC.chk[key], st = on ? icState(n) : "";
       var gi = host.querySelector("input.gap");
       if (gi) { gi.classList.remove("icok", "icbad"); if (on && icK(n)) gi.classList.add(icEq(icK(n), gi.value) ? "icok" : "icbad"); gi.style.width = Math.max(6, gi.value.length + 2) + "ch"; }
-      host.appendChild(ibtn("tick", on ? "Hide answer" : "Check", function () {
+      var tb = ibtn(on && st === "bad" ? "cross" : "tick", on ? "Hide answer" : "Check", function () {
         if (!icK(n)) { IC.err = "The answer key is not loaded yet."; renderNotes(); return; }
-        var qc = host.classList.contains("qcell") || !!host.querySelector("input.gap"); IC.hov = false;
+        var qc = true; IC.hov = false;
         if (IC.chk[key] && !(qc && IC.pop !== n)) { delete IC.chk[key]; delete IC.ev[key]; if (IC.pop === n) IC.pop = null; } else { IC.chk[key] = true; if (qc) IC.pop = n; }
         icRefresh(true);
-      }, "bare icc" + (on ? " on" : "")));
+      }, "bare icc" + (on ? " on" + (st ? " " + st : "") : "")); tb.setAttribute("data-n", String(n)); host.appendChild(tb);
       if (!on) return;
       var ex = h("div", { cls: "ex icx" }), ns = m.g.kind === "multi" ? [m.g.firstq, m.g.firstq + 1, m.g.firstq + 2] : [n];
       ex.appendChild(h("div", null, h("b", { text: "Answer: " }), h("span", { text: icAnswerText(n) })));
@@ -1199,21 +1200,19 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       ns.forEach(function (q) { var e = kEv(icK(q)); if (e) ex.appendChild(h("div", { cls: "icev", text: (ns.length > 1 ? q + ". " : "") + e })); });
       ex.appendChild(h("button", { cls: "ib bare ice" + (IC.ev[key] ? " on" : ""), title: IC.ev[key] ? "Hide evidence" : "Show evidence", "aria-label": "Evidence", html: ICON.evid + "<span>Evidence</span>",
         onclick: function () { IC.ev[key] = !IC.ev[key]; icRefresh(false); if (IC.ev[key]) { var f = document.querySelector("#passage mark.evd"); if (f) f.scrollIntoView({ block: "center", behavior: "smooth" }); } } }));
-      if (host.classList.contains("qcell") || gi) { if (IC.pop === n) { ex.classList.add("icpop"); ex.addEventListener("mouseleave", function (e) { if (!IC.hov) return; var to = e.relatedTarget; if (!(to && to.closest && to.closest(".qt,.qcell"))) icClosePop(); IC.hov = false; }); ex.insertBefore(h("b", { cls: "icn", text: "Q" + n }), ex.firstChild); document.body.appendChild(ex); icPlace(ex, host.querySelector(".icc") || host); } }
-      else if (host.classList.contains("hrow")) host.parentNode.insertBefore(ex, host.nextSibling);
-      else { var qi = t.closest(".qi"); (qi || host.parentNode).appendChild(ex); }
+      { if (IC.pop === n) { ex.classList.add("icpop"); ex.addEventListener("mouseleave", function (e) { if (!IC.hov) return; var to = e.relatedTarget; if (!(to && to.closest && to.closest(".qt,.qcell,.hrow"))) icClosePop(); IC.hov = false; }); ex.insertBefore(h("b", { cls: "icn", text: "Q" + n }), ex.firstChild); document.body.appendChild(ex); icPlace(ex, host.querySelector(".icc") || host); } }
     });
     applyQHl(); icVerdicts();
     if (!icMo) icMo = new MutationObserver(function () { if (icBusy) return; clearTimeout(icMo.t); icMo.t = setTimeout(icDecorate, 30); });
     icMo.observe(qs, { childList: true, subtree: true });
     if (!qs._ichv) { qs._ichv = 1;
       qs.addEventListener("mouseover", function (e) {
-        var g = e.target.closest && e.target.closest(".qt,.qcell"); if (!g || !g.querySelector("input.gap")) return;
+        var g = e.target.closest && e.target.closest(".qt,.qcell,.hrow"); if (!g) return;
         var qn = g.querySelector(".qn"), n = qn ? parseInt((qn.id || "").slice(1), 10) : 0;
         if (!n || !QMAP[n] || !IC.chk[chkKey(n)] || IC.pop === n) return; IC.pop = n; IC.hov = true; icDecorate();
       });
       qs.addEventListener("mouseout", function (e) {
-        if (!IC.hov || !IC.pop) return; var to = e.relatedTarget, q = document.getElementById("q" + IC.pop), g = q && q.closest(".qt,.qcell");
+        if (!IC.hov || !IC.pop) return; var to = e.relatedTarget, q = document.getElementById("q" + IC.pop), g = q && q.closest(".qt,.qcell,.hrow");
         if (to && to.closest && (to.closest(".icpop") || (g && g.contains(to)))) return; icClosePop(); IC.hov = false;
       });
     }
@@ -1236,7 +1235,14 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     });
     el.insertBefore(h("b", { text: okc + "/" + cols.length + " correct" }), el.firstChild);
   }
-  function icVerdicts() { [].forEach.call(document.querySelectorAll(".icvr"), icVerdict); }
+  function icState(n) {
+    var a = 0, b = 0; IC.rows.filter(isOn).forEach(function (s) { var v = stuAns(s, n), t = showVal(v); if (!t) return; var ok = stuOk(n, v); if (ok === true) a++; else if (ok === false) b++; });
+    return b ? "bad" : (a ? "ok" : "");
+  }
+  function icVerdicts() {
+    [].forEach.call(document.querySelectorAll(".icvr"), icVerdict);
+    [].forEach.call(document.querySelectorAll(".icc.on[data-n]"), function (b) { var n = parseInt(b.getAttribute("data-n"), 10), st = icState(n); b.className = "ib bare icc on" + (st ? " " + st : ""); b.innerHTML = ICON[st === "bad" ? "cross" : "tick"]; });
+  }
   function icPlace(el, a) {
     var r = a.getBoundingClientRect(), w = el.offsetWidth, hh = el.offsetHeight;
     var top = r.bottom + 6; if (top + hh > innerHeight - 8) top = Math.max(8, r.top - hh - 6);
