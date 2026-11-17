@@ -1189,7 +1189,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       if (gi) { gi.classList.remove("icok", "icbad"); if (on && icK(n)) gi.classList.add(icEq(icK(n), gi.value) ? "icok" : "icbad"); gi.style.width = Math.max(6, gi.value.length + 2) + "ch"; }
       var tb = ibtn(on && st === "bad" ? "cross" : "tick", on ? (IC.pop === n ? "Hide answer" : "Show answer") : "Check", function () {
         if (!icK(n)) { IC.err = "The answer key is not loaded yet."; renderNotes(); return; }
-        if (!IC.chk[key]) { IC.chk[key] = true; IC.pop = null; } else if (IC.pop !== n) IC.pop = n; else IC.pop = null;
+        if (!IC.chk[key]) { IC.chk[key] = true; IC.pop = null; icRelease(n); if (m.g.kind !== "multi" && !state.ans[n]) { var fa = kAns(icK(n))[0]; if (fa !== undefined && fa !== "") { state.ans[n] = String(fa); try { paint(); updateTiles(); } catch (e) { } } } } else if (IC.pop !== n) IC.pop = n; else IC.pop = null;
         icRefresh(true);
       }, "bare icc" + (on ? " on" + (st ? " " + st : "") : "")); tb.setAttribute("data-n", String(n)); host.appendChild(tb);
       if (!on) return;
@@ -1211,7 +1211,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       var host = g.closest(".qt,.qcell"), qn = host && host.querySelector(".qn"), n = qn ? parseInt((qn.id || "").slice(1), 10) : 0;
       if (!n || !QMAP[n]) return; e.preventDefault();
       if (!icK(n)) { IC.err = "The answer key is not loaded yet."; renderNotes(); return; }
-      IC.chk[chkKey(n)] = true; icRefresh(true);
+      IC.chk[chkKey(n)] = true; icRelease(n); icRefresh(true);
     }); }
     if (!qs._icin) { qs._icin = 1; qs.addEventListener("input", function (e) { var g = e.target; if (g && g.classList && g.classList.contains("gap")) { g.style.width = Math.max(6, g.value.length + 2) + "ch"; if (g.classList.contains("icok") || g.classList.contains("icbad")) icDecorate(); } }); }
     icBusy = false;
@@ -1244,6 +1244,13 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     if (e.target.closest && e.target.closest(".icc")) return; icClosePop();
   });
   document.addEventListener("scroll", function (e) { if (IC.pop && e.target && e.target.id === "qs") icClosePop(); }, true);
+  var icRel = {};
+  function icRelease(n) {
+    var m = QMAP[n]; if (!m || !IC.code || !IC.ok) return;
+    var q = m.g.kind === "multi" ? m.g.firstq : n; if (icRel[q] || !IC.rows.length) return; icRel[q] = 1;
+    var items = IC.rows.map(function (s) { var v = stuAns(s, n), txt = showVal(v); return { student_name: s.student_name, class_code: s.class_code, given: txt, correct: txt ? stuOk(n, v) : null }; });
+    rpcNet("teacher_check_release", { p_teacher_code: IC.code, p_assignment_code: D.code, p_q: q, p_results: items }).catch(function () { delete icRel[q]; });
+  }
   function icRefresh() { icDecorate(); renderNotes(); renderPassage(); }
 
   /* evidence highlight in the passage */

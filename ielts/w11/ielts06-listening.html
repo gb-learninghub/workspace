@@ -52,7 +52,7 @@ svg{display:block}
 .ttl{font-weight:700;font-size:17px;text-align:center;padding:2px 0}
 .qi{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
 .pre,.post{font-size:16px}
-.qn{flex:none;min-width:30px;height:30px;border-radius:999px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.ckv{margin-left:8px;font-weight:700}.ckv.ok{color:#1f6b3f}.ckv.bad{color:#a32626}.ckv.blank{color:#888}.qn{flex:none;min-width:30px;height:30px;border-radius:999px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
 input.gap{flex:1;min-width:0;height:44px;border:0;border-bottom:2px solid var(--line);background:var(--panel);border-radius:10px 10px 0 0;padding:0 12px;font-size:18px;outline:0}
 input.gap:focus{border-bottom-color:var(--g3)}
 input.gap:disabled{opacity:1;color:var(--ink)}
@@ -488,7 +488,14 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     });
   }
   var lookup0 = vlookup;
-  vlookup = function (w, count) { return lookup0(w, count).then(function (r) { if (count) addWords(w, r); return r; }); };
+  function autoAdd(r) {
+    (r || []).forEach(function (e) {
+      if (!e || e.in_notebook) return;
+      rpc("student_vocab_add", { p_student_code: state.code, p_word: e.word, p_pos: e.pos || "", p_ipa: e.ipa || null, p_meaning: e.meaning || null, p_definition: e.definition || null, p_file_key: FILEKEY })
+        .then(function () { e.in_notebook = true; VOC.nb = null; wlist().forEach(function (x) { if (x.word.toLowerCase() === String(e.word).toLowerCase() && (x.pos || "") === (e.pos || "")) x.added = true; }); scheduleSave(); drawWords(); vdraw(); }).catch(function () { });
+    });
+  }
+  vlookup = function (w, count) { return lookup0(w, count).then(function (r) { if (count) { addWords(w, r); autoAdd(r); } return r; }); };
 
   /* suggestions while typing in the look-up bar */
   function attachSuggest(lk, getGo) {
@@ -776,6 +783,28 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     }).catch(function () { });
   }
   setInterval(tnPoll, 6000);
+
+  /* ---------- results the teacher opened in class (first Check only) ---------- */
+  var CKS = {}, ckMo = null, ckBusy = false, ckSig = "";
+  function ckDecor() {
+    var pw = document.getElementById("pw"); if (ckBusy) return; ckBusy = true; if (ckMo) ckMo.disconnect();
+    [].forEach.call(document.querySelectorAll("#pw .ckv"), function (e) { e.remove(); });
+    if (pw) [].forEach.call(pw.querySelectorAll(".qn"), function (t) {
+      var n = parseInt(t.textContent, 10); if (!n || !(n in CKS) || !t.parentElement) return; var c = CKS[n];
+      t.parentElement.appendChild(h("span", { cls: "ckv " + (c === true ? "ok" : c === false ? "bad" : "blank"), title: "Checked in class", text: c === true ? "\u2713" : c === false ? "\u2717" : "\u2013" }));
+    });
+    if (!ckMo) ckMo = new MutationObserver(function () { if (ckBusy) return; clearTimeout(ckMo.t); ckMo.t = setTimeout(ckDecor, 30); });
+    if (pg) ckMo.observe(pg, { childList: true, subtree: true });
+    ckBusy = false;
+  }
+  function ckPoll() {
+    if (!state.code || document.visibilityState !== "visible") return;
+    rpc("student_checks", { p_student_code: state.code, p_assignment_code: D.code }).then(function (r) {
+      var m = {}; (r || []).forEach(function (x) { m[x.q] = x.correct; });
+      var sig = JSON.stringify(m); if (sig === ckSig) return; ckSig = sig; CKS = m; ckDecor();
+    }).catch(function () { });
+  }
+  setInterval(ckPoll, 5000);
 
   function loadProgress(pg) {
     state.loading = true;
