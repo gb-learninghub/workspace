@@ -505,7 +505,6 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
         else if (ic.pop !== n) ic.pop = n; else ic.pop = null;
         ic.sel = n; icPaint();
       } });
-      var gi = host.querySelector("input.gap"); if (gi) { if (on && gi.value) { gi.style.width = Math.max(6, gi.value.length + 2) + "ch"; gi.style.flex = "none"; } else { gi.style.width = ""; gi.style.flex = ""; } }
       b.innerHTML = on && st === "bad" ? IC_X : (ICON.check || "&#10003;");
       var old = host.querySelector(".ick"); if (old) old.remove(); var oldf = host.querySelector(".icf"); if (oldf) oldf.remove();
       host.appendChild(b); if (ic.pop === n) popTick = b;

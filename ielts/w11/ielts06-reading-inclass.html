@@ -1186,7 +1186,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       var m = QMAP[n], key = chkKey(n), host = t.closest(".qt,.hrow,.qcell"); if (!host) return;
       var on = !!IC.chk[key], st = on ? icState(n) : "";
       var gi = host.querySelector("input.gap");
-      if (gi) { gi.classList.remove("icok", "icbad"); if (on && icK(n)) gi.classList.add(icEq(icK(n), gi.value) ? "icok" : "icbad"); gi.style.width = Math.max(6, gi.value.length + 2) + "ch"; }
+      if (gi) { gi.classList.remove("icok", "icbad"); if (on && icK(n)) gi.classList.add(icEq(icK(n), gi.value) ? "icok" : "icbad"); gi.style.width = Math.max(16, gi.value.length + 2) + "ch"; }
       var tb = ibtn(on && st === "bad" ? "cross" : "tick", on ? (IC.pop === n ? "Hide answer" : "Show answer") : "Check", function () {
         if (!icK(n)) { IC.err = "The answer key is not loaded yet."; renderNotes(); return; }
         if (!IC.chk[key]) { IC.chk[key] = true; IC.pop = null; icRelease(n); if (m.g.kind !== "multi" && !state.ans[n]) { var fa = kAns(icK(n))[0]; if (fa !== undefined && fa !== "") { state.ans[n] = String(fa); var ps = $("#passage").scrollTop, qs0 = $("#qs").scrollTop; try { renderQuestions(); updateTiles(); } catch (e) { } $("#passage").scrollTop = ps; $("#qs").scrollTop = qs0; } } } else if (IC.pop !== n) IC.pop = n; else IC.pop = null;
