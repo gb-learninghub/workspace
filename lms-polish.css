@@ -973,3 +973,11 @@ main>section.rounded-2xl,main>.bg-white.rounded-2xl,.overview-finance,.overview-
 #lib-list .mt-td{font-size:.9rem;color:#1B1D22}
 #lib-list .mt-link{border:0;background:transparent;padding:0 8px;min-height:44px;font-weight:700;color:#8a6414;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 @media(max-width:640px){#lib-list .mt-th{display:none}#lib-list .mt-tr{grid-template-columns:1fr 1fr}#lib-list .mt-tn{grid-column:1/-1}#lib-list .mt-td[data-l]::before{content:attr(data-l) ": ";font-size:.75rem;color:#6b7280;font-weight:600}}
+
+/* Hộp thoại Giao bài: tiêu đề và nút lưu cố định, chỉ cuộn phần giữa */
+#dlg-asg .card{display:flex;flex-direction:column;overflow:hidden;padding:0;width:min(560px,100%);height:min(780px,calc(100dvh - 32px))}
+#dlg-asg .card>h2{flex:none;margin:0;padding:20px 22px 12px;border-bottom:1px solid #EEF0F3}
+#dlg-asg .dlg-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 22px 12px;-webkit-overflow-scrolling:touch}
+#dlg-asg .dlg-foot{flex:none;padding:8px 22px 16px;border-top:1px solid #EEF0F3;background:#fff}
+#dlg-asg .dlg-foot .err{min-height:0;margin-top:4px}
+#dlg-asg .dlg-foot .acts{margin-top:8px}

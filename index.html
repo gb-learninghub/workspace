@@ -438,6 +438,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
   <div id="dlg-asg" class="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="da-title">
     <form class="card" novalidate>
       <h2 id="da-title">Giao bài cho nhiều lớp</h2>
+      <div class="dlg-body">
       <div id="da-reg">
         <label for="da-file">Đăng ký bài mới từ file HTML (file có khối key)</label>
         <input id="da-file" type="file" accept=".html,text/html" class="field">
@@ -445,6 +446,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         <input id="da-path" class="field" placeholder="vd. ielts/w10/ielts05-listening.html" autocomplete="off">
         <div id="da-reg-msg" class="text-xs" style="margin:6px 0 10px"></div>
       </div>
+      <label for="da-name">Tên hiển thị (học sinh thấy tên này)</label>
+      <input id="da-name" class="field" autocomplete="off">
       <div class="row2">
         <div><label for="da-grp">Nhóm lớp</label><select id="da-grp" class="field"></select></div>
         <div><label for="da-skill">Kỹ năng / dạng đề</label><select id="da-skill" class="field"></select></div>
@@ -466,11 +469,14 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       <div id="da-days" class="flex flex-wrap gap-2"></div>
       <p id="da-days-hint" class="text-xs text-slate-500" style="margin-top:6px"></p>
       <p class="text-xs text-slate-500" style="margin-top:8px">Lớp đã được giao sẽ được tick sẵn. Bỏ tick rồi bấm Lưu sẽ gỡ bài khỏi lớp đó (bài nộp của học sinh vẫn được giữ). Không tick lớp nào cũng được.</p>
+      </div>
+      <div class="dlg-foot">
       <div class="err" id="da-err" role="alert"></div>
       <div class="acts">
         <button type="submit" class="btn-primary">Lưu</button>
         <button type="button" class="btn-soft" data-close>Hủy</button>
         <button type="button" class="btn-danger" id="da-del">Xóa đề</button>
+      </div>
       </div>
     </form>
   </div>
@@ -929,14 +935,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const m = st.libAsg.find(x => x.code === code); if (!m || !m.page) return;
         const u = new URL(m.page, location.href); u.searchParams.set('s', '0000'); location.href = u.href;
       }
-      async function renameAsg(code) {
-        const m = st.libAsg.find(x => x.code === code); if (!m) return;
-        const nn = window.prompt('Tên học liệu', m.title); if (nn === null) return;
-        const v = nn.trim(); if (!v || v === m.title) return;
-        const r = await st.c.from('assignments').update({ assignment_name: v }).eq('assignment_code', code);
-        if (r.error) { $('page-msg').textContent = LMS.friendlyError(r.error); return; }
-        await loadLib(); renderLib();
-      }
+      async function renameAsg(code) { return openAsg(code); }
       function libItem(m) {
               if (m.scan) {
                 const reg = (st.asgByPath || {})[m.path];
@@ -988,7 +987,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
             return `<div class="mt-line"><b>${esc(codeOf(id))}</b><span>${esc(info)}</span></div>`;
           }).join('');
           const acts = m.asg
-            ? `${m.page ? `<button type="button" class="icon-btn" data-prev-asg="${esc(m.code)}" aria-label="Xem thử bài làm"><i data-lucide="eye" class="w-4 h-4"></i></button>` : ''}<button type="button" class="icon-btn" data-rename-asg="${esc(m.code)}" aria-label="Sửa tên"><i data-lucide="pencil" class="w-4 h-4"></i></button><button type="button" class="icon-btn" data-edit-asg="${esc(m.code)}" aria-label="Giao lại bài"><i data-lucide="send" class="w-4 h-4"></i></button>`
+            ? `${m.page ? `<button type="button" class="icon-btn" data-prev-asg="${esc(m.code)}" aria-label="Xem thử bài làm"><i data-lucide="eye" class="w-4 h-4"></i></button>` : ''}<button type="button" class="icon-btn" data-rename-asg="${esc(m.code)}" aria-label="Sửa bài" title="Sửa bài và giao lớp"><i data-lucide="pencil" class="w-4 h-4"></i></button>`
             : `${isHttp(m.url) ? `<a class="icon-btn" href="${esc(m.url)}" target="_blank" rel="noopener" aria-label="Mở link"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : ''}<button type="button" class="icon-btn" data-edit-mat="${m.id}" aria-label="Sửa mục"><i data-lucide="pencil" class="w-4 h-4"></i></button><button type="button" class="icon-btn" data-del-mat="${m.id}" aria-label="Xóa mục" style="color:#be123c"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
           const ckey = k + '|m|' + (m.asg ? m.code : m.id);
           (st.mtMap = st.mtMap || {})[ckey] = { title: m.title, lines, acts, hw };
@@ -1337,6 +1336,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const have = new Set((ex.data || []).map(x => x.class_id)); st.asgHave = have;
         const first = (ex.data || [])[0];
         $('da-week').value = (first && first.week_start) || (a && a.week_start) || weekKey();
+        $('da-name').value = (a && a.assignment_name) || '';
         $('da-kind').value = (a && a.kind) === 'lesson' ? 'lesson' : 'homework'; $('da-askill').value = (a && a.skill) || '';
         $('da-due').value = toLocalInput((first && first.due_at) || (a && a.due_at));
         document.querySelectorAll('#da-classes input').forEach(x => { x.checked = have.has(Number(x.dataset.id)); });
@@ -1351,6 +1351,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const drop = boxes.filter(i => !i.checked && st.asgHave && st.asgHave.has(Number(i.dataset.id))).map(i => Number(i.dataset.id));
         const kind = $('da-kind').value === 'lesson' ? 'lesson' : 'homework';
         const askill = $('da-askill').value || null;
+        const nn = ($('da-name').value || '').trim();
+        if (nn && nn !== a.assignment_name) { const un = await st.c.from('assignments').update({ assignment_name: nn }).eq('id', a.id); if (un.error) { err.textContent = LMS.friendlyError(un.error); return; } a.assignment_name = nn; }
         if (kind !== a.kind || askill !== (a.skill || null)) { const uk = await st.c.from('assignments').update({ kind, skill: askill }).eq('id', a.id); if (uk.error) { err.textContent = LMS.friendlyError(uk.error); return; } a.kind = kind; a.skill = askill; }
         if (!codes.length && !drop.length) { closeDlgs(); await refresh('Đã lưu loại: ' + (kind === 'lesson' ? 'Bài học' : 'Bài tập') + '.'); return; }
         const due = $('da-due').value ? new Date($('da-due').value).toISOString() : null;
