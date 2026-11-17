@@ -213,7 +213,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
   /* ---------- rpc ---------- */
   /* ---------- local preview (only when the key block is present in this file and the code is 0000) ---------- */
   var LK = null; try { var kel = document.getElementById("gb-"+"key"); if (kel) LK = JSON.parse(kel.textContent); } catch (e) { LK = null; }
-  function lnorm(x) { return String(x == null ? "" : x).replace(/\\s+/g, " ").trim().toLowerCase(); }
+  function lnorm(x) { return String(x == null ? "" : x).replace(/\s+/g, " ").trim().toLowerCase(); }
   function lstore(v) { var k = "gbpv_" + D.code; try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || "null") || { answers: {}, parts: [] }; localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } return { answers: {}, parts: [] }; }
   function localRpc(fn, b) {
     var st = lstore();
@@ -462,7 +462,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       var host2 = host.classList.contains("stem") ? host : host;
       var old = host2.querySelector(".ick"); if (old) old.remove(); var oldf = host2.querySelector(".icf"); if (oldf) oldf.remove();
       host2.appendChild(b);
-      if (ic.chk[n]) {
+      if (ic.chk[n] && LK && LK["q" + n]) {
         var ok = icOk(n, val(n)), f = h("span", { cls: "icf " + (ok ? "ok" : "bad"), text: ok ? "Đúng" : "Sai · Đáp án: " + icAns(n) });
         host2.appendChild(f);
       }
@@ -515,7 +515,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
         ic.stu.forEach(function (s) {
           var col = h("div", { cls: "icgc" }); col.appendChild(h("div", { cls: "icgn", text: s.name }));
           var a = s.ans(pi), items = h("div", { cls: "icgl" }), ck = 0, cc = 0;
-          icNums(pi).forEach(function (n) { var g = a["q" + n] || "", mk = ic.chk[n] && g !== "" ? (icOk(n, g) ? " ok" : " bad") : ""; if (ic.chk[n]) { ck++; if (mk === " ok") cc++; } items.appendChild(h("div", { cls: "icr" + mk + (tnGet(s.name, s.cls, n) ? " hn" : ""), title: tnGet(s.name, s.cls, n), text: n + ". " + (g === "" ? "—" : g), onclick: function (ev) { tnBar(s.name, s.cls, n, ev.currentTarget, icPanels); } })); });
+          icNums(pi).forEach(function (n) { var g = a["q" + n] || "", mk = ic.chk[n] && g !== "" && LK && LK["q" + n] ? (icOk(n, g) ? " ok" : " bad") : ""; if (ic.chk[n]) { ck++; if (mk === " ok") cc++; } items.appendChild(h("div", { cls: "icr" + mk + (tnGet(s.name, s.cls, n) ? " hn" : ""), title: tnGet(s.name, s.cls, n), text: n + ". " + (g === "" ? "—" : g), onclick: function (ev) { tnBar(s.name, s.cls, n, ev.currentTarget, icPanels); } })); });
           if (ck) col.appendChild(h("div", { cls: "icgs", text: cc + " / " + ck })); col.appendChild(items);
           col.appendChild(h("div", { cls: "icgt", text: s.notes(pi) || (s.has ? "(chưa có ghi chú)" : "(chưa làm)") }));
           grid.appendChild(col);

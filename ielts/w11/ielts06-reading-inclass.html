@@ -172,6 +172,8 @@ mark.evd{background:#ffd9a0;color:inherit;border-radius:3px;padding:0 1px}
 .ica{position:relative}.ica.hn:before{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:#e0a24a}
 .icstrip{flex:none;padding:10px 12px 0}
 
+.ict th{z-index:3}.ict td{z-index:0}.ica.blank{background:#f3f3f3;color:#888}
+.icvr{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:15px}.icvs{padding:2px 10px;border-radius:12px}.icvs.ok{background:#e3f3e6;color:#1f6b3f}.icvs.bad{background:#fbe6e6;color:#a32626}.icvs.blank{background:#f3f3f3;color:#777}
 </style><style id="fitfix">
 html,body{max-width:100%;overflow-x:hidden}
 img,svg,video,canvas{max-width:100%}
@@ -671,7 +673,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
   var KEYEL = document.getElementById("gb-key"), KEY = null;
   try { KEY = KEYEL ? JSON.parse(KEYEL.textContent) : null; } catch (e) { KEY = null; }
   function keyOk(k, v) {
-    var a = (k && typeof k === "object" && !Array.isArray(k)) ? k.a : k; v = norm(v); if (v === "") return false;
+    var a = (k && typeof k === "object" && !Array.isArray(k)) ? (k.a !== undefined ? k.a : k.answer) : k; v = norm(v); if (v === "") return false;
     return (Array.isArray(a) ? a : [a]).some(function (x) { return norm(x) === v; });
   }
   var LOCAL = {
@@ -831,18 +833,54 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     var st = offIn(a, rg.startContainer, rg.startOffset), en = offIn(a, rg.endContainer, rg.endOffset); if (en <= st) return null;
     return { i: idx, s: st, e: en };
   }
-  function overlaps(inf) { return (hlOf(state.p)[inf.i] || []).some(function (r) { return r[0] < inf.e && r[1] > inf.s; }); }
+  /* highlights in the question pane: state.hl["q"+passage] = [[start,end],...] over the pane's text */
+  function qWalk() {
+    var qs = document.getElementById("qs"), out = [], n; if (!qs) return out;
+    var w = document.createTreeWalker(qs, NodeFilter.SHOW_TEXT, { acceptNode: function (x) { var p = x.parentNode; return (p && p.closest && p.closest(".icx,.icc,.ib,script,style,textarea")) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
+    while ((n = w.nextNode())) out.push(n); return out;
+  }
+  function qOff(nodes, c, o) {
+    var pos = 0, i, x;
+    if (c.nodeType === 3) { for (i = 0; i < nodes.length; i++) { if (nodes[i] === c) return pos + o; pos += nodes[i].length; } return -1; }
+    var t = c.childNodes[o];
+    for (i = 0; i < nodes.length; i++) {
+      x = nodes[i];
+      if (t ? (t === x || t.contains(x) || (t.compareDocumentPosition(x) & 4)) : ((c.compareDocumentPosition(x) & 4) && !c.contains(x))) return pos;
+      pos += x.length;
+    }
+    return pos;
+  }
+  function qSelInfo() {
+    var s = window.getSelection(); if (!s || !s.rangeCount || s.isCollapsed) return null;
+    var rg = s.getRangeAt(0), qs = document.getElementById("qs"); if (!qs || !qs.contains(rg.commonAncestorContainer)) return null;
+    var nodes = qWalk(), a = qOff(nodes, rg.startContainer, rg.startOffset), b = qOff(nodes, rg.endContainer, rg.endOffset);
+    if (a < 0 || b <= a) return null; return { q: 1, s: a, e: b };
+  }
+  function applyQHl() {
+    var qs = document.getElementById("qs"); if (!qs) return;
+    [].forEach.call(qs.querySelectorAll("mark.qhl"), function (m) { var p = m.parentNode; while (m.firstChild) p.insertBefore(m.firstChild, m); p.removeChild(m); p.normalize(); });
+    var L = (state.hl["q" + state.p] || []).slice().sort(function (a, b) { return b[0] - a[0]; }); if (!L.length) return;
+    var spans = [], pos = 0; qWalk().forEach(function (n) { spans.push([n, pos, pos + n.length]); pos += n.length; });
+    L.forEach(function (r) {
+      for (var i = spans.length - 1; i >= 0; i--) {
+        var sp = spans[i], a = Math.max(r[0], sp[1]), b = Math.min(r[1], sp[2]); if (a >= b) continue;
+        var rg = document.createRange(); rg.setStart(sp[0], a - sp[1]); rg.setEnd(sp[0], b - sp[1]);
+        var mk = document.createElement("mark"); mk.className = "hl qhl"; try { rg.surroundContents(mk); } catch (e) { }
+      }
+    });
+  }
+  function overlaps(inf) { return (inf.q ? (state.hl["q" + state.p] || []) : (hlOf(state.p)[inf.i] || [])).some(function (r) { return r[0] < inf.e && r[1] > inf.s; }); }
   state.hlUndo = [];
   ICON.undo = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
   function undoBtn() { var b = document.querySelector('button[title="Undo highlight"]'); if (b) b.classList.toggle("off", !state.hlUndo.length); }
-  function undoHl() { if (!state.hlUndo.length) return; state.hl = JSON.parse(state.hlUndo.pop()); renderPassage(); scheduleSave(); undoBtn(); }
+  function undoHl() { if (!state.hlUndo.length) return; state.hl = JSON.parse(state.hlUndo.pop()); renderPassage(); icDecorate(); scheduleSave(); undoBtn(); }
   document.addEventListener("keydown", function (e) { var a = document.activeElement; if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === "z" && !(a && (a.tagName === "TEXTAREA" || a.tagName === "INPUT"))) { e.preventDefault(); undoHl(); } });
   function setHl(inf, add) {
     state.hlUndo.push(JSON.stringify(state.hl)); if (state.hlUndo.length > 50) state.hlUndo.shift(); setTimeout(undoBtn, 0);
-    var H = hlOf(state.p), L = (H[inf.i] || []).slice(), out = [];
+    var H = hlOf(state.p), L = (inf.q ? (state.hl["q" + state.p] || []) : (H[inf.i] || [])).slice(), out = [];
     if (add) { L.push([inf.s, inf.e]); L.sort(function (a, b) { return a[0] - b[0]; }); L.forEach(function (r) { var l = out[out.length - 1]; if (l && r[0] <= l[1]) l[1] = Math.max(l[1], r[1]); else out.push([r[0], r[1]]); }); }
     else L.forEach(function (r) { if (r[1] <= inf.s || r[0] >= inf.e) out.push(r); else { if (r[0] < inf.s) out.push([r[0], inf.s]); if (r[1] > inf.e) out.push([inf.e, r[1]]); } });
-    H[inf.i] = out; try { window.getSelection().removeAllRanges(); } catch (e) { } hideSel(); renderPassage(); scheduleSave();
+    if (inf.q) state.hl["q" + state.p] = out; else H[inf.i] = out; try { window.getSelection().removeAllRanges(); } catch (e) { } hideSel(); renderPassage(); if (inf.q) icDecorate(); scheduleSave();
   }
   var fcard = h("div", { id: "fcard", hidden: "hidden" }); document.body.appendChild(fcard);
   state.fc = null; state.dis = {};
@@ -867,9 +905,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       res.forEach(function (e) {
         var c = h("div", { cls: "vc" }, h("button", { cls: "ib bare", title: "Listen", "aria-label": "Listen", html: ICON.spk, onclick: function () { speak(e.word); } }), h("span", { cls: "vw", text: e.word }), h("span", { cls: "vp", text: [e.pos, e.ipa].filter(Boolean).join("  ") }), h("div", { text: e.meaning || "No meaning saved yet" }));
         if (e.definition) c.appendChild(h("div", { cls: "npm", text: e.definition }));
-        var b = h("button", { cls: "vb", text: e.in_notebook ? "In notebook" : "Add to notebook" });
-        if (e.in_notebook) b.disabled = true; else b.addEventListener("click", function () { addWord(e, b); setTimeout(hideCard, 1000); });
-        c.appendChild(b); fcard.appendChild(c);
+        fcard.appendChild(c);
       });
     } else {
       fcard.appendChild(h("div", { cls: "vw", text: w })); fcard.appendChild(h("div", { cls: "npm", text: "Not in the word bank yet." }));
@@ -882,6 +918,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       t = a.value.slice(a.selectionStart, a.selectionEnd); var r = a.getBoundingClientRect(); rect = { left: r.left, top: r.top + 4, bottom: r.top + 4 };
     } else {
       var s = window.getSelection(); if (s && s.rangeCount && !s.isCollapsed && $("#passage").contains(s.anchorNode)) { t = s.toString(); rect = s.getRangeAt(0).getBoundingClientRect(); inf = selInfo(); }
+      else if (s && s.rangeCount && !s.isCollapsed && $("#qs") && $("#qs").contains(s.anchorNode)) { t = s.toString(); rect = s.getRangeAt(0).getBoundingClientRect(); inf = qSelInfo(); }
     }
     t = String(t).replace(/\s+/g, " ").trim();
     var word = /^[A-Za-z][A-Za-z' -]{1,38}$/.test(t) && t.split(" ").length <= 3;
@@ -899,7 +936,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
   selb.addEventListener("mousedown", function (e) { e.preventDefault(); });
   bl.addEventListener("click", function () {
     var w = selWord, rect = selRect; hideSel(); if (!w) return;
-    delete state.dis[w]; lookup(w, true).then(function () { showCard(w, rect); });
+    delete state.dis[w]; lookup(w, true).then(function (r) { autoAdd(r); showCard(w, rect); });
   });
   bh.addEventListener("click", function () { if (selHl) setHl(selHl, true); });
   bc.addEventListener("click", function () { if (selHl) setHl(selHl, false); });
@@ -936,6 +973,13 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
         h("span", { cls: "ww", text: x.word }), sel, add,
         h("button", { cls: "ib bare wx", text: "×", title: "Remove", "aria-label": "Remove " + x.word, onclick: function () { L.splice(i, 1); scheduleSave(); drawWords(); } }),
         h("span", { cls: "wi", text: x.ipa }), mi));
+    });
+  }
+  function autoAdd(r) {
+    (r || []).forEach(function (e) {
+      if (e.in_notebook || e._adding) return; e._adding = true;
+      rpc("student_vocab_add", { p_student_code: state.code, p_word: e.word, p_pos: e.pos || "", p_ipa: e.ipa || null, p_meaning: e.meaning || null, p_definition: e.definition || null, p_file_key: FILEKEY })
+        .then(function () { e.in_notebook = true; state.nb = null; }).catch(function () { e._adding = false; });
     });
   }
   var lookup0 = lookup;
@@ -1028,8 +1072,8 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
   try { IC.sel = JSON.parse(store("ic_sel") || "{}") || {}; } catch (e) { IC.sel = {}; }
   var ELOC = D.eloc || {};
   function icK(n) { var K = KEY || IC.key; return K ? K["q" + n] : null; }
-  function kAns(k) { var a = (k && typeof k === "object" && !Array.isArray(k)) ? k.a : k; return Array.isArray(a) ? a : [a]; }
-  function kEv(k) { return (k && typeof k === "object" && !Array.isArray(k)) ? (k.e || "") : ""; }
+  function kAns(k) { var a = (k && typeof k === "object" && !Array.isArray(k)) ? (k.a !== undefined ? k.a : k.answer) : k; return Array.isArray(a) ? a : [a]; }
+  function kEv(k) { return (k && typeof k === "object" && !Array.isArray(k)) ? (k.e || k.explanation || "") : ""; }
   function subVal(st, n) {
     var part = QMAP[n].pi + 1, s = (st.submissions || []).filter(function (x) { return x.part === part; })[0];
     return s && s.answers ? (s.answers["q" + n] || "") : "";
@@ -1048,7 +1092,16 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
   function stuOk(n, v) {
     var m = QMAP[n], K = icK(n); if (!K) return null;
     if (m.g.kind === "multi") { var set = kAns(K); return Array.isArray(v) && v.length === set.length && v.every(function (x) { return set.indexOf(x) > -1; }); }
-    return keyOk(K, v);
+    return icEq(K, v);
+  }
+  function icCan(x) {
+    var t = norm(x).replace(/[‘’]/g, "'").replace(/[–—-]/g, " ").replace(/[.,;:!?]+$/g, "").replace(/\s+/g, " ").trim();
+    return ({ t: "true", f: "false", ng: "not given", "n g": "not given", notgiven: "not given" })[t] || t;
+  }
+  function icEq(K, v) {
+    if (Array.isArray(v)) v = v.join(" ");
+    var c = icCan(v); if (c === "") return false;
+    return kAns(K).some(function (x) { return icCan(x) === c; });
   }
   function showVal(v) { return Array.isArray(v) ? v.join(" ") : (v === "" || v == null ? "" : String(v)); }
 
@@ -1090,7 +1143,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
         tr.appendChild(h("td", { cls: "icq" }, h("button", { text: m.g.kind === "multi" ? m.g.firstq + "–" + (m.g.firstq + m.g.n - 1) : String(n), onclick: (function (n) { return function () { go(n); }; })(n) })));
         cols.forEach(function (s, ci) {
           var v = stuAns(s, n), txt = showVal(v), cls = "ica"; if (tnGet(s.student_name, s.class_code, n)) cls += " hn";
-          if (ck) { var ok = stuOk(n, v); if (ok === true) { cls += " ok"; tot[ci][0]++; } else if (ok === false) cls += " bad"; if (ok !== null) tot[ci][1]++; }
+          if (ck) { var ok = stuOk(n, v); if (ok === true) { cls += " ok"; tot[ci][0]++; } else if (ok === false) cls += (txt ? " bad" : " blank"); if (ok !== null) tot[ci][1]++; }
           tr.appendChild(h("td", { cls: cls, title: tnGet(s.student_name, s.class_code, n) || txt, onclick: (function (nq) { return function (ev) { tnBar(s.student_name, s.class_code, nq, ev.currentTarget, renderNotes); }; })(n) }, h("span", { text: txt || "–" })));
         });
         tbody.appendChild(tr);
@@ -1131,6 +1184,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       if (!on) return;
       var ex = h("div", { cls: "ex icx" }), ns = m.g.kind === "multi" ? [m.g.firstq, m.g.firstq + 1, m.g.firstq + 2] : [n];
       ex.appendChild(h("div", null, h("b", { text: "Answer: " }), h("span", { text: icAnswerText(n) })));
+      ex.appendChild(h("div", { cls: "icvr", "data-n": String(n) }));
       ns.forEach(function (q) { var e = kEv(icK(q)); if (e) ex.appendChild(h("div", { cls: "icev", text: (ns.length > 1 ? q + ". " : "") + e })); });
       ex.appendChild(h("button", { cls: "ib bare ice" + (IC.ev[key] ? " on" : ""), title: IC.ev[key] ? "Hide evidence" : "Show evidence", "aria-label": "Evidence", html: ICON.evid + "<span>Evidence</span>",
         onclick: function () { IC.ev[key] = !IC.ev[key]; icRefresh(false); if (IC.ev[key]) { var f = document.querySelector("#passage mark.evd"); if (f) f.scrollIntoView({ block: "center", behavior: "smooth" }); } } }));
@@ -1138,10 +1192,21 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       else if (host.classList.contains("hrow")) host.parentNode.insertBefore(ex, host.nextSibling);
       else { var qi = t.closest(".qi"); (qi || host.parentNode).appendChild(ex); }
     });
+    applyQHl(); icVerdicts();
     if (!icMo) icMo = new MutationObserver(function () { if (icBusy) return; clearTimeout(icMo.t); icMo.t = setTimeout(icDecorate, 30); });
     icMo.observe(qs, { childList: true, subtree: true });
     icBusy = false;
   }
+  function icVerdict(el) {
+    var n = parseInt(el.getAttribute("data-n"), 10), cols = IC.rows.filter(isOn), okc = 0; el.innerHTML = "";
+    if (!cols.length) { el.appendChild(h("span", { text: "No student answers yet." })); return; }
+    cols.forEach(function (s) {
+      var v = stuAns(s, n), txt = showVal(v), ok = txt ? stuOk(n, v) : null; if (ok === true) okc++;
+      el.appendChild(h("span", { cls: "icvs " + (ok === true ? "ok" : ok === false ? "bad" : "blank"), text: (ok === true ? "✓ " : ok === false ? "✗ " : "– ") + s.student_name + (txt ? ": " + txt : "") }));
+    });
+    el.insertBefore(h("b", { text: okc + "/" + cols.length + " correct" }), el.firstChild);
+  }
+  function icVerdicts() { [].forEach.call(document.querySelectorAll("#qs .icvr"), icVerdict); }
   function icRefresh() { icDecorate(); renderNotes(); renderPassage(); }
 
   /* evidence highlight in the passage */
@@ -1175,7 +1240,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     if (!IC.code) return Promise.resolve();
     return Promise.all([rpcNet("teacher_review", { p_teacher_code: IC.code, p_assignment_code: D.code }), rpcNet("teacher_notes_get", { p_teacher_code: IC.code, p_assignment_code: D.code }).catch(function () { return null; })]).then(function (rr) { var r = rr[0]; if (rr[1]) tnMerge(rr[1]);
       var first = !IC.ok; IC.ok = true; IC.err = ""; IC.rows = r.students || []; if (r.key && !KEY) { var had = !!IC.key; IC.key = r.key; if (!had) icDecorate(); } IC.t = Date.now();
-      renderNotes(); return first;
+      renderNotes(); icVerdicts(); return first;
     }).catch(function (e) {
       var m = String(e && e.message || e);
       IC.err = m.indexOf("assignment_not_found") > -1 ? "This test is not assigned to any class yet, so there are no student answers." : m.indexOf("forbidden") > -1 ? "Teacher code not accepted." : "Could not reach the server.";
@@ -1190,7 +1255,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     var who = $("#who"); if (who) who.textContent = "Teacher";
     function begin(code) {
       IC.code = code; try { sessionStorage.setItem("ic_code", code); } catch (e) { }
-      icPoll(); setInterval(function () { if (document.visibilityState === "visible") icPoll(); }, 8000);
+      icPoll(); setInterval(function () { if (document.visibilityState === "visible") icPoll(); }, 2000);
     }
     if (c) { begin(c); try { history.replaceState(null, "", location.pathname); } catch (e) { } return; }
     var inp = h("input", { cls: "gap big", type: "password", autocomplete: "off", placeholder: "Teacher code", "aria-label": "Teacher code" }), msg = h("p", { cls: "err", text: "" });
