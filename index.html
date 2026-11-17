@@ -1003,7 +1003,10 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const out = order.length ? '<div class="mt-tbl"><div class="mt-th"><span>Tên</span><span>Số lớp giao</span><span>Bài học</span><span>Bài tập</span><span>Slide</span></div>' + order.map(g => {
           const L = grp[g], nm = L.find(m => m.kind === 'homework') || L[0], cls = new Set(); L.forEach(m => (m.class_ids || []).forEach(c => cls.add(c)));
           const bkey = k + '|b|' + g, TL = { ls: 'Bài học', hw: 'Bài tập', sl: 'Slide' };
-          st.mtMap[bkey] = { title: baseName(nm.title), blk: g, lines: ['ls', 'hw', 'sl'].map(t => L.filter(m => typeOf(m) === t).map(m => `<div class="mt-sub">${TL[t]}</div>` + st.mtMap[regKey(m)].lines).join('')).join('') };
+          L.forEach(m => regKey(m));
+          const infoOf = (m, id) => { const ds = m.asg ? ((m.dates && m.dates[id]) || []) : matDates(m); if (m.kind === 'homework') { const d = dmy((m.dues && m.dues[id]) || m.due_at); return (ds.length ? ds.map(dayName).join(', ') + ' · ' : '') + (d ? 'Hạn ' + d : 'Chưa đặt hạn'); } return ds.length ? ds.map(dayName).join(', ') : 'Cả tuần'; };
+          const cellOf = (t, id) => { const m = L.find(x => typeOf(x) === t && (x.class_ids || []).includes(id)); return `<span>${m ? esc(infoOf(m, id)) : '—'}</span>`; };
+          st.mtMap[bkey] = { title: baseName(nm.title), blk: g, lines: '<div class="mt-m mt-mh"><span>Lớp</span><span>Bài học</span><span>Bài tập</span><span>Slide</span></div>' + [...cls].sort((x, y) => natural(codeOf(x), codeOf(y))).map(id => `<div class="mt-m"><b>${esc(codeOf(id))}</b>${cellOf('ls', id)}${cellOf('hw', id)}${cellOf('sl', id)}</div>`).join('') };
           const cell = (t, lab) => { const xs = L.filter(m => typeOf(m) === t); return `<span class="mt-td" data-l="${lab}">${xs.length ? xs.map(m => m.asg ? `<button type="button" class="mt-link" data-prev-asg="${esc(m.code)}">Link</button>` : (isHttp(m.url) ? `<a class="mt-link" href="${esc(m.url)}" target="_blank" rel="noopener">Link</a>` : '—')).join(' ') : '—'}</span>`; };
           return `<div class="mt-tr"><span class="mt-td mt-tn"><button type="button" class="mt-tnb" data-mt-blk="${esc(bkey)}">${esc(baseName(nm.title))}</button></span><span class="mt-td" data-l="Số lớp giao">${cls.size}</span>${cell('ls', 'Bài học')}${cell('hw', 'Bài tập')}${cell('sl', 'Slide')}</div>`;
         }).join('') + '</div>' : '';
@@ -1398,7 +1401,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const B = st.blk, err = $('da-err'); if (!B) return;
         const boxes = [...document.querySelectorAll('#da-classes input')];
         const codes = boxes.filter(i => i.checked).map(i => i.value), ids = boxes.filter(i => i.checked).map(i => Number(i.dataset.id));
-        const drop = boxes.filter(i => !i.checked && st.asgHave && st.asgHave.has(Number(i.dataset.id))).map(i => Number(i.dataset.id));
+        const drop = boxes.filter(i => !i.checked && st.asgHave && st.asgHave.has(Number(i.dataset.id)) && !/^00\./.test(classLabel(i.dataset.id))).map(i => Number(i.dataset.id));
         if (!codes.length && !drop.length) { closeDlgs(); return; }
         const need = ['ls', 'hw'].filter(t => B.slots[t] && !B.slots[t].code);
         if (codes.length && need.length) { err.textContent = 'Còn thiếu key cho: ' + need.map(t => BLK_L[t]).join(', ') + '. Chọn file có key ở mục trên.'; return; }
@@ -1448,7 +1451,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         if (!a) { err.textContent = 'Chưa có bài nào để giao.'; return; }
         const boxes = [...document.querySelectorAll('#da-classes input')];
         const codes = boxes.filter(i => i.checked).map(i => i.value);
-        const drop = boxes.filter(i => !i.checked && st.asgHave && st.asgHave.has(Number(i.dataset.id))).map(i => Number(i.dataset.id));
+        const drop = boxes.filter(i => !i.checked && st.asgHave && st.asgHave.has(Number(i.dataset.id)) && !/^00\./.test(classLabel(i.dataset.id))).map(i => Number(i.dataset.id));
         const kind = $('da-kind').value === 'lesson' ? 'lesson' : 'homework';
         const askill = $('da-askill').value || null;
         const nn = ($('da-name').value || '').trim();
