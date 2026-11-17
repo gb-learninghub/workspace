@@ -1000,15 +1000,16 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const typeOf = m => m.kind === 'homework' ? 'hw' : m.kind === 'slide' ? 'sl' : 'ls';
         const grp = {}, order = [];
         given.forEach(m => { const g = stemOf(m); if (!grp[g]) { grp[g] = []; order.push(g); } grp[g].push(m); });
-        const out = order.length ? '<div class="mt-tbl"><div class="mt-th"><span>Tên</span><span>Số lớp giao</span><span>Bài học</span><span>Bài tập</span><span>Slide</span></div>' + order.map(g => {
+        const out = order.length ? '<div class="mt-tbl"><div class="mt-th"><span>Tên</span><span>Chương trình</span><span>Bài học</span><span>Bài tập</span><span>Slide</span></div>' + order.map(g => {
           const L = grp[g], nm = L.find(m => m.kind === 'homework') || L[0], cls = new Set(); L.forEach(m => (m.class_ids || []).forEach(c => cls.add(c)));
+          const progTxt = ids => { const r = [...new Set(ids.map(id => { const c = String(codeOf(id) || '').toUpperCase(); return /^AC12/.test(c) ? 'AC12' : /^IE/.test(c) ? 'IE' : /^TO/.test(c) ? 'TO' : /^GT/.test(c) ? 'GT' : /^(AC|GS)/.test(c) ? 'GS' : ''; }).filter(Boolean))]; return r.length ? r.join(', ') : '—'; };
           const bkey = k + '|b|' + g, TL = { ls: 'Bài học', hw: 'Bài tập', sl: 'Slide' };
           L.forEach(m => regKey(m));
           const infoOf = (m, id) => { const ds = m.asg ? ((m.dates && m.dates[id]) || []) : matDates(m); if (m.kind === 'homework') { const d = dmy((m.dues && m.dues[id]) || m.due_at); return (ds.length ? ds.map(dayName).join(', ') + ' · ' : '') + (d ? 'Hạn ' + d : 'Chưa đặt hạn'); } return ds.length ? ds.map(dayName).join(', ') : 'Cả tuần'; };
           const cellOf = (t, id) => { const m = L.find(x => typeOf(x) === t && (x.class_ids || []).includes(id)); return `<span>${m ? esc(infoOf(m, id)) : '—'}</span>`; };
           st.mtMap[bkey] = { title: baseName(nm.title), blk: g, lines: '<div class="mt-m mt-mh"><span>Lớp</span><span>Bài học</span><span>Bài tập</span><span>Slide</span></div>' + [...cls].sort((x, y) => natural(codeOf(x), codeOf(y))).map(id => `<div class="mt-m"><b>${esc(codeOf(id))}</b>${cellOf('ls', id)}${cellOf('hw', id)}${cellOf('sl', id)}</div>`).join('') };
           const cell = (t, lab) => { const xs = L.filter(m => typeOf(m) === t); return `<span class="mt-td" data-l="${lab}">${xs.length ? xs.map(m => m.asg ? `<button type="button" class="mt-link" data-prev-asg="${esc(m.code)}">Link</button>` : (isHttp(m.url) ? `<a class="mt-link" href="${esc(m.url)}" target="_blank" rel="noopener">Link</a>` : '—')).join(' ') : '—'}</span>`; };
-          return `<div class="mt-tr"><span class="mt-td mt-tn"><button type="button" class="mt-tnb" data-mt-blk="${esc(bkey)}">${esc(baseName(nm.title))}</button></span><span class="mt-td" data-l="Số lớp giao">${cls.size}</span>${cell('ls', 'Bài học')}${cell('hw', 'Bài tập')}${cell('sl', 'Slide')}</div>`;
+          return `<div class="mt-tr"><span class="mt-td mt-tn"><button type="button" class="mt-tnb" data-mt-blk="${esc(bkey)}">${esc(baseName(nm.title))}</button></span><span class="mt-td" data-l="Chương trình">${esc(progTxt([...cls]))}</span>${cell('ls', 'Bài học')}${cell('hw', 'Bài tập')}${cell('sl', 'Slide')}</div>`;
         }).join('') + '</div>' : '';
         const og = {}, oord = []; orphan.filter(m => m.scan).forEach(m => { const g = stemOf(m); if (!og[g]) { og[g] = []; oord.push(g); } og[g].push(m); });
         const sufT = p => /-(inclass|in-class|present)\.html?$/i.test(p) ? 'Slide' : /-lesson\.html?$/i.test(p) ? 'Bài học' : 'Bài tập';
