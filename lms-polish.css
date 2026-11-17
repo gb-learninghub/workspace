@@ -981,3 +981,12 @@ main>section.rounded-2xl,main>.bg-white.rounded-2xl,.overview-finance,.overview-
 #dlg-asg .dlg-foot{flex:none;padding:8px 22px 16px;border-top:1px solid #EEF0F3;background:#fff}
 #dlg-asg .dlg-foot .err{min-height:0;margin-top:4px}
 #dlg-asg .dlg-foot .acts{margin-top:8px}
+
+/* Giao theo khối */
+#da-blk{display:none}
+#dlg-asg.blk-mode #da-blk{display:block;margin-bottom:10px}
+#dlg-asg.blk-mode .sgl{display:none!important}
+.blk-row{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid #E4E6EA;font-size:14px}
+.mt-tnb{background:none;border:0;padding:0;font:inherit;font-weight:700;text-align:left;cursor:pointer;color:inherit;text-decoration:underline dotted;text-underline-offset:3px}
+a.mt-link{text-decoration:none;display:inline-block}
+.mt-sub{font-weight:700;font-size:12px;color:#5b6270;margin:10px 0 4px}

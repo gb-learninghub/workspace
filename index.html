@@ -439,25 +439,26 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
     <form class="card" novalidate>
       <h2 id="da-title">Giao bài cho nhiều lớp</h2>
       <div class="dlg-body">
-      <div id="da-reg">
+      <div id="da-blk"><div id="da-blk-list"></div></div>
+      <div id="da-reg" class="sgl">
         <label for="da-file">Đăng ký bài mới từ file HTML (file có khối key)</label>
         <input id="da-file" type="file" accept=".html,text/html" class="field">
         <label for="da-path">Đường dẫn trên GitHub (để trống = tự đặt)</label>
         <input id="da-path" class="field" placeholder="vd. ielts/w10/ielts05-listening.html" autocomplete="off">
         <div id="da-reg-msg" class="text-xs" style="margin:6px 0 10px"></div>
       </div>
-      <label for="da-name">Tên hiển thị (học sinh thấy tên này)</label>
-      <input id="da-name" class="field" autocomplete="off">
-      <div class="row2">
+      <label for="da-name" class="sgl">Tên hiển thị (học sinh thấy tên này)</label>
+      <input id="da-name" class="field sgl" autocomplete="off">
+      <div class="row2 sgl">
         <div><label for="da-grp">Nhóm lớp</label><select id="da-grp" class="field"></select></div>
         <div><label for="da-skill">Kỹ năng / dạng đề</label><select id="da-skill" class="field"></select></div>
       </div>
-      <label for="da-code">Đề</label>
-      <select id="da-code" class="field"></select>
-      <label for="da-kind">Dùng như</label>
-      <select id="da-kind" class="field"><option value="lesson">Bài học</option><option value="homework">Bài tập</option></select>
-      <label for="da-askill">Tính vào điểm mục tiêu</label>
-      <select id="da-askill" class="field"><option value="">Không tính</option><option value="reading">Reading</option><option value="listening">Listening</option><option value="writing">Writing</option><option value="speaking">Speaking</option><option value="dgnl">ĐGNL</option><option value="thpt">TN THPT</option></select>
+      <label for="da-code" class="sgl">Đề</label>
+      <select id="da-code" class="field sgl"></select>
+      <label for="da-kind" class="sgl">Dùng như</label>
+      <select id="da-kind" class="field sgl"><option value="lesson">Bài học</option><option value="homework">Bài tập</option></select>
+      <label for="da-askill" class="sgl">Tính vào điểm mục tiêu</label>
+      <select id="da-askill" class="field sgl"><option value="">Không tính</option><option value="reading">Reading</option><option value="listening">Listening</option><option value="writing">Writing</option><option value="speaking">Speaking</option><option value="dgnl">ĐGNL</option><option value="thpt">TN THPT</option></select>
       <label for="da-week">Tuần (ngày đầu tuần)</label>
       <input id="da-week" type="date" class="field">
       <label for="da-due">Hạn nộp</label>
@@ -933,7 +934,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       }
       function previewAsg(code) {
         const m = st.libAsg.find(x => x.code === code); if (!m || !m.page) return;
-        const u = new URL(m.page, location.href); u.searchParams.set('s', '0000'); location.href = u.href;
+        const u = new URL(m.page, location.href); u.searchParams.set('s', '0000'); window.open(u.href, '_blank', 'noopener');
       }
       async function renameAsg(code) { return openAsg(code); }
       function libItem(m) {
@@ -1001,10 +1002,16 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         given.forEach(m => { const g = stemOf(m); if (!grp[g]) { grp[g] = []; order.push(g); } grp[g].push(m); });
         const out = order.length ? '<div class="mt-tbl"><div class="mt-th"><span>Tên</span><span>Số lớp giao</span><span>Bài học</span><span>Bài tập</span><span>Slide</span></div>' + order.map(g => {
           const L = grp[g], nm = L.find(m => m.kind === 'homework') || L[0], cls = new Set(); L.forEach(m => (m.class_ids || []).forEach(c => cls.add(c)));
-          const cell = (t, lab) => { const xs = L.filter(m => typeOf(m) === t); return `<span class="mt-td" data-l="${lab}">${xs.length ? xs.map(m => `<button type="button" class="mt-link" data-mt-key="${regKey(m)}">Link</button>`).join(' ') : '—'}</span>`; };
-          return `<div class="mt-tr"><span class="mt-td mt-tn">${esc(baseName(nm.title))}</span><span class="mt-td" data-l="Số lớp giao">${cls.size}</span>${cell('ls', 'Bài học')}${cell('hw', 'Bài tập')}${cell('sl', 'Slide')}</div>`;
+          const bkey = k + '|b|' + g, TL = { ls: 'Bài học', hw: 'Bài tập', sl: 'Slide' };
+          st.mtMap[bkey] = { title: baseName(nm.title), blk: g, lines: ['ls', 'hw', 'sl'].map(t => L.filter(m => typeOf(m) === t).map(m => `<div class="mt-sub">${TL[t]}</div>` + st.mtMap[regKey(m)].lines).join('')).join('') };
+          const cell = (t, lab) => { const xs = L.filter(m => typeOf(m) === t); return `<span class="mt-td" data-l="${lab}">${xs.length ? xs.map(m => m.asg ? `<button type="button" class="mt-link" data-prev-asg="${esc(m.code)}">Link</button>` : (isHttp(m.url) ? `<a class="mt-link" href="${esc(m.url)}" target="_blank" rel="noopener">Link</a>` : '—')).join(' ') : '—'}</span>`; };
+          return `<div class="mt-tr"><span class="mt-td mt-tn"><button type="button" class="mt-tnb" data-mt-blk="${esc(bkey)}">${esc(baseName(nm.title))}</button></span><span class="mt-td" data-l="Số lớp giao">${cls.size}</span>${cell('ls', 'Bài học')}${cell('hw', 'Bài tập')}${cell('sl', 'Slide')}</div>`;
         }).join('') + '</div>' : '';
-        const orph = orphan.length ? `<div class="mt-class" style="padding:14px 16px"><div class="font-bold text-rose-700 mb-2">Chưa giao cho lớp nào</div><div class="flex flex-col gap-2">${orphan.map(libItem).join('')}</div></div>` : '';
+        const og = {}, oord = []; orphan.filter(m => m.scan).forEach(m => { const g = stemOf(m); if (!og[g]) { og[g] = []; oord.push(g); } og[g].push(m); });
+        const sufT = p => /-(inclass|in-class|present)\.html?$/i.test(p) ? 'Slide' : /-lesson\.html?$/i.test(p) ? 'Bài học' : 'Bài tập';
+        const scanRows = oord.map(g => { const L = og[g], nm = L.find(m => sufT(m.path) === 'Bài tập') || L[0], tags = [...new Set(L.map(m => { const r = (st.asgByPath || {})[m.path]; return r ? (r.kind === 'homework' ? 'Bài tập' : 'Bài học') : sufT(m.path); }))]; return `<div class="mat-item"><div class="min-w-0 flex-1"><div style="font-weight:700;color:var(--t-primary);overflow-wrap:anywhere">${esc(baseName(nm.title))}</div><div class="text-xs text-slate-500 mt-1"><span class="text-rose-700">Chưa giao cho lớp nào</span> · ${tags.join(' · ')}</div></div><button type="button" class="icon-btn" data-blk="${esc(g)}" aria-label="Giao cả khối" title="Giao cả khối"><i data-lucide="send" class="w-4 h-4"></i></button></div>`; });
+        const restOrph = orphan.filter(m => !m.scan).map(libItem), orphAll = scanRows.concat(restOrph);
+        const orph = orphAll.length ? `<div class="mt-class" style="padding:14px 16px"><div class="font-bold text-rose-700 mb-2">Chưa giao cho lớp nào</div><div class="flex flex-col gap-2">${orphAll.join('')}</div></div>` : '';
         return out + orph;
       }
       function renderLib() {
@@ -1248,8 +1255,9 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         closeDlgs(); await refresh('Đã xóa đề.');
       }
 
-      async function registerAsgFile(file) {
-        const msg = $('da-reg-msg'), err = $('da-err'); err.textContent = ''; msg.textContent = '';
+      async function registerAsgFile(file, opt) {
+        opt = opt || {};
+        const msg = opt.msg || $('da-reg-msg'), err = $('da-err'); err.textContent = ''; msg.textContent = '';
         const fail = t => { msg.style.color = '#be123c'; msg.textContent = t; };
         let text; try { text = await file.text(); } catch (e) { return fail('Không đọc được file.'); }
         const dm = text.match(/window\.DATA\s*=\s*(\{[\s\S]*?\})\s*;?\s*<\/script>/);
@@ -1286,10 +1294,11 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           answer_key[q.id] = e;
         }
         const kind = D.mode === 'teaching' ? 'lesson' : 'homework';
+        if (opt.expect && kind !== opt.expect) return fail('File này là ' + (kind === 'lesson' ? 'bài học' : 'bài tập') + ', không đúng ô ' + (opt.expect === 'lesson' ? 'Bài học' : 'Bài tập') + '. Chọn lại file.');
         const tn = code + ' ' + name, skill = kind === 'homework' ? (/thpt/i.test(tn) ? 'thpt' : /đgnl|dgnl|vact/i.test(tn) ? 'dgnl' : isListen ? 'listening' : /reading/i.test(tn) ? 'reading' : /writing/i.test(tn) ? 'writing' : null) : null;
         const program = /^ielts/i.test(code) ? 'ielts' : /^toeic/i.test(code) ? 'toeic' : (/^ac12/i.test(code) || /thpt|đgnl|dgnl|vact/i.test(tn)) ? 'ac12' : null;
         const folder = program || 'gt', wk = weekNoOf(curMon());
-        const page_path = ($('da-path').value || '').trim().replace(/^\/+/, '') || (folder + '/w' + String(wk).padStart(2, '0') + '/' + file.name);
+        const page_path = (opt.path || $('da-path').value || '').trim().replace(/^\/+/, '') || (folder + '/w' + String(wk).padStart(2, '0') + '/' + file.name);
         const row = { assignment_code: code, assignment_name: name, kind, skill, program, page_path, questions, parts: parts.length ? parts : null, is_active: true };
         const ex = await st.c.from('assignments').select('id').eq('assignment_code', code).maybeSingle();
         if (ex.error) return fail(LMS.friendlyError(ex.error));
@@ -1307,6 +1316,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           if (pv.error) return fail('Bài đã lưu nhưng đăng từ vựng lỗi: ' + LMS.friendlyError(pv.error));
           vocabNote = ' Từ vựng: ' + (pv.data.core || 0) + ' từ vào sổ, ' + (pv.data.ref || 0) + ' từ tham khảo.';
         }
+        if (opt.quiet) { msg.style.color = '#047857'; msg.textContent = 'Đã lưu key (' + questions.length + ' câu).'; return { code, kind }; }
         const clean = text.replace(/<script[^>]*id=["']gb-key["'][^>]*>[\s\S]*?<\/script>[ \t]*\r?\n?/, '');
         const blob = new Blob([clean], { type: 'text/html' }), url = URL.createObjectURL(blob);
         await openAsg(code);
@@ -1315,6 +1325,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('da-file').value = '';
       }
       async function openAsg(code) {
+        st.blk = null; $('dlg-asg').classList.remove('blk-mode'); $('da-title').textContent = 'Giao bài cho nhiều lớp';
         $('da-err').textContent = '';
         const r = await st.c.from('assignments').select('id,assignment_code,assignment_name,week_start,due_at,kind,skill').eq('is_active', true).order('assignment_code');
         if (r.error) { $('page-msg').textContent = LMS.friendlyError(r.error); return; }
@@ -1330,6 +1341,95 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         openDlg('dlg-asg');
         await asgPick();
       }
+
+      const blkStem = m => { let u = m.asg ? (m.page || '') : (m.url || ''); u = String(u).split('?')[0].split('/').pop().replace(/\.html?$/i, '').toLowerCase().replace(/-(lesson|inclass|in-class|present|homework)$/, ''); return u || String(m.title).toLowerCase(); };
+      const blkSuffix = p => /-(inclass|in-class|present)\.html?$/i.test(p) ? 'sl' : /-lesson\.html?$/i.test(p) ? 'ls' : 'hw';
+      const BLK_L = { ls: 'Bài học', hw: 'Bài tập', sl: 'Slide' };
+      async function openBlock(stem) {
+        const mem = st.lib.concat(st.libAsg).concat(scanItems()).filter(m => blkStem(m) === stem), slots = {};
+        mem.forEach(m => {
+          let t, o;
+          if (m.asg) { t = m.kind === 'homework' ? 'hw' : 'ls'; o = { code: m.code, path: String(m.page || '').toLowerCase(), title: m.title }; }
+          else if (m.scan) {
+            const reg = (st.asgByPath || {})[m.path];
+            if (reg) { t = reg.kind === 'homework' ? 'hw' : 'ls'; o = { code: reg.assignment_code, path: m.path, title: reg.assignment_name || m.title }; }
+            else { t = blkSuffix(m.path); o = { path: m.path, url: m.url, title: m.title }; }
+          } else if (m.kind === 'slide') { t = 'sl'; o = { matId: m.id, url: m.url, title: m.title }; }
+          else return;
+          o.m = m; if (!slots[t]) slots[t] = o;
+        });
+        const list = Object.keys(slots); if (!list.length) return;
+        const first = slots.hw || slots.ls || slots.sl, ids = new Set();
+        list.forEach(t => (slots[t].m.class_ids || []).forEach(c => ids.add(c)));
+        const baseT = String(first.title).replace(/\s*\((lesson|in[- ]?class|homework)\)\s*$/i, '').replace(/\s+lesson\s*$/i, '');
+        st.blk = { stem, slots, name: baseT };
+        $('dlg-asg').classList.add('blk-mode'); $('da-err').textContent = ''; $('da-title').textContent = 'Giao theo khối · ' + baseT;
+        const cls = matClasses();
+        $('da-classes').innerHTML = cls.map(c => `<label class="pickrow"><input type="checkbox" value="${esc(c.class_code)}" data-id="${c.id}"${ids.has(c.id) ? ' checked' : ''}><span>${esc(c.class_code)}</span></label>`).join('');
+        quick = quickGroups(); $('da-quick').innerHTML = quickHtml();
+        st.asgHave = ids;
+        const hwm = slots.hw && slots.hw.m, anyM = first.m, wk = toMon(anyM.week_start) || weekKey();
+        $('da-week').value = wk;
+        const dueV = hwm ? ((hwm.dues && Object.values(hwm.dues)[0]) || hwm.due_at) : null;
+        $('da-due').value = toLocalInput(dueV);
+        const dm = anyM.asg ? (anyM.dates && Object.values(anyM.dates)[0]) : matDates(anyM);
+        st.daDates = new Set(dm || []);
+        renderBlkList(); openDlg('dlg-asg'); renderAsgDays();
+      }
+      function renderBlkList() {
+        const B = st.blk; if (!B) return;
+        $('da-blk-list').innerHTML = ['ls', 'hw', 'sl'].map(t => {
+          const o = B.slots[t]; let h;
+          if (!o) h = '<span class="text-slate-400">Không có file</span>';
+          else if (t === 'sl') h = '<span class="text-emerald-700">Sẵn sàng (không cần key)</span>';
+          else if (o.code) h = '<span class="text-emerald-700">Đã có key · ' + esc(o.code) + '</span>';
+          else h = '<span class="text-rose-700">Chưa có key: chọn file có khối key</span><input type="file" accept=".html,text/html" data-blk-file="' + t + '" class="field" style="margin-top:6px"><div class="text-xs" id="blk-msg-' + t + '"></div>';
+          return '<div class="blk-row"><b>' + BLK_L[t] + '</b><div style="min-width:0">' + (o ? '<div class="text-xs text-slate-500" style="overflow-wrap:anywhere">' + esc(o.path || o.url || '') + '</div>' : '') + h + '</div></div>';
+        }).join('');
+      }
+      async function blkFile(t, file) {
+        const o = st.blk && st.blk.slots[t]; if (!o || !file) return;
+        const r = await registerAsgFile(file, { msg: $('blk-msg-' + t), path: o.path, expect: t === 'ls' ? 'lesson' : 'homework', quiet: true });
+        if (!r) return;
+        o.code = r.code; st.asgByPath = st.asgByPath || {}; st.asgByPath[o.path] = { assignment_code: r.code, assignment_name: o.title, kind: r.kind };
+        renderBlkList();
+      }
+      async function saveBlock() {
+        const B = st.blk, err = $('da-err'); if (!B) return;
+        const boxes = [...document.querySelectorAll('#da-classes input')];
+        const codes = boxes.filter(i => i.checked).map(i => i.value), ids = boxes.filter(i => i.checked).map(i => Number(i.dataset.id));
+        const drop = boxes.filter(i => !i.checked && st.asgHave && st.asgHave.has(Number(i.dataset.id))).map(i => Number(i.dataset.id));
+        if (!codes.length && !drop.length) { closeDlgs(); return; }
+        const need = ['ls', 'hw'].filter(t => B.slots[t] && !B.slots[t].code);
+        if (codes.length && need.length) { err.textContent = 'Còn thiếu key cho: ' + need.map(t => BLK_L[t]).join(', ') + '. Chọn file có key ở mục trên.'; return; }
+        const wk = $('da-week').value || null, due = $('da-due').value ? new Date($('da-due').value).toISOString() : null;
+        const dts = [...(st.daDates || [])].filter(k => wk && weekDatesFrom(wk).map(ymd).includes(k));
+        st.busy = true; err.textContent = '';
+        try {
+          for (const t of ['ls', 'hw']) {
+            const o = B.slots[t]; if (!o || !o.code) continue;
+            const ar = await st.c.from('assignments').select('id').eq('assignment_code', o.code).maybeSingle();
+            if (ar.error || !ar.data) throw ar.error || new Error('Không tìm thấy bài ' + o.code);
+            if (codes.length) {
+              const rs = await st.c.rpc('assign_assignment_bulk', { p_assignment_code: o.code, p_class_codes: codes, p_class_prefix: null, p_week_start: wk, p_due_at: t === 'hw' ? due : null });
+              if (rs.error) throw rs.error;
+              const ud = await st.c.from('assignment_classes').update({ session_dates: dts }).eq('assignment_id', ar.data.id).in('class_id', ids);
+              if (ud.error) throw ud.error;
+            }
+            if (drop.length) { const dr = await st.c.from('assignment_classes').update({ is_active: false }).eq('assignment_id', ar.data.id).in('class_id', drop); if (dr.error) throw dr.error; }
+          }
+          const sl = B.slots.sl;
+          if (sl) {
+            const row = { week_start: wk || weekKey(), class_ids: ids, session_dates: dts };
+            let r2;
+            if (sl.matId) r2 = await st.c.from('week_materials').update(row).eq('id', sl.matId);
+            else if (ids.length) r2 = await st.c.from('week_materials').insert(Object.assign({ kind: 'slide', skill: null, title: sl.title, url: sl.url }, row));
+            if (r2 && r2.error) throw r2.error;
+          }
+        } catch (e) { st.busy = false; err.textContent = LMS.friendlyError(e); return; }
+        st.busy = false; closeDlgs();
+        await refresh('Đã giao khối ' + B.name + (codes.length ? ' cho ' + codes.length + ' lớp.' : '.') + (drop.length ? ' Đã gỡ khỏi ' + drop.length + ' lớp.' : ''));
+      }
       async function asgPick() {
         const a = st.asgList.find(x => x.assignment_code === $('da-code').value);
         const ex = a ? await st.c.from('assignment_classes').select('class_id,week_start,due_at,session_dates').eq('assignment_id', a.id).eq('is_active', true) : { data: [] };
@@ -1343,7 +1443,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         st.daDates = new Set((first && first.session_dates) || []); renderAsgDays();
       }
       async function saveAsg(ev) {
-        ev.preventDefault(); if (st.busy) return;
+        ev.preventDefault(); if (st.busy) return; if (st.blk) return saveBlock();
         const err = $('da-err'), code = $('da-code').value, a = st.asgList.find(x => x.assignment_code === code);
         if (!a) { err.textContent = 'Chưa có bài nào để giao.'; return; }
         const boxes = [...document.querySelectorAll('#da-classes input')];
@@ -1586,8 +1686,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('btn-add-mat').addEventListener('click', () => openMat(null));
         $('view-mat').addEventListener('click', e => { const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) openMat(b.dataset.editMat); });
         $('view-lib').addEventListener('click', e => { const r = e.target.closest('[data-mt-key]'); if (!r) return; const x = (st.mtMap || {})[r.dataset.mtKey]; if (!x) return; $('dmt-title').textContent = x.title + ' · ' + (x.hw ? 'Hạn nộp' : 'Ngày học'); $('dmt-lines').innerHTML = x.lines; $('dmt-acts').innerHTML = x.acts; openDlg('dlg-mt'); icons(); });
-        $('dlg-mt').addEventListener('click', e => { if (e.target === $('dlg-mt') || e.target.closest('[data-edit-mat],[data-del-mat],[data-prev-asg],[data-rename-asg],[data-edit-asg]')) closeDlgs(); });
-        $('view-lib').addEventListener('click', e => { const gv = e.target.closest('[data-give-scan]'); if (gv) { const gp = gv.dataset.giveScan; $('da-path').value = gp; $('da-reg-msg').style.color = '#475569'; $('da-reg-msg').textContent = 'Bài này chưa có đáp án: chọn file có khối key (bản trong thư mục Practice Test) để lưu đáp án rồi giao lớp.'; $('da-file').click(); openAsg(''); return; } const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) return openAsg(a.dataset.editAsg); const pv = e.target.closest('[data-prev-asg]'); if (pv) return previewAsg(pv.dataset.prevAsg); const rn = e.target.closest('[data-rename-asg]'); if (rn) return renameAsg(rn.dataset.renameAsg); const sc = e.target.closest('[data-add-scan]'); if (sc) { const it = st.scanAll.find(x => x.path === sc.dataset.addScan); if (it) return openMat(null, it); } const pt = e.target.closest('[data-ptab]'); if (pt) { st.libProg = pt.dataset.ptab; renderLib(); } });
+        $('dlg-mt').addEventListener('click', e => { const bb = e.target.closest('[data-blk]'); if (bb) { closeDlgs(); openBlock(bb.dataset.blk); return; } if (e.target === $('dlg-mt') || e.target.closest('[data-edit-mat],[data-del-mat],[data-prev-asg],[data-rename-asg],[data-edit-asg]')) closeDlgs(); });
+        $('view-lib').addEventListener('click', e => { const mb = e.target.closest('[data-mt-blk]'); if (mb) { const x = (st.mtMap || {})[mb.dataset.mtBlk]; if (!x) return; $('dmt-title').textContent = x.title + ' · Các lớp được giao'; $('dmt-lines').innerHTML = x.lines || '<div class="text-sm text-slate-500">Chưa giao lớp nào.</div>'; $('dmt-acts').innerHTML = `<button type="button" class="icon-btn" data-blk="${esc(x.blk)}" aria-label="Sửa và giao bài" title="Sửa và giao bài"><i data-lucide="pencil" class="w-4 h-4"></i></button>`; openDlg('dlg-mt'); icons(); return; } const bk = e.target.closest('[data-blk]'); if (bk) return openBlock(bk.dataset.blk); const gv = e.target.closest('[data-give-scan]'); if (gv) { const gp = gv.dataset.giveScan; $('da-path').value = gp; $('da-reg-msg').style.color = '#475569'; $('da-reg-msg').textContent = 'Bài này chưa có đáp án: chọn file có khối key (bản trong thư mục Practice Test) để lưu đáp án rồi giao lớp.'; $('da-file').click(); openAsg(''); return; } const d = e.target.closest('[data-del-mat]'); if (d) return removeMat(d.dataset.delMat); const b = e.target.closest('[data-edit-mat]'); if (b) return openMat(b.dataset.editMat); const a = e.target.closest('[data-edit-asg]'); if (a) return openAsg(a.dataset.editAsg); const pv = e.target.closest('[data-prev-asg]'); if (pv) return previewAsg(pv.dataset.prevAsg); const rn = e.target.closest('[data-rename-asg]'); if (rn) return renameAsg(rn.dataset.renameAsg); const sc = e.target.closest('[data-add-scan]'); if (sc) { const it = st.scanAll.find(x => x.path === sc.dataset.addScan); if (it) return openMat(null, it); } const pt = e.target.closest('[data-ptab]'); if (pt) { st.libProg = pt.dataset.ptab; renderLib(); } });
         $('view-lib').addEventListener('change', e => { if (e.target.id === 'lib-psel') { st.libProg = e.target.value; renderLib(); } });
         ['lib-search', 'lib-class', 'lib-kind', 'lib-skill', 'lib-week-scope'].forEach(id => $(id).addEventListener(id === 'lib-search' ? 'input' : 'change', () => { if (id === 'lib-week-scope') st.libWeek = $('lib-week-scope').value; renderLib(); }));
         $('dlg-mat').querySelector('form').addEventListener('submit', saveMat);
@@ -1602,6 +1702,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('lib-filter-toggle').addEventListener('click', () => { const v = $('view-lib'), o = v.classList.toggle('filters-open'); $('lib-filter-toggle').setAttribute('aria-expanded', String(o)); if (o) $('lib-search').focus(); });
         $('dlg-asg').querySelector('form').addEventListener('submit', saveAsg);
         $('da-code').addEventListener('change', asgPick);
+        $('da-blk-list').addEventListener('change', e => { const f = e.target.closest('[data-blk-file]'); if (f && f.files && f.files[0]) blkFile(f.dataset.blkFile, f.files[0]); });
         $('da-file').addEventListener('change', e => { const f = e.target.files && e.target.files[0]; if (f) registerAsgFile(f); });
         $('da-grp').addEventListener('change', () => { fillAsgSkill(); fillAsgCode(); asgPick(); });
         $('da-skill').addEventListener('change', () => { fillAsgCode(); asgPick(); });
