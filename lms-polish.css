@@ -996,3 +996,7 @@ main>section.rounded-2xl,main>.bg-white.rounded-2xl,.overview-finance,.overview-
 .mt-m{display:grid;grid-template-columns:72px repeat(3,minmax(0,1fr));gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid #EEF0F3;font-size:13px}
 .mt-m.mt-mh{font-size:12px;font-weight:700;color:#6b7280;position:sticky;top:0;background:#fff;border-bottom:1px solid #E4E6EA}
 .mt-m b{color:#1B1D22}.mt-m span{color:#4b5563;overflow-wrap:anywhere}
+#lib-list .mt-th,#lib-list .mt-tr{grid-template-columns:minmax(0,1.6fr) repeat(4,minmax(0,1fr))}
+#lib-list .mt-th span:not(:first-child){text-align:center}
+#lib-list .mt-td:not(.mt-tn){justify-content:center;text-align:center}
+@media(max-width:640px){#lib-list .mt-th,#lib-list .mt-tr{grid-template-columns:1fr 1fr}}

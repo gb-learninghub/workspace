@@ -1048,7 +1048,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           let head = 'Chưa gán tuần';
           if (k) { const n = weekNoOf(k), d = weekDates(n); head = `Tuần ${pad(n)} <span class="font-normal text-slate-500">(${pad(d[0].getDate())}.${pad(d[0].getMonth() + 1)} – ${pad(d[6].getDate())}.${pad(d[6].getMonth() + 1)})</span>`; }
           const collapseKey = k || '__none__';
-          return `<details class="lib-week-group bg-white rounded-2xl border border-slate-200${k && k === curMon() ? ' is-current' : ''}" data-week-group="${collapseKey}" ${st.libCollapsed[collapseKey] === false ? 'open' : ''}><summary class="lib-week-summary"><span><span class="lib-week-title">${head}${k && k === curMon() ? '<span class="lib-now">Tuần này</span>' : ''}</span><small>${byWeek[k].length} mục</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
+          return `<details class="lib-week-group bg-white rounded-2xl border border-slate-200${k && k === curMon() ? ' is-current' : ''}" data-week-group="${collapseKey}" ${st.libCollapsed[collapseKey] === false ? 'open' : ''}><summary class="lib-week-summary"><span><span class="lib-week-title">${head}${k && k === curMon() ? '<span class="lib-now">Tuần này</span>' : ''}</span><small>${new Set(byWeek[k].map(blkStem)).size} mục</small></span><i data-lucide="chevron-down" aria-hidden="true"></i></summary>
             <div class="lib-week-items space-y-2">${weekByClass(k, byWeek[k])}</div></details>`;
         }).join('') : '<p class="text-sm text-slate-400">' + (st.libProg ? 'Chưa có học liệu cho ' + PS[st.libProg] + '.' : 'Chưa có học liệu nào.') + '</p>';
         icons();
