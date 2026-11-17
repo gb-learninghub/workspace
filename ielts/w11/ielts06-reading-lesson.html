@@ -279,7 +279,30 @@ mark.sel{background:#fff1b8;color:inherit;border-radius:3px;box-decoration-break
 .gl .gt,.gl>li .gt{font-weight:700!important;font-style:italic!important}
 .gl .gt,.gl>li .gt{font-style:normal!important}
 .gl>li{padding:8px 0!important}
-</style></head>
+</style><style id="fitfix">
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,video,canvas{max-width:100%}
+.card:has(ul.intro){max-height:calc(100dvh - 20px);overflow:hidden;padding:14px 16px}
+.card:has(ul.intro) h3{font-size:18px;margin:0 0 6px}
+ul.intro{margin:0 0 4px;padding-left:18px}
+ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
+.card:has(ul.intro) .brow{margin-top:8px}
+@media (max-height:700px){ul.intro li{font-size:13px;margin-bottom:3px}}
+.gap{max-width:100%}
+.tbl{table-layout:fixed;width:100%}.tbl td,.tbl th{word-break:break-word}
+#tiles{overflow-x:visible;gap:8px;padding:6px 10px}
+#tiles .tg{flex:1 1 0;min-width:0;gap:3px;padding:3px 4px}
+#tiles .tile{flex:1 1 0;min-width:0;width:auto;max-width:34px;height:30px}
+@media (max-width:700px){#tiles .tg:not(.cur){display:none}#tiles .tg.cur{flex:1 1 100%}#tiles .tile{height:28px;font-size:12px;max-width:none}}
+#tl .t{min-width:0;flex:1 1 0;padding:0}
+#hd{height:auto;min-height:52px;flex-wrap:wrap;row-gap:4px}
+#hd .tools{flex-wrap:wrap}
+#app{grid-template-columns:minmax(0,1fr);max-width:100vw}
+#app>*{min-width:0}
+.qcell{white-space:normal}
+@media (max-width:700px){#app{grid-template-rows:auto minmax(0,1fr) auto}#hd{flex-wrap:wrap;height:auto}}
+</style>
+</head>
 <body><div id="app"><header id="hd"></header>
 <div id="main"><div id="passage"></div><div id="split" title="Drag to resize"></div><div id="qs"></div></div>
 <footer id="tiles"></footer></div>
