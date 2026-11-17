@@ -468,14 +468,17 @@ table.tb input.gap.ok{background:var(--ok)}table.tb input.gap.bad{background:var
         var ctl2 = h("div", { cls: "icc" });
         ctl2.appendChild(h("button", { cls: "icb", text: "Tải lại", onclick: function () { icLoad(); } }));
         ctl2.appendChild(h("button", { cls: "icb" + (ic.ov ? " on" : ""), text: "Đối chiếu ghi chú với script", onclick: function () { ic.ov = !ic.ov; ic.tab = ic.ov ? "script" : "stu"; icPanels(); } }));
+        var cs = h("select", { cls: "icb" }); (ic.cl || []).forEach(function (c) { var o = document.createElement("option"); o.value = c; o.textContent = c; if (c === ic.cls) o.selected = true; cs.appendChild(o); });
+        cs.onchange = function () { ic.cls = cs.value; try { sessionStorage.setItem("gbic_cls", ic.cls); } catch (e) { } icFilter(); icPanels(); };
+        ctl2.insertBefore(cs, ctl2.firstChild);
         p2.appendChild(ctl2);
         var grid = h("div", { cls: "icg" });
         ic.stu.forEach(function (s) {
           var col = h("div", { cls: "icgc" }); col.appendChild(h("div", { cls: "icgn", text: s.name }));
-          var a = s.ans(pi), c = 0, items = h("div", { cls: "icgl" });
-          icNums(pi).forEach(function (n) { var g = a["q" + n] || "", ok = icOk(n, g); if (ok) c++; items.appendChild(h("div", { cls: "icr " + (g === "" ? "" : ok ? "ok" : "bad"), text: n + ". " + (g === "" ? "—" : g) + (g !== "" && !ok ? "  → " + icAns(n) : "") })); });
-          col.appendChild(h("div", { cls: "icgs", text: c + " / " + icNums(pi).length })); col.appendChild(items);
-          col.appendChild(h("div", { cls: "icgt", text: s.notes(pi) || "(chưa có ghi chú)" }));
+          var a = s.ans(pi), items = h("div", { cls: "icgl" });
+          icNums(pi).forEach(function (n) { var g = a["q" + n] || ""; items.appendChild(h("div", { cls: "icr", text: n + ". " + (g === "" ? "—" : g) })); });
+          col.appendChild(items);
+          col.appendChild(h("div", { cls: "icgt", text: s.notes(pi) || (s.has ? "(chưa có ghi chú)" : "(chưa làm)") }));
           grid.appendChild(col);
         });
         p2.appendChild(grid);
@@ -493,14 +496,19 @@ table.tb input.gap.ok{background:var(--ok)}table.tb input.gap.bad{background:var
       if (!a && !b) return w; return '<span class="' + (a && b ? "sab" : a ? "sa" : "sb") + '">' + w + "</span>";
     });
   }
+  function icFilter() { ic.stu = (ic.all || []).filter(function (x) { return x.cls === ic.cls; }); }
   function icMap(list) {
-    ic.stu = (list || []).map(function (s) {
-      var d = s.draft || {}, subs = {}; (s.submissions || []).forEach(function (x) { if (!subs[x.part] || x.attempt_no < subs[x.part].attempt_no) subs[x.part] = x; });
-      return { name: s.student_name || "Học sinh",
-        ans: function (pi) { var o = {}, sa = subs[pi + 1] && subs[pi + 1].answers || {}, da = d.ans || {}; icNums(pi).forEach(function (n) { o["q" + n] = sa["q" + n] != null && sa["q" + n] !== "" ? sa["q" + n] : (da[n] || da["q" + n] || ""); }); return o; },
-        notes: function (pi) { return (d.notes || {})[pi] || ""; } };
+    ic.all = (list || []).map(function (s) {
+      var d = s.draft || {}, ld = s.lesson_draft || {}, subs = {}; (s.submissions || []).forEach(function (x) { if (!subs[x.part] || x.attempt_no < subs[x.part].attempt_no) subs[x.part] = x; });
+      return { name: s.student_name || "Học sinh", cls: s.class_code || "", has: !!(s.draft || s.lesson_draft || (s.submissions || []).length),
+        ans: function (pi) { var o = {}, sa = subs[pi + 1] && subs[pi + 1].answers || {}, da = d.ans || {}, la = ld.ans || {}; icNums(pi).forEach(function (n) { var v = sa["q" + n]; if (v == null || v === "") v = da[n] || da["q" + n]; if (v == null || v === "") v = la[n] || la["q" + n]; o["q" + n] = v || ""; }); return o; },
+        notes: function (pi) { var a = (d.notes || {})[pi] || "", b = ((ld.lnotes || {})[pi] || []).filter(function (x) { return x; }).join("\n"); return [a, b].filter(function (x) { return x; }).join("\n"); } };
     });
-    if (!ic.stu.length) { ic.stuMsg = "Chưa có học sinh nào làm bài này."; ic.stu = null; }
+    ic.cl = []; ic.all.forEach(function (x) { if (x.cls && ic.cl.indexOf(x.cls) < 0) ic.cl.push(x.cls); });
+    var sv = ""; try { sv = sessionStorage.getItem("gbic_cls") || ""; } catch (e) { }
+    if (!ic.cls || ic.cl.indexOf(ic.cls) < 0) { var f = ic.all.filter(function (x) { return x.has; })[0]; ic.cls = ic.cl.indexOf(sv) > -1 ? sv : (f ? f.cls : ic.cl[0]); }
+    icFilter();
+    if (!ic.all.length) { ic.stuMsg = "Chưa có học sinh nào được giao bài này."; ic.stu = null; }
   }
   function icFetch(pw) {
     return fetch(D.sb.url + "/rest/v1/rpc/teacher_review", { method: "POST", headers: { "Content-Type": "application/json", apikey: D.sb.key }, body: JSON.stringify({ p_teacher_code: pw, p_assignment_code: "IELTS06-Listening" }) })
