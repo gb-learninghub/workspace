@@ -160,6 +160,18 @@ mark.evd{background:#ffd9a0;color:inherit;border-radius:3px;padding:0 1px}
 .ica.ok{background:#e3f3e6;color:#1f6b3f}.ica.bad{background:#fbe6e6;color:#a32626}
 .icsum td{font-weight:700;border-top:1.5px solid #111;border-bottom:0}
 .sbar{display:none!important}
+.stp{flex:none;margin:0 0 8px}.stk{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border:1.5px solid var(--line);border-radius:12px}.stk::-webkit-scrollbar{display:none}.stc{flex:0 0 100%;scroll-snap-align:start;padding:10px 12px;overflow:hidden;font-size:14px;line-height:1.45}.stn{font-weight:800;font-size:15px;margin:0 0 6px;color:#000}.stb{margin:0;padding:0 0 0 18px;list-style:disc}.stb li{margin:0 0 4px}.stb li::marker{font-size:1em}.stf{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:4px}.sta{border:0;background:none;font-size:22px;line-height:1;width:44px;height:32px}.sta[disabled]{opacity:.25}.std{display:flex;gap:6px}.sdot{width:7px;height:7px;border-radius:50%;background:#ccc}.sdot.on{background:#111}
+#nbar{position:fixed;z-index:70;width:min(380px,94vw);background:#fff;border:1.5px solid #111;border-radius:14px;padding:10px}
+#nbar .nq{font-size:14px;color:#6b6b6b;margin-bottom:8px}
+#nbar .nrow{display:flex;gap:6px;align-items:center}
+#nbar input{flex:1;min-width:0;font:inherit;font-size:16px;border:1.5px solid #dcdcdc;border-radius:12px;padding:8px 10px;height:40px}
+#nbar .nb{height:38px;min-width:38px;border:0;border-radius:19px;background:#f3f3f3;font-size:16px;padding:0 8px}
+#nbar .nb.dark{background:#111;color:#fff}
+.tnq{margin:6px 0 4px;padding:6px 10px;border-radius:10px;background:#fff1c9;font-size:15px;line-height:1.45;color:#111}
+.tnq b{font-weight:800}
+.ica{position:relative}.ica.hn:before{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:#e0a24a}
+.icstrip{flex:none;padding:10px 12px 0}
+
 </style></head>
 <body><div id="app"><header id="hd"></header>
 <div id="main"><div id="passage"></div><div id="split" title="Drag to resize"></div><div id="qs"></div></div>
@@ -917,6 +929,79 @@ mark.evd{background:#ffd9a0;color:inherit;border-radius:3px;padding:0 1px}
   /* ---------- in-class: per-question check, evidence, students' answers ---------- */
   ICON.evid = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h6M14.5 5.5l4 4L9 19l-4.5.5L5 15zM14.5 5.5L17 3l4 4-2.5 2.5"/></svg>';
   ICON.sync = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-4M4 4v4h4M4 13a8 8 0 0 0 14 4M20 20v-4h-4"/></svg>';
+
+  var STEPTXT = {
+    tfng: ["True / False / Not given", ["Gạch chân keywords trong statement: tên riêng, con số, động từ chính.", "Các statements đi theo thứ tự của passage. Bắt đầu tìm từ chỗ câu trước kết thúc.", "Scan tìm keywords hoặc synonyms, khoanh câu đó và chỉ đọc trong khung.", "Cùng nghĩa = TRUE, trái nghĩa = FALSE, không được nhắc đến = NOT GIVEN."]],
+    fill: ["Completion", ["Đọc yêu cầu về số từ tối đa.", "Đoán loại từ cần điền: noun, adjective hoặc verb.", "Gạch chân các từ quanh chỗ trống, scan passage tìm chúng hoặc synonyms.", "Chép đúng từ trong passage, kiểm tra chính tả và số từ."]],
+    flow: ["Flowchart completion", ["Đọc các ô từ trên xuống, passage đi theo cùng thứ tự.", "Dùng các từ trước và sau chỗ trống để tìm vị trí.", "Tìm paragraph nơi ô đầu tiên bắt đầu, rồi chỉ đọc tiếp về phía sau.", "Chép đúng từ trong passage, không quá số từ cho phép."]],
+    head: ["Matching headings", ["Đọc các headings trước, gạch chân ý chính của từng heading.", "Đọc câu đầu và câu cuối của mỗi paragraph.", "Loại trừ các headings không phù hợp.", "Chọn heading bao quát cả paragraph, không chỉ một chi tiết."]],
+    multi: ["Choose three answers", ["Đọc câu hỏi và gạch chân chủ đề.", "Đối chiếu từng option với passage, chỉ giữ option mà passage nói rõ.", "Scan tìm ý của option hoặc synonyms, khoanh câu hỗ trợ."]],
+    mcq: ["Multiple choice", ["Đọc phần đầu câu hỏi (stem), gạch chân keywords.", "Đọc tất cả options, gạch chân keywords và loại option rõ ràng sai.", "Tìm keywords trong passage, khoanh phần đó và đối chiếu từng option."]]
+  };
+  function stepCards(pi) {
+    var P = D.passages[pi], seen = {}, out = [];
+    P.groups.forEach(function (g) {
+      var k = g.kind; if (!STEPTXT[k] || seen[k]) return; seen[k] = 1;
+      out.push({ n: STEPTXT[k][0], c: STEPTXT[k][1].map(function (t, i) { return (i + 1) + ". " + t; }) });
+    });
+    return out;
+  }
+
+  /* step cards: horizontal swipe strip between My words and the notes box */
+  function stripEl(cards) {
+    var wrap = h("div", { cls: "stp" }), tk = h("div", { cls: "stk" }), dots = h("div", { cls: "std" }), cur = 0;
+    cards.forEach(function (c, i) {
+      var body = h("ul", { cls: "stb" }); c.c.forEach(function (ln) { body.appendChild(h("li", { text: ln.replace(/^\d+\.\s*/, "") })); });
+      tk.appendChild(h("div", { cls: "stc" }, h("div", { cls: "stn", text: "Step " + (i + 1) + ": " + c.n }), body));
+      dots.appendChild(h("span", { cls: "sdot" + (i === 0 ? " on" : "") }));
+    });
+    function go(d) { var w = tk.clientWidth; tk.scrollTo({ left: Math.max(0, Math.min(cards.length - 1, cur + d)) * w, behavior: "smooth" }); }
+    var prev = h("button", { cls: "sta", text: "‹", "aria-label": "Previous step", onclick: function () { go(-1); } }), next = h("button", { cls: "sta", text: "›", "aria-label": "Next step", onclick: function () { go(1); } });
+    tk.addEventListener("scroll", function () {
+      var w = tk.clientWidth || 1; cur = Math.round(tk.scrollLeft / w);
+      [].forEach.call(dots.children, function (d, i) { d.classList.toggle("on", i === cur); });
+      prev.disabled = cur === 0; next.disabled = cur === cards.length - 1;
+    });
+    prev.disabled = true; if (cards.length < 2) next.disabled = true;
+    wrap.appendChild(tk); wrap.appendChild(h("div", { cls: "stf" }, prev, dots, next));
+    function fit() { var m = 0; [].forEach.call(tk.children, function (c) { c.style.height = "auto"; m = Math.max(m, c.offsetHeight); }); if (m) { [].forEach.call(tk.children, function (c) { c.style.height = m + "px"; }); tk.style.height = m + "px"; } }
+    wrap.fit = fit; setTimeout(fit, 0); setTimeout(fit, 200); window.addEventListener("resize", fit);
+    return wrap;
+  }
+  /* ---------- teacher's per-question notes (shared by In-class pages) ---------- */
+  var TNOTES = {}, TNP = {};
+  function tnGet(name, cls, n) { var it = TNOTES[name + "|" + cls + "|q" + n]; return it && it[0] ? (it[0].note || "") : ""; }
+  function tnSet(name, cls, n, note) {
+    var k = name + "|" + cls + "|q" + n; TNP[k] = (TNP[k] || 0) + 1;
+    if (note) TNOTES[k] = [{ note: note }]; else delete TNOTES[k];
+    TN_RPC("teacher_note_save", { p_teacher_code: TN_CODE(), p_assignment_code: TN_ASSIGN(), p_student_name: name, p_class_code: cls, p_ref: "q" + n, p_items: note ? [{ note: note }] : [] })
+      .catch(function () { }).then(function () { TNP[k]--; });
+  }
+  function tnMerge(list) {
+    var seen = {}; (list || []).forEach(function (x) { var k = x.student_name + "|" + x.class_code + "|" + x.ref; seen[k] = 1; if (!TNP[k]) TNOTES[k] = x.items; });
+    Object.keys(TNOTES).forEach(function (k) { if (!seen[k] && !TNP[k]) delete TNOTES[k]; });
+  }
+  function tnBar(name, cls, n, anchor, done) {
+    var old = document.getElementById("nbar"); if (old) old.remove();
+    var cur = tnGet(name, cls, n);
+    var inp = h("input", { type: "text", placeholder: "Note for this question", "aria-label": "Note", autocomplete: "off", value: cur });
+    function close() { var b = document.getElementById("nbar"); if (b) b.remove(); }
+    function save() { tnSet(name, cls, n, inp.value.trim()); close(); if (done) done(); }
+    var row = h("div", { cls: "nrow" }, inp, h("button", { cls: "nb dark", title: "Save note", "aria-label": "Save note", text: "✓", onclick: save }));
+    if (cur) row.appendChild(h("button", { cls: "nb", title: "Delete note", "aria-label": "Delete note", text: "🗑", onclick: function () { inp.value = ""; save(); } }));
+    row.appendChild(h("button", { cls: "nb", title: "Close", "aria-label": "Close", text: "×", onclick: close }));
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") save(); });
+    var bar = h("div", { id: "nbar" }, h("div", { cls: "nq", text: name + " · Question " + n }), row);
+    document.body.appendChild(bar);
+    var rc = anchor.getBoundingClientRect(), bh = bar.offsetHeight, bw = bar.offsetWidth;
+    var top = rc.bottom + 6; if (top + bh > innerHeight - 8) top = Math.max(8, rc.top - bh - 6);
+    bar.style.top = top + "px"; bar.style.left = Math.min(Math.max(8, rc.left - 40), innerWidth - bw - 8) + "px";
+    setTimeout(function () { inp.focus(); }, 30);
+  }
+
+  function TN_RPC(fn, body) { return rpcNet(fn, body); }
+  function TN_CODE() { return IC.code; }
+  function TN_ASSIGN() { return D.code; }
   var IC = state.ic = { code: "", chk: {}, ev: {}, rows: [], key: null, err: "", t: 0, sel: {}, ok: false };
   try { IC.sel = JSON.parse(store("ic_sel") || "{}") || {}; } catch (e) { IC.sel = {}; }
   var ELOC = D.eloc || {};
@@ -951,12 +1036,15 @@ mark.evd{background:#ffd9a0;color:inherit;border-radius:3px;padding:0 1px}
   function renderNotes() {
     var p = state.npEl; if (!p) return;
     var old = p.querySelector(".icb"), top = old ? old.scrollTop : 0, lft = old ? old.scrollLeft : 0;
-    p.innerHTML = "";
+    var sw = state.icSw || (state.icSw = h("div", { cls: "icstrip" }));
+    if (sw._pi !== state.p) { sw.innerHTML = ""; sw.appendChild(stripEl(stepCards(state.p))); sw._pi = state.p; sw._fit = 0; }
+    [].slice.call(p.children).forEach(function (c) { if (c !== sw) p.removeChild(c); });
     var head = h("div", { cls: "nph" }, h("span", { cls: "nt on", text: "In-class" }), h("span", { cls: "sp" }),
       h("button", { cls: "ib bare", title: "Refresh answers", "aria-label": "Refresh answers", html: ICON.sync, onclick: function () { icPoll(); } }),
       h("button", { cls: "ib bare", text: "×", title: "Close", "aria-label": "Close", onclick: toggleNotes }));
-    p.appendChild(head);
+    if (sw.parentNode === p) p.insertBefore(head, sw); else { p.appendChild(head); p.appendChild(sw); }
     var body = h("div", { cls: "npb icb" }); p.appendChild(body);
+    if (!sw._fit && p.offsetHeight) { sw._fit = 1; setTimeout(function () { try { sw.firstChild.fit(); } catch (e) { } }, 30); }
     var t = IC.t ? new Date(IC.t) : null;
     body.appendChild(h("div", { cls: "npm", text: IC.err ? IC.err : (t ? "Updated " + t.toTimeString().slice(0, 8) : "Loading...") }));
     if (IC.rows.length) {
@@ -979,9 +1067,9 @@ mark.evd{background:#ffd9a0;color:inherit;border-radius:3px;padding:0 1px}
         var ck = !!IC.chk[chkKey(n)], tr = h("tr", { cls: ck ? "ck" : "" });
         tr.appendChild(h("td", { cls: "icq" }, h("button", { text: m.g.kind === "multi" ? m.g.firstq + "–" + (m.g.firstq + m.g.n - 1) : String(n), onclick: (function (n) { return function () { go(n); }; })(n) })));
         cols.forEach(function (s, ci) {
-          var v = stuAns(s, n), txt = showVal(v), cls = "ica";
+          var v = stuAns(s, n), txt = showVal(v), cls = "ica"; if (tnGet(s.student_name, s.class_code, n)) cls += " hn";
           if (ck) { var ok = stuOk(n, v); if (ok === true) { cls += " ok"; tot[ci][0]++; } else if (ok === false) cls += " bad"; if (ok !== null) tot[ci][1]++; }
-          tr.appendChild(h("td", { cls: cls, title: txt }, h("span", { text: txt || "–" })));
+          tr.appendChild(h("td", { cls: cls, title: tnGet(s.student_name, s.class_code, n) || txt, onclick: (function (nq) { return function (ev) { tnBar(s.student_name, s.class_code, nq, ev.currentTarget, renderNotes); }; })(n) }, h("span", { text: txt || "–" })));
         });
         tbody.appendChild(tr);
       }
@@ -1063,7 +1151,7 @@ mark.evd{background:#ffd9a0;color:inherit;border-radius:3px;padding:0 1px}
   /* students' answers from the server */
   function icPoll() {
     if (!IC.code) return Promise.resolve();
-    return rpcNet("teacher_review", { p_teacher_code: IC.code, p_assignment_code: D.code }).then(function (r) {
+    return Promise.all([rpcNet("teacher_review", { p_teacher_code: IC.code, p_assignment_code: D.code }), rpcNet("teacher_notes_get", { p_teacher_code: IC.code, p_assignment_code: D.code }).catch(function () { return null; })]).then(function (rr) { var r = rr[0]; if (rr[1]) tnMerge(rr[1]);
       var first = !IC.ok; IC.ok = true; IC.err = ""; IC.rows = r.students || []; if (r.key && !KEY) { var had = !!IC.key; IC.key = r.key; if (!had) icDecorate(); } IC.t = Date.now();
       renderNotes(); return first;
     }).catch(function (e) {

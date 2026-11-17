@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Test 06 - Writing (In-class)</title>
+<style>
+:root{--fs:18px;--ink:#111;--mut:#6b6b6b;--line:#dcdcdc;--soft:#f3f3f3;--ok:#e3f3e6;--okl:#2e7d4f;--bad:#fbe6e6;--badl:#b42b2b}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Aptos,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#fff;font-size:16px}
+button{font-family:inherit;color:inherit;cursor:pointer}
+#app{height:100dvh;display:grid;grid-template-rows:56px 1fr}
+#hd{display:flex;align-items:center;gap:18px;padding:0 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);backdrop-filter:blur(10px)}
+.brand{font-weight:700;font-size:17px;white-space:nowrap}
+.tabs{display:flex;gap:4px;margin:0 auto}
+.tab{border:0;background:none;padding:15px 14px 13px;font-size:16px;border-bottom:3px solid transparent;color:var(--mut)}
+.tab.on{color:var(--ink);font-weight:700;border-bottom-color:var(--ink)}
+.tools{display:flex;align-items:center;gap:6px}
+.who2{font-size:14px;color:var(--mut);margin-right:6px}
+.ib,.fsb,.tm{height:38px;min-width:38px;border:0;border-radius:19px;background:var(--soft);display:inline-flex;align-items:center;justify-content:center;padding:0 10px}
+.fsb,.tm{font-weight:700;font-size:15px}
+.tm.on{background:#111;color:#fff}
+.ib.dark{background:#111;color:#fff}
+.clock{font-variant-numeric:tabular-nums;font-weight:700;font-size:17px;min-width:56px;text-align:center}
+.clock.over{color:var(--badl)}
+.sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+.mv{display:none}
+#main{--lw:48%;display:flex;min-height:0}
+#task{width:var(--lw);overflow:auto;padding:24px 28px 60px;min-width:0}
+#split{width:10px;cursor:col-resize;background:var(--soft);flex:none;position:relative;touch-action:none}
+#split:after{content:"";position:absolute;left:3px;top:50%;width:4px;height:44px;margin-top:-22px;border-radius:2px;background:#bdbdbd}
+#work{flex:1;display:flex;flex-direction:column;min-width:0;padding:24px 28px 16px}
+.ptag{font-size:14px;color:var(--mut);margin-bottom:4px}
+h2{margin:0 0 14px;font-size:calc(var(--fs) + 8px);line-height:1.25}
+.tp{font-size:var(--fs);line-height:1.6;margin:0 0 12px;text-align:justify}
+.tp.hint{color:var(--mut);font-size:16px}
+.tp b{font-weight:700}
+.q{font-weight:700}
+#fig{width:100%;height:auto;border:1px solid var(--line);border-radius:8px;margin-top:6px;display:block}
+#ta{flex:1;min-height:0;width:100%;resize:none;border:1.5px solid var(--line);border-radius:12px;padding:16px 18px;font:inherit;font-size:var(--fs);line-height:1.6;outline:none;color:var(--ink);background:#fff}
+#ta:focus{border-color:#111}
+#ta[readonly]{background:var(--soft)}
+#bar{display:flex;align-items:center;gap:12px;padding:10px 2px 0;font-size:15px;color:var(--mut)}
+#wc{font-weight:700;color:var(--ink)}
+#wc.low{color:var(--badl)}
+#wc.ok{color:var(--okl)}
+.fill{flex:1}
+.banner{border-radius:10px;padding:10px 14px;margin:0 0 12px;font-size:15px;line-height:1.5;background:var(--ok)}
+.banner.fb{background:var(--soft)}
+.banner b{font-weight:700}
+.ov{position:fixed;inset:0;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:50}
+.ov.solid{background:#fff}
+.card{width:min(480px,92vw);background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 28px}
+.card h3{margin:0 0 10px;font-size:22px}
+.card p{margin:8px 0;line-height:1.5;font-size:16px}
+.card p.muted{color:var(--mut);font-size:15px}
+.err{color:var(--badl)}
+.gap{font:inherit;font-size:17px;border:0;border-bottom:2px solid #111;background:var(--soft);padding:10px 12px;margin:10px 0;width:100%;border-radius:6px 6px 0 0;outline:none}
+.brow{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.pill{white-space:nowrap;border:0;border-radius:22px;background:#111;color:#fff;height:44px;padding:0 24px;font-size:16px;font-weight:600}
+.pill.ghost{background:var(--soft);color:#111}
+@media (max-width:900px){#main{flex-direction:column}#task{width:100%;height:42%}#split{display:none}.brand{display:none}}
+@media (max-width:700px){#app{grid-template-rows:auto 1fr}#hd{height:auto;flex-wrap:wrap;gap:4px 8px;padding:6px 10px}.tabs{order:3;flex:1 0 100%;margin:0}.tab{flex:1;padding:8px 6px}.tools{margin-left:auto;flex-wrap:wrap;gap:4px}.who2,.hide-m{display:none}#main[data-v="t"] #work,#main[data-v="w"] #task{display:none}#task,#work{width:100%;flex:1;min-height:0}#task{padding:14px 16px 24px}#work{padding:12px 16px 10px}.mv{display:flex;order:4;flex:1 0 100%;gap:8px;padding-bottom:6px}.mvb{flex:1;height:38px;border:0;border-radius:19px;background:var(--soft);font-size:15px;font-weight:600}.mvb.on{background:#111;color:#fff}.card{padding:20px}.brow{flex-wrap:wrap}.sep{display:none}}
+.stp{flex:none;margin:0 0 8px}.stk{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border:1.5px solid var(--line);border-radius:12px}.stk::-webkit-scrollbar{display:none}.stc{flex:0 0 100%;scroll-snap-align:start;padding:10px 12px;overflow:hidden;font-size:14px;line-height:1.45}.stn{font-weight:800;font-size:15px;margin:0 0 6px;color:#000}.stb{margin:0;padding:0 0 0 18px;list-style:disc}.stb li{margin:0 0 4px}.stb li::marker{font-size:1em}.stf{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:4px}.sta{border:0;background:none;font-size:22px;line-height:1;width:44px;height:32px}.sta[disabled]{opacity:.25}.std{display:flex;gap:6px}.sdot{width:7px;height:7px;border-radius:50%;background:#ccc}.sdot.on{background:#111}
+#stripbox{flex:none;padding:12px 16px 0}#wbody{flex:1;min-height:0;display:flex;flex-direction:column}
+
+.sct mark{border-radius:3px;padding:0 1px;color:inherit;cursor:pointer}
+.sct mark::after{content:attr(data-n);font-size:.6em;font-weight:800;vertical-align:super;margin-left:1px;color:#111}
+.t-Grammar{background:#fbd5d5}.t-Word{background:#ffe0a8}.t-Spelling{background:#e3d4ff}.t-Unclear{background:#cfe3ff}.t-Good{background:#cdeccf}
+.sn{flex:none;max-height:38%;overflow:auto;border-top:1px solid var(--line);padding:8px 14px;background:#fafafa}
+.sn .ni{display:flex;gap:8px;align-items:baseline;font-size:15px;line-height:1.45;margin:3px 0;cursor:pointer}
+.sn .ni b{flex:none;min-width:18px}
+.sn .ni i{font-style:normal;flex:none;border-radius:10px;padding:1px 8px;font-size:13px;font-weight:700}
+.sn .ni q{quotes:none;color:var(--mut)}
+#abar{position:fixed;z-index:60;width:min(440px,94vw);background:#fff;border:1.5px solid #111;border-radius:14px;padding:10px}
+#abar .aq{font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px}
+#abar .ach{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+#abar .ach button{height:36px;padding:0 12px;border-radius:18px;border:1.5px solid var(--line);background:#fff;font-size:14px;font-weight:600}
+#abar .ach button.on{border-color:#111;border-width:2px}
+#abar .arow{display:flex;gap:6px;align-items:center}
+#abar input{flex:1;min-width:0;font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;height:40px}
+#abar .am{font-size:13px;color:var(--badl);margin-top:6px}
+
+#tools2{display:flex;align-items:center;gap:6px}
+#upd{font-size:14px;color:var(--mut);margin-right:6px;white-space:nowrap}
+#work{padding:0;background:#fff}
+.icchips{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px;border-bottom:1px solid var(--line);flex:none;align-items:center}
+.icchip{height:36px;padding:0 14px;border-radius:18px;border:1.5px solid var(--line);background:#fff;font-size:15px}
+.icchip.on{background:#111;border-color:#111;color:#fff}
+.icchip small{margin-left:6px;opacity:.7;font-size:12px}
+#cards{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;padding:12px 16px 16px;overflow:auto}
+.sc{flex:1 1 0;min-height:240px;display:flex;flex-direction:column;border:1.5px solid var(--line);border-radius:14px;overflow:hidden}
+.sch{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--soft);flex:none}
+.sch b{font-size:16px}.sch small{color:var(--mut);font-size:13px}
+.sch .fill{flex:1}
+.st{font-size:13px;font-weight:700;border-radius:12px;padding:3px 10px;background:#fff;color:var(--mut);border:1px solid var(--line)}
+.st.sub{background:var(--ok);color:var(--okl);border-color:transparent}
+.st.late{background:#fff0d6;color:#8a5a00;border-color:transparent}
+.st.wr{background:#111;color:#fff;border-color:#111}
+.wcn{font-weight:700;font-size:15px}.wcn.low{color:var(--badl)}.wcn.ok{color:var(--okl)}
+.sct{flex:1;min-height:0;overflow:auto;padding:14px 16px;font-size:var(--fs);line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.sct.empty{color:var(--mut)}
+.msg{padding:16px;color:var(--mut);font-size:15px}
+</style></head>
+<body><div id="app"><header id="hd"></header>
+<div id="main"><div id="task"></div><div id="split" title="Drag to resize"></div><div id="work"></div></div></div>
+<script>window.DATA={"title": "Test 06 - Writing (In-class)", "code": "IELTS06-Writing", "sb": {"url": "https://bumaiagvgpewhvczgwio.supabase.co", "key": "sb_publishable_B563fC34wnTDCGSZv29euw_6P3mFRs5"}, "tasks": [{"id": 1, "name": "Task 1", "mins": 20, "min": 150, "time": "You should spend about 20 minutes on this task.", "lines": [{"t": "The graph below shows the number of immigrants to three countries from 1990 to 2001."}, {"t": "Summarise the information by selecting and reporting the main features, and make comparisons where relevant."}], "fig": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjIwIiBmb250LWZhbWlseT0iQXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWYiPjxyZWN0IHdpZHRoPSI5MDAiIGhlaWdodD0iNjIwIiBmaWxsPSIjZmZmIi8+PHRleHQgeD0iNDUwLjAiIHk9IjM4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjI2IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMTExIj5Bbm51YWwgaW1taWdyYXRpb24gMTk5MCB0byAyMDAxPC90ZXh0PjxsaW5lIHgxPSI5MCIgeDI9Ijg3MCIgeTE9IjQ5MC4wIiB5Mj0iNDkwLjAiIHN0cm9rZT0iI2U2ZTZlNiIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48dGV4dCB4PSI3OCIgeT0iNDk2LjAiIHRleHQtYW5jaG9yPSJlbmQiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMyMjIiPjA8L3RleHQ+PGxpbmUgeDE9IjkwIiB4Mj0iODcwIiB5MT0iNDQ4LjAiIHkyPSI0NDguMCIgc3Ryb2tlPSIjZTZlNmU2IiBzdHJva2Utd2lkdGg9IjEuNSIvPjx0ZXh0IHg9Ijc4IiB5PSI0NTQuMCIgdGV4dC1hbmNob3I9ImVuZCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzIyMiI+MjAwPC90ZXh0PjxsaW5lIHgxPSI5MCIgeDI9Ijg3MCIgeTE9IjQwNi4wIiB5Mj0iNDA2LjAiIHN0cm9rZT0iI2U2ZTZlNiIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48dGV4dCB4PSI3OCIgeT0iNDEyLjAiIHRleHQtYW5jaG9yPSJlbmQiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMyMjIiPjQwMDwvdGV4dD48bGluZSB4MT0iOTAiIHgyPSI4NzAiIHkxPSIzNjQuMCIgeTI9IjM2NC4wIiBzdHJva2U9IiNlNmU2ZTYiIHN0cm9rZS13aWR0aD0iMS41Ii8+PHRleHQgeD0iNzgiIHk9IjM3MC4wIiB0ZXh0LWFuY2hvcj0iZW5kIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMjIyIj42MDA8L3RleHQ+PGxpbmUgeDE9IjkwIiB4Mj0iODcwIiB5MT0iMzIyLjAiIHkyPSIzMjIuMCIgc3Ryb2tlPSIjZTZlNmU2IiBzdHJva2Utd2lkdGg9IjEuNSIvPjx0ZXh0IHg9Ijc4IiB5PSIzMjguMCIgdGV4dC1hbmNob3I9ImVuZCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzIyMiI+ODAwPC90ZXh0PjxsaW5lIHgxPSI5MCIgeDI9Ijg3MCIgeTE9IjI4MC4wIiB5Mj0iMjgwLjAiIHN0cm9rZT0iI2U2ZTZlNiIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48dGV4dCB4PSI3OCIgeT0iMjg2LjAiIHRleHQtYW5jaG9yPSJlbmQiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMyMjIiPjEwMDA8L3RleHQ+PGxpbmUgeDE9IjkwIiB4Mj0iODcwIiB5MT0iMjM4LjAiIHkyPSIyMzguMCIgc3Ryb2tlPSIjZTZlNmU2IiBzdHJva2Utd2lkdGg9IjEuNSIvPjx0ZXh0IHg9Ijc4IiB5PSIyNDQuMCIgdGV4dC1hbmNob3I9ImVuZCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzIyMiI+MTIwMDwvdGV4dD48bGluZSB4MT0iOTAiIHgyPSI4NzAiIHkxPSIxOTYuMCIgeTI9IjE5Ni4wIiBzdHJva2U9IiNlNmU2ZTYiIHN0cm9rZS13aWR0aD0iMS41Ii8+PHRleHQgeD0iNzgiIHk9IjIwMi4wIiB0ZXh0LWFuY2hvcj0iZW5kIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMjIyIj4xNDAwPC90ZXh0PjxsaW5lIHgxPSI5MCIgeDI9Ijg3MCIgeTE9IjE1NC4wIiB5Mj0iMTU0LjAiIHN0cm9rZT0iI2U2ZTZlNiIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48dGV4dCB4PSI3OCIgeT0iMTYwLjAiIHRleHQtYW5jaG9yPSJlbmQiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMyMjIiPjE2MDA8L3RleHQ+PGxpbmUgeDE9IjkwIiB4Mj0iODcwIiB5MT0iMTEyLjAiIHkyPSIxMTIuMCIgc3Ryb2tlPSIjZTZlNmU2IiBzdHJva2Utd2lkdGg9IjEuNSIvPjx0ZXh0IHg9Ijc4IiB5PSIxMTguMCIgdGV4dC1hbmNob3I9ImVuZCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzIyMiI+MTgwMDwvdGV4dD48bGluZSB4MT0iOTAiIHgyPSI4NzAiIHkxPSI3MC4wIiB5Mj0iNzAuMCIgc3Ryb2tlPSIjZTZlNmU2IiBzdHJva2Utd2lkdGg9IjEuNSIvPjx0ZXh0IHg9Ijc4IiB5PSI3Ni4wIiB0ZXh0LWFuY2hvcj0iZW5kIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMjIyIj4yMDAwPC90ZXh0Pjx0ZXh0IHRyYW5zZm9ybT0idHJhbnNsYXRlKDI2LDI4MC4wKSByb3RhdGUoLTkwKSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzIyMiI+TnVtYmVyIG9mIGltbWlncmFudHMgKGluIHRob3VzYW5kcyk8L3RleHQ+PHRleHQgeD0iMTI1LjQ1NDU0NTQ1NDU0NTQ1IiB5PSI1MjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMyMjIiPjE5OTE8L3RleHQ+PHRleHQgeD0iMTk2LjM2MzYzNjM2MzYzNjM3IiB5PSI1MjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMyMjIiPjE5OTI8L3RleHQ+PHRleHQgeD0iMjY3LjI3MjcyNzI3MjcyNzI1IiB5PSI1MjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMyMjIiPjE5OTM8L3RleHQ+PHRleHQgeD0iMzM4LjE4MTgxODE4MTgxODIiIHk9IjUyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzIyMiI+MTk5NDwvdGV4dD48dGV4dCB4PSI0MDkuMDkwOTA5MDkwOTA5MDciIHk9IjUyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzIyMiI+MTk5NTwvdGV4dD48dGV4dCB4PSI0ODAuMCIgeT0iNTIyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMjIyIj4xOTk2PC90ZXh0Pjx0ZXh0IHg9IjU1MC45MDkwOTA5MDkwOTEiIHk9IjUyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzIyMiI+MTk5NzwvdGV4dD48dGV4dCB4PSI2MjEuODE4MTgxODE4MTgxOSIgeT0iNTIyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMjIyIj4xOTk4PC90ZXh0Pjx0ZXh0IHg9IjY5Mi43MjcyNzI3MjcyNzI3IiB5PSI1MjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMyMjIiPjE5OTk8L3RleHQ+PHRleHQgeD0iNzYzLjYzNjM2MzYzNjM2MzYiIHk9IjUyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzIyMiI+MjAwMDwvdGV4dD48dGV4dCB4PSI4MzQuNTQ1NDU0NTQ1NDU0NSIgeT0iNTIyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMjIyIj4yMDAxPC90ZXh0Pjxwb2x5bGluZSBwb2ludHM9IjEyNS41LDE4NS41IDE5Ni40LDExMi4wIDI2Ny4zLDI4MC4wIDMzOC4yLDI5Ni44IDQwOS4xLDMxNy44IDQ4MC4wLDMyOC4zIDU1MC45LDI5Ni44IDYyMS44LDMxNS43IDY5Mi43LDM0NS4xIDc2My42LDM0NS4xIDgzNC41LDMwNS4yIiBmaWxsPSJub25lIiBzdHJva2U9IiNlMDNhM2EiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBhdGggZD0iTTExOS40NTQ1NDU0NTQ1NDU0NSwxNzkuNUwxMzEuNDU0NTQ1NDU0NTQ1NDQsMTkxLjVNMTE5LjQ1NDU0NTQ1NDU0NTQ1LDE5MS41TDEzMS40NTQ1NDU0NTQ1NDU0NCwxNzkuNSIgc3Ryb2tlPSIjZTAzYTNhIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik0xOTAuMzYzNjM2MzYzNjM2MzcsMTA2LjBMMjAyLjM2MzYzNjM2MzYzNjM3LDExOC4wTTE5MC4zNjM2MzYzNjM2MzYzNywxMTguMEwyMDIuMzYzNjM2MzYzNjM2MzcsMTA2LjAiIHN0cm9rZT0iI2UwM2EzYSIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNMjYxLjI3MjcyNzI3MjcyNzI1LDI3NC4wTDI3My4yNzI3MjcyNzI3MjcyNSwyODYuME0yNjEuMjcyNzI3MjcyNzI3MjUsMjg2LjBMMjczLjI3MjcyNzI3MjcyNzI1LDI3NC4wIiBzdHJva2U9IiNlMDNhM2EiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBhdGggZD0iTTMzMi4xODE4MTgxODE4MTgyLDI5MC44TDM0NC4xODE4MTgxODE4MTgyLDMwMi44TTMzMi4xODE4MTgxODE4MTgyLDMwMi44TDM0NC4xODE4MTgxODE4MTgyLDI5MC44IiBzdHJva2U9IiNlMDNhM2EiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBhdGggZD0iTTQwMy4wOTA5MDkwOTA5MDkwNywzMTEuODAwMDAwMDAwMDAwMDdMNDE1LjA5MDkwOTA5MDkwOTA3LDMyMy44MDAwMDAwMDAwMDAwN000MDMuMDkwOTA5MDkwOTA5MDcsMzIzLjgwMDAwMDAwMDAwMDA3TDQxNS4wOTA5MDkwOTA5MDkwNywzMTEuODAwMDAwMDAwMDAwMDciIHN0cm9rZT0iI2UwM2EzYSIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNNDc0LjAsMzIyLjNMNDg2LjAsMzM0LjNNNDc0LjAsMzM0LjNMNDg2LjAsMzIyLjMiIHN0cm9rZT0iI2UwM2EzYSIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNNTQ0LjkwOTA5MDkwOTA5MSwyOTAuOEw1NTYuOTA5MDkwOTA5MDkxLDMwMi44TTU0NC45MDkwOTA5MDkwOTEsMzAyLjhMNTU2LjkwOTA5MDkwOTA5MSwyOTAuOCIgc3Ryb2tlPSIjZTAzYTNhIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik02MTUuODE4MTgxODE4MTgxOSwzMDkuN0w2MjcuODE4MTgxODE4MTgxOSwzMjEuN002MTUuODE4MTgxODE4MTgxOSwzMjEuN0w2MjcuODE4MTgxODE4MTgxOSwzMDkuNyIgc3Ryb2tlPSIjZTAzYTNhIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik02ODYuNzI3MjcyNzI3MjcyNywzMzkuMUw2OTguNzI3MjcyNzI3MjcyNywzNTEuMU02ODYuNzI3MjcyNzI3MjcyNywzNTEuMUw2OTguNzI3MjcyNzI3MjcyNywzMzkuMSIgc3Ryb2tlPSIjZTAzYTNhIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik03NTcuNjM2MzYzNjM2MzYzNiwzMzkuMUw3NjkuNjM2MzYzNjM2MzYzNiwzNTEuMU03NTcuNjM2MzYzNjM2MzYzNiwzNTEuMUw3NjkuNjM2MzYzNjM2MzYzNiwzMzkuMSIgc3Ryb2tlPSIjZTAzYTNhIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik04MjguNTQ1NDU0NTQ1NDU0NSwyOTkuMjAwMDAwMDAwMDAwMDVMODQwLjU0NTQ1NDU0NTQ1NDUsMzExLjIwMDAwMDAwMDAwMDA1TTgyOC41NDU0NTQ1NDU0NTQ1LDMxMS4yMDAwMDAwMDAwMDAwNUw4NDAuNTQ1NDU0NTQ1NDU0NSwyOTkuMjAwMDAwMDAwMDAwMDUiIHN0cm9rZT0iI2UwM2EzYSIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cG9seWxpbmUgcG9pbnRzPSIxMjUuNSw0NDguMCAxOTYuNCw0NDEuNyAyNjcuMyw0MzMuMyAzMzguMiw0MzMuMyA0MDkuMSw0NDEuNyA0ODAuMCw0NDEuNyA1NTAuOSw0NDEuNyA2MjEuOCw0NDEuNyA2OTIuNyw0NDEuNyA3NjMuNiw0MzMuMyA4MzQuNSwzOTMuNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWE5YTNhIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik0xMjUuNDU0NTQ1NDU0NTQ1NDUsNDQwLjBMMTMyLjQ1NDU0NTQ1NDU0NTQ0LDQ1NC4wTDExOC40NTQ1NDU0NTQ1NDU0NSw0NTQuMFoiIGZpbGw9IiMxYTlhM2EiLz48cGF0aCBkPSJNMTk2LjM2MzYzNjM2MzYzNjM3LDQzMy43TDIwMy4zNjM2MzYzNjM2MzYzNyw0NDcuN0wxODkuMzYzNjM2MzYzNjM2MzcsNDQ3LjdaIiBmaWxsPSIjMWE5YTNhIi8+PHBhdGggZD0iTTI2Ny4yNzI3MjcyNzI3MjcyNSw0MjUuM0wyNzQuMjcyNzI3MjcyNzI3MjUsNDM5LjNMMjYwLjI3MjcyNzI3MjcyNzI1LDQzOS4zWiIgZmlsbD0iIzFhOWEzYSIvPjxwYXRoIGQ9Ik0zMzguMTgxODE4MTgxODE4Miw0MjUuM0wzNDUuMTgxODE4MTgxODE4Miw0MzkuM0wzMzEuMTgxODE4MTgxODE4Miw0MzkuM1oiIGZpbGw9IiMxYTlhM2EiLz48cGF0aCBkPSJNNDA5LjA5MDkwOTA5MDkwOTA3LDQzMy43TDQxNi4wOTA5MDkwOTA5MDkwNyw0NDcuN0w0MDIuMDkwOTA5MDkwOTA5MDcsNDQ3LjdaIiBmaWxsPSIjMWE5YTNhIi8+PHBhdGggZD0iTTQ4MC4wLDQzMy43TDQ4Ny4wLDQ0Ny43TDQ3My4wLDQ0Ny43WiIgZmlsbD0iIzFhOWEzYSIvPjxwYXRoIGQ9Ik01NTAuOTA5MDkwOTA5MDkxLDQzMy43TDU1Ny45MDkwOTA5MDkwOTEsNDQ3LjdMNTQzLjkwOTA5MDkwOTA5MSw0NDcuN1oiIGZpbGw9IiMxYTlhM2EiLz48cGF0aCBkPSJNNjIxLjgxODE4MTgxODE4MTksNDMzLjdMNjI4LjgxODE4MTgxODE4MTksNDQ3LjdMNjE0LjgxODE4MTgxODE4MTksNDQ3LjdaIiBmaWxsPSIjMWE5YTNhIi8+PHBhdGggZD0iTTY5Mi43MjcyNzI3MjcyNzI3LDQzMy43TDY5OS43MjcyNzI3MjcyNzI3LDQ0Ny43TDY4NS43MjcyNzI3MjcyNzI3LDQ0Ny43WiIgZmlsbD0iIzFhOWEzYSIvPjxwYXRoIGQ9Ik03NjMuNjM2MzYzNjM2MzYzNiw0MjUuM0w3NzAuNjM2MzYzNjM2MzYzNiw0MzkuM0w3NTYuNjM2MzYzNjM2MzYzNiw0MzkuM1oiIGZpbGw9IiMxYTlhM2EiLz48cGF0aCBkPSJNODM0LjU0NTQ1NDU0NTQ1NDUsMzg1LjQwMDAwMDAwMDAwMDAzTDg0MS41NDU0NTQ1NDU0NTQ1LDM5OS40MDAwMDAwMDAwMDAwM0w4MjcuNTQ1NDU0NTQ1NDU0NSwzOTkuNDAwMDAwMDAwMDAwMDNaIiBmaWxsPSIjMWE5YTNhIi8+PHBvbHlsaW5lIHBvaW50cz0iMTI1LjUsNDY2LjkgMTk2LjQsNDY2LjkgMjY3LjMsNDY2LjkgMzM4LjIsNDc1LjMgNDA5LjEsNDc1LjMgNDgwLjAsNDY2LjkgNTUwLjksNDY2LjkgNjIxLjgsNDY2LjkgNjkyLjcsNDY2LjkgNzYzLjYsNDU4LjUgODM0LjUsNDU4LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzFmNGZlMCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48Y2lyY2xlIGN4PSIxMjUuNDU0NTQ1NDU0NTQ1NDUiIGN5PSI0NjYuOSIgcj0iNi41IiBmaWxsPSIjMWY0ZmUwIi8+PGNpcmNsZSBjeD0iMTk2LjM2MzYzNjM2MzYzNjM3IiBjeT0iNDY2LjkiIHI9IjYuNSIgZmlsbD0iIzFmNGZlMCIvPjxjaXJjbGUgY3g9IjI2Ny4yNzI3MjcyNzI3MjcyNSIgY3k9IjQ2Ni45IiByPSI2LjUiIGZpbGw9IiMxZjRmZTAiLz48Y2lyY2xlIGN4PSIzMzguMTgxODE4MTgxODE4MiIgY3k9IjQ3NS4zIiByPSI2LjUiIGZpbGw9IiMxZjRmZTAiLz48Y2lyY2xlIGN4PSI0MDkuMDkwOTA5MDkwOTA5MDciIGN5PSI0NzUuMyIgcj0iNi41IiBmaWxsPSIjMWY0ZmUwIi8+PGNpcmNsZSBjeD0iNDgwLjAiIGN5PSI0NjYuOSIgcj0iNi41IiBmaWxsPSIjMWY0ZmUwIi8+PGNpcmNsZSBjeD0iNTUwLjkwOTA5MDkwOTA5MSIgY3k9IjQ2Ni45IiByPSI2LjUiIGZpbGw9IiMxZjRmZTAiLz48Y2lyY2xlIGN4PSI2MjEuODE4MTgxODE4MTgxOSIgY3k9IjQ2Ni45IiByPSI2LjUiIGZpbGw9IiMxZjRmZTAiLz48Y2lyY2xlIGN4PSI2OTIuNzI3MjcyNzI3MjcyNyIgY3k9IjQ2Ni45IiByPSI2LjUiIGZpbGw9IiMxZjRmZTAiLz48Y2lyY2xlIGN4PSI3NjMuNjM2MzYzNjM2MzYzNiIgY3k9IjQ1OC41IiByPSI2LjUiIGZpbGw9IiMxZjRmZTAiLz48Y2lyY2xlIGN4PSI4MzQuNTQ1NDU0NTQ1NDU0NSIgY3k9IjQ1OC41IiByPSI2LjUiIGZpbGw9IiMxZjRmZTAiLz48bGluZSB4MT0iMjQwLjAiIHgyPSIyODAuMCIgeTE9IjU4MiIgeTI9IjU4MiIgc3Ryb2tlPSIjZTAzYTNhIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik0yNTQuMCw1NzZMMjY2LjAsNTg4TTI1NC4wLDU4OEwyNjYuMCw1NzYiIHN0cm9rZT0iI2UwM2EzYSIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48dGV4dCB4PSIyOTAuMCIgeT0iNTg4IiBmb250LXNpemU9IjE5IiBmaWxsPSIjMjIyIj5VU0E8L3RleHQ+PGxpbmUgeDE9IjM5MC4wIiB4Mj0iNDMwLjAiIHkxPSI1ODIiIHkyPSI1ODIiIHN0cm9rZT0iIzFhOWEzYSIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cGF0aCBkPSJNNDEwLjAsNTc0TDQxNy4wLDU4OEw0MDMuMCw1ODhaIiBmaWxsPSIjMWE5YTNhIi8+PHRleHQgeD0iNDQwLjAiIHk9IjU4OCIgZm9udC1zaXplPSIxOSIgZmlsbD0iIzIyMiI+Q2FuYWRhPC90ZXh0PjxsaW5lIHgxPSI1NDAuMCIgeDI9IjU4MC4wIiB5MT0iNTgyIiB5Mj0iNTgyIiBzdHJva2U9IiMxZjRmZTAiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGNpcmNsZSBjeD0iNTYwLjAiIGN5PSI1ODIiIHI9IjYuNSIgZmlsbD0iIzFmNGZlMCIvPjx0ZXh0IHg9IjU5MC4wIiB5PSI1ODgiIGZvbnQtc2l6ZT0iMTkiIGZpbGw9IiMyMjIiPkF1c3RyYWxpYTwvdGV4dD48L3N2Zz4="}, {"id": 2, "name": "Task 2", "mins": 40, "min": 250, "time": "You should spend about 40 minutes on this task.", "lines": [{"t": "Nowadays, some parents put a lot of pressure on their children to succeed."}, {"t": "Why do parents do this?", "q": 1}, {"t": "Is this a positive or negative development for the children?", "q": 1}]}]};</script>
+<script>(function () {
+  "use strict";
+  var D = window.DATA;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  function h(tag, a) {
+    var e = document.createElement(tag);
+    if (a) for (var k in a) { if (k === "cls") e.className = a[k]; else if (k === "html") e.innerHTML = a[k]; else if (k === "text") e.textContent = a[k]; else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), a[k]); else e.setAttribute(k, a[k]); }
+    for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c == null) continue; e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); }
+    return e;
+  }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem("w6ic_" + k); localStorage.setItem("w6ic_" + k, v); } catch (e) { } return null; }
+  var ICON = {
+    sync: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-4M4 4v4h4M4 13a8 8 0 0 0 14 4M20 20v-4h-4"/></svg>',
+    full: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
+  };
+
+  var WSTEPS = {
+    1: [["Read the task", ["Xác định loại biểu đồ, đối tượng, đơn vị và mốc thời gian."]], ["Analyse the task", ["Tìm xu hướng chính, điểm cao nhất và thấp nhất, thay đổi lớn nhất, các cặp số liệu so sánh được. Chọn 2 đến 3 nhóm số liệu."]], ["Layout", ["Introduction (paraphrase đề), Overview (2 ý chính, không số liệu), Body 1, Body 2 (so sánh, không liệt kê)."]], ["Write and check", ["Viết tối thiểu 150 từ. Kiểm tra thì, số liệu và đơn vị, từ chỉ xu hướng, ngữ pháp và chính tả."]]],
+    2: [["Read the task", ["Gạch chân từ khóa và xác định dạng đề (opinion, discuss both views, two-part question...)."]], ["Analyse the task", ["Trả lời đúng mọi câu hỏi của đề, chọn quan điểm và 2 ý chính để triển khai."]], ["Layout", ["Introduction (paraphrase và nêu quan điểm), Body 1, Body 2 (câu chủ đề, giải thích, ví dụ), Conclusion."]], ["Write and check", ["Viết tối thiểu 250 từ. Kiểm tra bám đề, liên kết giữa các ý, ngữ pháp, word choice và chính tả."]]]
+  };
+  function stepCards(id) { return (WSTEPS[id] || WSTEPS[2]).map(function (x) { return { n: x[0], c: x[1] }; }); }
+
+  /* step cards: horizontal swipe strip between My words and the notes box */
+  function stripEl(cards) {
+    var wrap = h("div", { cls: "stp" }), tk = h("div", { cls: "stk" }), dots = h("div", { cls: "std" }), cur = 0;
+    cards.forEach(function (c, i) {
+      var body = h("ul", { cls: "stb" }); c.c.forEach(function (ln) { body.appendChild(h("li", { text: ln.replace(/^\d+\.\s*/, "") })); });
+      tk.appendChild(h("div", { cls: "stc" }, h("div", { cls: "stn", text: "Step " + (i + 1) + ": " + c.n }), body));
+      dots.appendChild(h("span", { cls: "sdot" + (i === 0 ? " on" : "") }));
+    });
+    function go(d) { var w = tk.clientWidth; tk.scrollTo({ left: Math.max(0, Math.min(cards.length - 1, cur + d)) * w, behavior: "smooth" }); }
+    var prev = h("button", { cls: "sta", text: "‹", "aria-label": "Previous step", onclick: function () { go(-1); } }), next = h("button", { cls: "sta", text: "›", "aria-label": "Next step", onclick: function () { go(1); } });
+    tk.addEventListener("scroll", function () {
+      var w = tk.clientWidth || 1; cur = Math.round(tk.scrollLeft / w);
+      [].forEach.call(dots.children, function (d, i) { d.classList.toggle("on", i === cur); });
+      prev.disabled = cur === 0; next.disabled = cur === cards.length - 1;
+    });
+    prev.disabled = true; if (cards.length < 2) next.disabled = true;
+    wrap.appendChild(tk); wrap.appendChild(h("div", { cls: "stf" }, prev, dots, next));
+    function fit() { var m = 0; [].forEach.call(tk.children, function (c) { c.style.height = "auto"; m = Math.max(m, c.offsetHeight); }); if (m) { [].forEach.call(tk.children, function (c) { c.style.height = m + "px"; }); tk.style.height = m + "px"; } }
+    wrap.fit = fit; setTimeout(fit, 0); setTimeout(fit, 200); window.addEventListener("resize", fit);
+    return wrap;
+  }
+  
+  function stepCards(id) { return (WSTEPS[id] || WSTEPS[2]).map(function (x) { return { n: x[0], c: x[1] }; }); }
+
+  /* step cards: horizontal swipe strip between My words and the notes box */
+  function stripEl(cards) {
+    var wrap = h("div", { cls: "stp" }), tk = h("div", { cls: "stk" }), dots = h("div", { cls: "std" }), cur = 0;
+    cards.forEach(function (c, i) {
+      var body = h("ul", { cls: "stb" }); c.c.forEach(function (ln) { body.appendChild(h("li", { text: ln.replace(/^\d+\.\s*/, "") })); });
+      tk.appendChild(h("div", { cls: "stc" }, h("div", { cls: "stn", text: "Step " + (i + 1) + ": " + c.n }), body));
+      dots.appendChild(h("span", { cls: "sdot" + (i === 0 ? " on" : "") }));
+    });
+    function go(d) { var w = tk.clientWidth; tk.scrollTo({ left: Math.max(0, Math.min(cards.length - 1, cur + d)) * w, behavior: "smooth" }); }
+    var prev = h("button", { cls: "sta", text: "‹", "aria-label": "Previous step", onclick: function () { go(-1); } }), next = h("button", { cls: "sta", text: "›", "aria-label": "Next step", onclick: function () { go(1); } });
+    tk.addEventListener("scroll", function () {
+      var w = tk.clientWidth || 1; cur = Math.round(tk.scrollLeft / w);
+      [].forEach.call(dots.children, function (d, i) { d.classList.toggle("on", i === cur); });
+      prev.disabled = cur === 0; next.disabled = cur === cards.length - 1;
+    });
+    prev.disabled = true; if (cards.length < 2) next.disabled = true;
+    wrap.appendChild(tk); wrap.appendChild(h("div", { cls: "stf" }, prev, dots, next));
+    function fit() { var m = 0; [].forEach.call(tk.children, function (c) { c.style.height = "auto"; m = Math.max(m, c.offsetHeight); }); if (m) { [].forEach.call(tk.children, function (c) { c.style.height = m + "px"; }); tk.style.height = m + "px"; } }
+    wrap.fit = fit; setTimeout(fit, 0); setTimeout(fit, 200); window.addEventListener("resize", fit);
+    return wrap;
+  }
+  
+  var S = { notes: {}, pend: {}, p: 0, code: "", rows: [], err: "", t: 0, sel: {}, sig: "", bar: null, dirty: false };
+  var TYPES = ["Grammar", "Word choice", "Spelling", "Unclear", "Good"];
+  function tcls(t) { return "t-" + t.split(" ")[0]; }
+  function annKey(s) { return sKey(s) + "|t" + T().id; }
+  function getAnn(s) { return S.notes[annKey(s)] || []; }
+  function setAnn(s, a) {
+    var k = annKey(s), ref = "t" + T().id; S.notes[k] = a; S.pend[k] = (S.pend[k] || 0) + 1;
+    rpc("teacher_note_save", { p_teacher_code: S.code, p_assignment_code: D.code, p_student_name: s.student_name, p_class_code: s.class_code, p_ref: ref, p_items: a })
+      .catch(function () { S.err = "Could not save the note. Check the connection."; renderWork(true); })
+      .then(function () { S.pend[k]--; });
+  }
+  function resolveAnn(text, list) {
+    var out = [];
+    list.forEach(function (a) {
+      var s = a.s, e = a.e;
+      if (text.slice(s, e) !== a.txt) { var i = text.indexOf(a.txt); if (i < 0) return; s = i; e = i + a.txt.length; }
+      out.push({ a: a, s: s, e: e });
+    });
+    out.sort(function (x, y) { return x.s - y.s; });
+    var res = [], end = 0; out.forEach(function (o) { if (o.s >= end) { res.push(o); end = o.e; } });
+    return res;
+  }
+  try { S.sel = JSON.parse(store("sel") || "{}") || {}; } catch (e) { S.sel = {}; }
+  function sKey(s) { return s.student_name + "|" + s.class_code; }
+  function T() { return D.tasks[S.p]; }
+  function wc(s) { var m = String(s || "").trim().match(/\S+/g); return m ? m.length : 0; }
+
+  function rpc(fn, body) {
+    return fetch(D.sb.url + "/rest/v1/rpc/" + fn, { method: "POST", headers: { "Content-Type": "application/json", apikey: D.sb.key }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error((j && (j.message || j.hint)) || "error"); return j; }); });
+  }
+    function isOn(s) { var k = sKey(s); return S.sel[k] === undefined ? S.rows.length <= 4 : !!S.sel[k]; }
+  function info(s, t) {
+    var sub = (s.subs || []).filter(function (x) { return x.part === t.id; })[0];
+    if (sub) return { text: sub.body || "", st: sub.is_late ? "late" : "sub", n: sub.word_count != null ? sub.word_count : wc(sub.body) };
+    var txt = (s.draft && s.draft["t" + t.id]) || "";
+    return { text: txt, st: txt ? "wr" : "none", n: wc(txt) };
+  }
+
+
+  /* ---------- teacher notes on the student's text ---------- */
+  function closeBar() { if (S.bar) { S.bar.remove(); S.bar = null; } if (S.dirty) { S.dirty = false; renderWork(true); } }
+  function checkSel(s, text, box) {
+    if (S.bar) return;
+    var sel = window.getSelection(); if (!sel || !sel.rangeCount || sel.isCollapsed) return;
+    var r = sel.getRangeAt(0); if (!box.contains(r.commonAncestorContainer)) return;
+    var pre = document.createRange(); pre.selectNodeContents(box); pre.setEnd(r.startContainer, r.startOffset);
+    var st = pre.toString().length, raw = r.toString(), lead = raw.length - raw.replace(/^\s+/, "").length, txt = raw.trim();
+    if (!txt) return; st += lead;
+    openBar(s, text, { s: st, e: st + txt.length, txt: txt }, r);
+  }
+  function openBar(s, text, o, anchor) {
+    if (S.bar) S.bar.remove();
+    var edit = o.edit, type = edit ? edit.type : TYPES[0], msg = h("div", { cls: "am" });
+    var note = h("input", { type: "text", placeholder: "Note for the student (optional)", "aria-label": "Note", autocomplete: "off", value: edit ? (edit.note || "") : "" });
+    var chips = h("div", { cls: "ach" });
+    function paintChips() { [].forEach.call(chips.children, function (b) { b.classList.toggle("on", b.dataset.t === type); }); }
+    TYPES.forEach(function (t) { chips.appendChild(h("button", { cls: tcls(t), "data-t": t, text: t, onclick: function () { type = t; paintChips(); } })); });
+    function save() {
+      var list = getAnn(s);
+      if (edit) { list.forEach(function (a) { if (a === edit || (a.txt === edit.txt && a.s === edit.s)) { a.type = type; a.note = note.value.trim(); } }); }
+      else {
+        var clash = resolveAnn(text, list).some(function (x) { return o.s < x.e && o.e > x.s; });
+        if (clash) { msg.textContent = "This overlaps an existing note. Edit that one instead."; return; }
+        list.push({ s: o.s, e: o.e, txt: o.txt, type: type, note: note.value.trim() });
+      }
+      setAnn(s, list); finish();
+    }
+    function del() { setAnn(s, getAnn(s).filter(function (a) { return !(a.txt === edit.txt && a.s === edit.s); })); finish(); }
+    function finish() { var sel = window.getSelection(); if (sel) sel.removeAllRanges(); S.dirty = true; if (S.bar) { S.bar.remove(); S.bar = null; } S.dirty = false; renderWork(true); }
+    var rowb = h("div", { cls: "arow" }, note, h("button", { cls: "ib dark", title: "Save note", "aria-label": "Save note", text: "✓", onclick: save }));
+    if (edit) rowb.appendChild(h("button", { cls: "ib", title: "Delete note", "aria-label": "Delete note", text: "🗑", onclick: del }));
+    rowb.appendChild(h("button", { cls: "ib", title: "Close", "aria-label": "Close", text: "×", onclick: function () { var sel = window.getSelection(); if (sel) sel.removeAllRanges(); closeBar(); } }));
+    note.addEventListener("keydown", function (e) { if (e.key === "Enter") save(); });
+    var bar = h("div", { id: "abar" }, h("div", { cls: "aq", text: "\u201c" + o.txt + "\u201d" }), chips, rowb, msg);
+    document.body.appendChild(bar); S.bar = bar; paintChips();
+    var rc = anchor.getBoundingClientRect(), bh = bar.offsetHeight, bw = bar.offsetWidth;
+    var top = rc.bottom + 8; if (top + bh > innerHeight - 8) top = Math.max(8, rc.top - bh - 8);
+    var left = Math.min(Math.max(8, rc.left), innerWidth - bw - 8);
+    bar.style.top = top + "px"; bar.style.left = left + "px";
+  }
+  function renderTask() {
+    var t = T(), box = $("#task"); box.innerHTML = "";
+    box.appendChild(h("div", { cls: "ptag", text: "Writing " + t.name }));
+    box.appendChild(h("h2", { text: t.name }));
+    box.appendChild(h("p", { cls: "tp hint", text: t.time }));
+    t.lines.forEach(function (l) { box.appendChild(h("p", { cls: "tp" + (l.q ? " q" : ""), text: l.t })); });
+    if (t.fig) box.appendChild(h("img", { id: "fig", src: t.fig, alt: "Task 1 chart" }));
+    box.appendChild(h("p", { cls: "tp hint", text: "Write at least " + t.min + " words." }));
+    box.scrollTop = 0;
+  }
+
+  var LAB = { sub: "Submitted", late: "Submitted late", wr: "Writing", none: "Not started" };
+  function renderWork(force) {
+    if (S.bar && !force) { S.dirty = true; return; }
+    var t = T(), box = $("#wbody");
+    var sig = JSON.stringify([S.p, S.err, S.t ? 1 : 0, S.rows.map(function (s) { return [sKey(s), isOn(s), info(s, t), getAnn(s)]; })]);
+    if (!force && sig === S.sig) return;
+    S.sig = sig;
+    var tops = {}; [].forEach.call(box.querySelectorAll(".sc"), function (c) { var x = c.querySelector(".sct"); if (x) tops[c.dataset.k] = x.scrollTop; });
+    var cp = $("#cards"), outer = cp ? cp.scrollTop : 0;
+    box.innerHTML = "";
+    if (S.rows.length) {
+      var chips = h("div", { cls: "icchips" });
+      S.rows.forEach(function (s) {
+        var on = isOn(s);
+        chips.appendChild(h("button", { cls: "icchip" + (on ? " on" : ""), title: s.class_code, onclick: function () { S.sel[sKey(s)] = !on; store("sel", JSON.stringify(S.sel)); renderWork(true); } }, s.student_name, h("small", { text: s.class_code })));
+      });
+      box.appendChild(chips);
+    }
+    var cards = h("div", { id: "cards" }); box.appendChild(cards);
+    var cols = S.rows.filter(isOn);
+    if (S.err) cards.appendChild(h("div", { cls: "msg", text: S.err }));
+    else if (!S.t) cards.appendChild(h("div", { cls: "msg", text: "Loading..." }));
+    else if (!S.rows.length) cards.appendChild(h("div", { cls: "msg", text: "No student has started this task yet." }));
+    else if (!cols.length) cards.appendChild(h("div", { cls: "msg", text: "Tap a name above to show that student's writing." }));
+    cols.forEach(function (s) {
+      var i = info(s, t), k = sKey(s);
+      var card = h("div", { cls: "sc", "data-k": k });
+      card.appendChild(h("div", { cls: "sch" }, h("b", { text: s.student_name }), h("small", { text: s.class_code }), h("span", { cls: "fill" }),
+        h("span", { cls: "wcn " + (i.n === 0 ? "" : i.n >= t.min ? "ok" : "low"), text: i.n + " / " + t.min + " words" }),
+        h("span", { cls: "st " + i.st, text: LAB[i.st] })));
+      var box2 = h("div", { cls: "sct" + (i.text ? "" : " empty") });
+      var rs = i.text ? resolveAnn(i.text, getAnn(s)) : [];
+      if (!i.text) box2.textContent = "Nothing written for this task yet.";
+      else { var pos = 0; rs.forEach(function (o, n) { if (o.s > pos) box2.appendChild(document.createTextNode(i.text.slice(pos, o.s))); box2.appendChild(h("mark", { cls: tcls(o.a.type), "data-n": String(n + 1), onclick: function (ev) { ev.stopPropagation(); openBar(s, i.text, { edit: o.a, s: o.s, e: o.e, txt: o.a.txt }, ev.currentTarget); } }, i.text.slice(o.s, o.e))); pos = o.e; }); if (pos < i.text.length) box2.appendChild(document.createTextNode(i.text.slice(pos))); }
+      box2.addEventListener("pointerup", function () { setTimeout(function () { checkSel(s, i.text, box2); }, 350); });
+      card.appendChild(box2);
+      if (rs.length) {
+        var sn = h("div", { cls: "sn" });
+        rs.forEach(function (o, n) { sn.appendChild(h("div", { cls: "ni", onclick: function () { var mk = box2.querySelectorAll("mark")[n]; if (mk) openBar(s, i.text, { edit: o.a, s: o.s, e: o.e, txt: o.a.txt }, mk); } }, h("b", { text: String(n + 1) }), h("i", { cls: tcls(o.a.type), text: o.a.type }), h("span", { text: o.a.note || "" }), h("q", { text: " \u201c" + (o.a.txt.length > 40 ? o.a.txt.slice(0, 40) + "…" : o.a.txt) + "\u201d" }))); });
+        card.appendChild(sn);
+      }
+      cards.appendChild(card);
+      var x = card.querySelector(".sct"); if (tops[k]) x.scrollTop = tops[k];
+    });
+    cards.scrollTop = outer;
+  }
+  function paintUpd() {
+    var u = $("#upd"); if (!u) return;
+    u.textContent = S.t ? "Updated " + new Date(S.t).toTimeString().slice(0, 8) : "";
+  }
+  function paintTabs() { document.querySelectorAll(".tab").forEach(function (b, i) { b.classList.toggle("on", i === S.p); }); }
+  function paintStrip() { var sb = $("#stripbox"); if (!sb) return; sb.innerHTML = ""; sb.appendChild(stripEl(stepCards(T().id))); }
+  function switchTo(i) { if (S.bar) { S.bar.remove(); S.bar = null; S.dirty = false; } S.p = i; paintTabs(); renderTask(); paintStrip(); renderWork(true); }
+
+  function poll() {
+    if (!S.code) return Promise.resolve();
+    return Promise.all([rpc("teacher_writing_review", { p_teacher_code: S.code, p_assignment_code: D.code }), rpc("teacher_notes_get", { p_teacher_code: S.code, p_assignment_code: D.code })]).then(function (rr) {
+      var r = rr[0]; S.err = ""; S.rows = r.students || [];
+      var seen = {}; (rr[1] || []).forEach(function (n) { var k = n.student_name + "|" + n.class_code + "|" + n.ref; seen[k] = 1; if (!S.pend[k]) S.notes[k] = n.items; });
+      Object.keys(S.notes).forEach(function (k) { if (!seen[k] && !S.pend[k]) delete S.notes[k]; });
+      S.t = Date.now(); paintUpd(); renderWork(false);
+    }).catch(function (e) {
+      var m = String(e && e.message || e);
+      S.err = m.indexOf("assignment_not_found") > -1 ? "This task is not assigned to any class yet, so there is no student writing." : m.indexOf("forbidden") > -1 ? "Teacher code not accepted." : "Could not reach the server. Retrying...";
+      renderWork(true);
+    });
+  }
+  function begin(code) {
+    S.code = code; try { sessionStorage.setItem("w6ic_code", code); } catch (e) { }
+    poll(); setInterval(function () { if (document.visibilityState === "visible") poll(); }, 4000);
+    document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") poll(); });
+  }
+  function start() {
+    var c = ""; try { c = (new URLSearchParams(location.search).get("s") || "").trim(); } catch (e) { }
+    if (!c) { try { c = sessionStorage.getItem("w6ic_code") || ""; } catch (e) { } }
+    if (c) { begin(c); try { history.replaceState(null, "", location.pathname); } catch (e) { } return; }
+    var inp = h("input", { cls: "gap", type: "password", autocomplete: "off", placeholder: "Teacher code", "aria-label": "Teacher code" }), msg = h("p", { cls: "err", text: "" });
+    var ov = h("div", { cls: "ov solid" }, h("div", { cls: "card" }, h("h3", { text: D.title }), h("p", { text: "Enter the teacher code to see students' writing." }), inp, msg,
+      h("div", { cls: "brow" }, h("button", { cls: "pill", text: "Open", onclick: go1 }))));
+    function go1() {
+      var v = inp.value.trim(); if (!v) { msg.textContent = "Please enter the code."; return; }
+      msg.textContent = "Checking...";
+      rpc("teacher_writing_review", { p_teacher_code: v, p_assignment_code: D.code }).then(function () { ov.remove(); begin(v); })
+        .catch(function (e) { var m = String(e && e.message || e); if (m.indexOf("assignment_not_found") > -1) { ov.remove(); begin(v); } else msg.textContent = m.indexOf("forbidden") > -1 ? "Teacher code not accepted." : "Could not reach the server."; });
+    }
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go1(); });
+    document.body.appendChild(ov); setTimeout(function () { inp.focus(); }, 50);
+  }
+  function fontStep(d) { var cur = parseFloat(store("fs") || "18"); cur = Math.max(14, Math.min(30, cur + d)); store("fs", String(cur)); document.documentElement.style.setProperty("--fs", cur + "px"); }
+  function setupSplit() {
+    var sp = $("#split"), main = $("#main"), drag = false;
+    sp.addEventListener("pointerdown", function (e) { drag = true; sp.setPointerCapture(e.pointerId); });
+    sp.addEventListener("pointermove", function (e) { if (!drag) return; var r = main.getBoundingClientRect(), p = ((e.clientX - r.left) / r.width) * 100; main.style.setProperty("--lw", Math.max(25, Math.min(70, p)) + "%"); });
+    sp.addEventListener("pointerup", function () { drag = false; });
+  }
+  function setView(v) { $("#main").setAttribute("data-v", v); document.querySelectorAll(".mvb").forEach(function (b) { b.classList.toggle("on", b.dataset.v === v); }); }
+  function boot() {
+    document.documentElement.style.setProperty("--fs", parseFloat(store("fs") || "18") + "px");
+    var tabs = h("nav", { cls: "tabs" });
+    D.tasks.forEach(function (t, i) { tabs.appendChild(h("button", { cls: "tab" + (i === 0 ? " on" : ""), text: t.name, onclick: function () { switchTo(i); } })); });
+    var tools = h("div", { cls: "tools" }, h("span", { id: "upd" }),
+      h("button", { cls: "ib", title: "Refresh now", "aria-label": "Refresh now", html: ICON.sync, onclick: function () { poll(); } }),
+      h("span", { cls: "sep" }),
+      h("button", { cls: "fsb", text: "A−", title: "Smaller text", onclick: function () { fontStep(-1); } }),
+      h("button", { cls: "fsb", text: "A+", title: "Larger text", onclick: function () { fontStep(1); } }),
+      h("button", { cls: "ib hide-m", title: "Full screen", "aria-label": "Full screen", html: ICON.full, onclick: function () { try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { } } }));
+    $("#hd").appendChild(h("div", { cls: "brand", text: D.title })); $("#hd").appendChild(tabs); $("#hd").appendChild(tools);
+    var mv = h("div", { cls: "mv" }); [["t", "Prompt"], ["w", "Students"]].forEach(function (v) { mv.appendChild(h("button", { cls: "mvb" + (v[0] === "t" ? " on" : ""), "data-v": v[0], text: v[1], onclick: function () { setView(v[0]); } })); });
+    $("#hd").appendChild(mv); $("#main").setAttribute("data-v", "t");
+    var wk = $("#work"); wk.appendChild(h("div", { id: "stripbox" })); wk.appendChild(h("div", { id: "wbody" }));
+    setupSplit(); renderTask(); paintStrip(); renderWork(true); start();
+  }
+  document.addEventListener("DOMContentLoaded", boot);
+})();
+</script></body></html>
