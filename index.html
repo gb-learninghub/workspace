@@ -984,7 +984,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           return `<div class="mt-class mt-item"><button type="button" class="mt-row" data-mt-key="${ckey}"><span class="mt-name">${esc(m.title)}</span><span class="tag bg-slate-100 text-slate-600 mt-count"><i data-lucide="users" class="mt-ic"></i>${ids.length} lớp</span></button></div>`;
         };
         const sect = (label, icon, list) => list.length ? `<div class="mt-sect"><h4><i data-lucide="${icon}" class="w-4 h-4"></i>${label}</h4>${list.map(row).join('')}</div>` : '';
-        const out = sect('Bài học', 'presentation', given.filter(m => m.kind !== 'homework')) + sect('Bài tập', 'file-check-2', given.filter(m => m.kind === 'homework'));
+        const cells = given.filter(m => m.kind !== 'homework' && m.kind !== 'slide').map(m => sect('Bài học', 'presentation', [m])).concat(given.filter(m => m.kind === 'slide').map(m => sect('Slide', 'monitor-play', [m])), given.filter(m => m.kind === 'homework').map(m => sect('Bài tập', 'file-check-2', [m]))), out = cells.length ? '<div class="mt-grid">' + cells.join('') + '</div>' : '';
         const orph = orphan.length ? `<div class="mt-class" style="padding:14px 16px"><div class="font-bold text-rose-700 mb-2">Chưa giao cho lớp nào</div><div class="flex flex-col gap-2">${orphan.map(libItem).join('')}</div></div>` : '';
         return out + orph;
       }
