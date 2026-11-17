@@ -893,10 +893,11 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       const SCAN_DIR = { ielts: 'ielts', toeic: 'toeic', gs: 'gs', gt: 'comm' };
       async function scanRepo() {
         if (Date.now() - st.scanAt < 120000) return;
+        st.scanAt = Date.now() - 90000;
         try {
           const b = new URL(SCAN_BASE), owner = b.hostname.split('.')[0], repo = b.pathname.replace(/\//g, '') || 'workspace';
           const r = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/git/trees/main?recursive=1');
-          if (!r.ok) return;
+          if (!r.ok) throw new Error('github ' + r.status);
           const j = await r.json(), out = [];
           (j.tree || []).forEach(t => {
             const m = t.type === 'blob' && /^(ielts|toeic|gs|gt)\/w(\d{1,2})\/([^\/]+)\.html$/i.exec(t.path);
@@ -910,8 +911,12 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
               if (t && t[1].trim()) x.title = t[1].trim();
             } catch (e) { }
           }));
-          st.scanAll = out; st.scanAt = Date.now();
-        } catch (e) { }
+          st.scanAll = out; st.scanAt = Date.now(); st.scanErr = '';
+          try { localStorage.setItem('gb_scan_cache', JSON.stringify(out)); } catch (e) { }
+        } catch (e) {
+          if (!st.scanAll.length) { try { st.scanAll = JSON.parse(localStorage.getItem('gb_scan_cache') || '[]'); } catch (x) { st.scanAll = []; } }
+          if (!st.scanErr) { st.scanErr = 'x'; try { LMS.toast('Không quét được GitHub lúc này (có thể do giới hạn lượt gọi). Đang dùng danh sách đã lưu lần trước, thử lại sau ít phút.'); } catch (x) { } }
+        }
       }
       function scanItems() {
         const base = new URL(SCAN_BASE).pathname, known = new Set();
