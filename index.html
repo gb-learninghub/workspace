@@ -1081,8 +1081,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         icons();
       }
       function quickGroups() {
-        const cls = matClasses(), ie = cls.filter(c => /^IE/i.test(c.class_code)).map(c => c.id), out = [{ label: 'Tất cả lớp', ids: cls.map(c => c.id), tone: 'green' }];
-        if (ie.length) out.push({ label: 'IE', ids: ie, tone: 'blue' });
+        const cls = matClasses(), out = [{ label: 'Tất cả lớp', ids: cls.map(c => c.id), tone: 'green' }];
+        [['GS', /^(AC(?!12)|GS)/i], ['AC12', /^AC12/i], ['IE', /^IE/i], ['TO', /^TO/i], ['GT', /^GT/i]].forEach(([label, re]) => { const ids = cls.filter(c => re.test(c.class_code)).map(c => c.id); if (ids.length) out.push({ label, ids, tone: 'blue' }); });
         return out;
       }
       function quickHtml() {
