@@ -1,0 +1,1378 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TN THPT 2026 - Tuần 11 (Lesson)</title>
+<style>
+:root{--fs:18px;--ink:#111;--mut:#6b6b6b;--line:#dcdcdc;--soft:#f3f3f3;--ok:#e3f3e6;--okl:#2e7d4f;--bad:#fbe6e6;--badl:#b42b2b;--on:#e4e8ef}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Aptos,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#fff;font-size:16px}
+button{font-family:inherit;color:inherit;cursor:pointer}
+#app{height:100dvh;display:grid;grid-template-rows:56px 1fr auto}
+#hd{display:flex;align-items:center;gap:18px;padding:0 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);backdrop-filter:blur(10px)}
+.brand{font-weight:700;font-size:17px;white-space:nowrap}
+.tabs{display:flex;gap:4px;margin:0 auto}
+.tab{border:0;background:none;padding:15px 14px 13px;font-size:16px;border-bottom:3px solid transparent;color:var(--mut)}
+.tab.on{color:var(--ink);font-weight:700;border-bottom-color:var(--ink)}
+.tools{display:flex;align-items:center;gap:6px}
+.who2{font-size:14px;color:var(--mut);margin-right:6px}
+.ib,.fsb{height:38px;min-width:38px;border:0;border-radius:19px;background:var(--soft);display:inline-flex;align-items:center;justify-content:center;padding:0 10px}
+.fsb{font-weight:700;font-size:15px}
+.ib.dark{background:#111;color:#fff}
+.ib.off{opacity:.4}
+.ib.bare{background:none;min-width:30px;height:30px;color:var(--ink)}
+#main{--lw:52%;display:flex;min-height:0}
+#passage{width:var(--lw);overflow:auto;padding:24px 28px 60px;min-width:0}
+#split{width:10px;cursor:col-resize;background:var(--soft);flex:none;position:relative;touch-action:none}
+#split:after{content:"";position:absolute;left:3px;top:50%;width:4px;height:44px;margin-top:-22px;border-radius:2px;background:#bdbdbd}
+#qs{flex:1;overflow:auto;padding:24px 28px 80px;min-width:0}
+.ptag{font-size:14px;color:var(--mut);margin-bottom:4px}
+h2{margin:0 0 16px;font-size:calc(var(--fs) + 8px);line-height:1.25}
+.para{display:flex;gap:12px;margin:0 0 14px}
+.pl{font-weight:700;font-size:var(--fs);width:22px;flex:none;line-height:1.55}
+.pl.pn{font-weight:400;font-size:12px;color:#aaa;padding-top:5px}
+.pt{font-size:var(--fs);line-height:1.6;text-align:justify}
+.para.quote{margin-left:34px}
+.para.quote .pt{font-style:italic}
+.who{font-style:normal;font-weight:700;font-size:calc(var(--fs) - 3px);margin-top:6px;text-align:left}
+mark.v{background:none;color:inherit}
+.vh mark.v{background:#fff0a8;border-radius:3px;cursor:help}
+.tip{display:none;position:fixed;z-index:30;max-width:320px;background:#111;color:#fff;border-radius:10px;padding:8px 12px;font-size:15px;line-height:1.4;pointer-events:none}
+.grp{margin:0 0 30px}
+.gh{margin:0 0 6px;font-size:17px;line-height:1.45}
+.gl{margin:0 0 6px;font-style:italic;font-size:16px}
+.legend{border:1px solid #111;border-radius:8px;padding:10px 14px;margin:8px 0 14px}
+.lr{display:grid;grid-template-columns:110px 1fr;gap:8px;font-size:15px;padding:2px 0}
+.qi{margin:0 0 18px}
+.qt{display:block;font-size:17px;line-height:1.9}
+.qt>*{vertical-align:middle}
+.qt .qn{margin-right:10px}
+.qn{display:inline-flex;min-width:30px;height:28px;padding:0 6px;align-items:center;justify-content:center;border-radius:8px;background:#e8eef7;font-weight:700;font-size:15px;flex:none}
+.qn.wide{padding:0 10px}
+.muted{color:var(--mut);font-size:15px;margin-right:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0 40px}
+.chip{min-width:42px;height:38px;padding:0 14px;border:1.5px solid var(--line);background:#fff;border-radius:19px;font-size:16px;font-weight:600}
+.chip.wide{min-width:110px}
+.chip:hover{border-color:#111}
+.chip.sel{background:#111;color:#fff;border-color:#111}
+.opts{display:flex;flex-direction:column;gap:7px;margin:8px 0 0 40px}
+.opt{display:flex;gap:12px;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:9px 14px;font-size:17px;line-height:1.45}
+.opt b{flex:none;width:18px}
+.opt:hover{border-color:#111}
+.opt.sel{background:var(--on);border-color:#111}
+.chip.right,.opt.right{background:var(--ok);border-color:var(--okl);color:var(--ink)}
+.chip.wrong,.opt.wrong{background:var(--bad);border-color:var(--badl);color:var(--ink)}
+.gap{font:inherit;font-size:17px;border:0;border-bottom:2px solid #111;background:var(--soft);padding:3px 8px;margin:0 6px;width:200px;border-radius:6px 6px 0 0;outline:none}
+.gap:focus{background:#e9e9e9}
+.gap.right{background:var(--ok);border-bottom-color:var(--okl)}
+.gap.wrong{background:var(--bad);border-bottom-color:var(--badl)}
+.gap.big{width:100%;margin:10px 0;padding:10px 12px;font-size:18px}
+.ex{margin:8px 0 0 40px;padding:10px 16px;border-radius:10px;font-size:16px;line-height:1.5}
+.ex.ok{background:var(--ok)}.ex.bad{background:var(--bad)}
+.opts .ex{margin-left:0}
+#tiles{display:flex;gap:14px;padding:8px 14px;border-top:1px solid var(--line);overflow-x:auto;background:#fff}
+.tg{display:flex;gap:4px;flex:none;padding:4px 6px;border-radius:12px}
+.tg.cur{background:var(--soft)}
+.tile{width:30px;height:30px;border:0;border-radius:8px;background:#e8eef7;font-size:13px;font-weight:600}
+.tile.on{background:#b9c7de}
+.tile.ok{background:#bfe3c7}.tile.bad{background:#f2b9b9}
+.ov{position:fixed;inset:0;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:50}
+.ov.solid{background:#fff}
+.card{width:min(480px,92vw);background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 28px}
+.card h3{margin:0 0 10px;font-size:22px}
+.card p{margin:8px 0;line-height:1.5;font-size:16px}
+.card p.score{font-size:44px;font-weight:700;margin:6px 0}
+.err{color:var(--badl)}
+.mv{display:none}
+.sbar{position:sticky;bottom:-80px;display:flex;gap:10px;justify-content:flex-end;align-items:center;background:#fff;border-top:1px solid var(--line);padding:12px 0;margin-top:10px}
+.sdone{font-size:15px;color:var(--okl);font-weight:600}
+.brow{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.pill{white-space:nowrap;border:0;border-radius:22px;background:#111;color:#fff;height:44px;padding:0 24px;font-size:16px;font-weight:600}
+.pill.ghost{background:var(--soft);color:#111}
+@media (max-width:900px){#main{flex-direction:column}#passage{width:100%;height:45%}#split{display:none}.brand{display:none}}
+@media (max-width:700px){#app{grid-template-rows:auto 1fr auto}#hd{height:auto;flex-wrap:wrap;gap:4px 8px;padding:6px 10px}.tabs{order:3;flex:1 0 100%;margin:0;justify-content:space-between}.tab{flex:1;padding:8px 6px 8px;font-size:15px}.tools{margin-left:auto;flex-wrap:wrap}.who2,.hide-m{display:none}#main[data-v="p"] #qs,#main[data-v="q"] #passage{display:none}#passage,#qs{width:100%;flex:1;min-height:0}#passage{padding:14px 16px 30px}#qs{padding:14px 16px 80px}.mv{display:flex;order:4;flex:1 0 100%;gap:8px;padding-bottom:6px}.mvb{flex:1;height:38px;border:0;border-radius:19px;background:var(--soft);font-size:15px;font-weight:600}.mvb.on{background:#111;color:#fff}.chips,.opts,.ex{margin-left:0}h2{font-size:calc(var(--fs) + 4px)}.sbar{bottom:-80px}.card{padding:20px}.brow{flex-wrap:wrap}}
+.bank{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}
+.hchip{display:flex;gap:8px;align-items:flex-start;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:7px 12px;font-size:16px;cursor:grab;text-align:left;max-width:100%;user-select:none}
+.hchip b{flex:none;min-width:22px}
+.hchip.used{opacity:.4}
+.hchip.pick{border-color:#111;background:var(--on)}
+.hrow{display:flex;align-items:center;gap:12px;margin:0 0 10px;flex-wrap:wrap}
+.hrow .hl{font-size:17px;min-width:110px}
+.hslot{flex:1;min-width:220px;min-height:44px;border:1.5px dashed #9a9a9a;border-radius:12px;padding:6px 12px;display:flex;align-items:center;gap:8px;font-size:16px;background:var(--soft);cursor:pointer}
+.hslot.over{border-color:#111;background:var(--on)}
+.hslot.fill{border-style:solid;border-color:#111;background:#fff}
+.hslot .hx{margin-left:auto;border:0;background:none;font-size:18px;min-width:30px;height:30px;color:var(--mut)}
+.hex{font-style:italic;margin:0 0 12px;font-size:16px}
+.tbl{width:100%;border-collapse:collapse;margin:8px 0 14px}
+.tbl td,.tbl th{border:1px solid #111;padding:8px 10px;font-size:16px;text-align:left;vertical-align:middle;line-height:1.9}
+.tbl .gap,.fbox .gap{width:110px;margin:2px 4px}
+.qcell{white-space:nowrap}
+.qcell .qn{margin-right:6px}
+.flow{display:flex;flex-direction:column;gap:2px;align-items:stretch;margin:8px 0 14px}
+.fbox{border:1px solid #111;border-radius:10px;padding:10px 12px;font-size:16px;line-height:2;text-align:center}
+.farr{display:flex;justify-content:center;font-weight:700;font-size:18px}
+.ftit{text-align:center;font-weight:700;margin:6px 0}
+#np{position:fixed;right:0;top:56px;bottom:52px;width:360px;background:#fff;border-left:1.5px solid #111;z-index:40;display:flex;flex-direction:column;overflow:hidden}
+#np[hidden]{display:none}
+.nph{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line)}
+.nph .nt{border:0;background:none;padding:8px 12px;border-radius:18px;font-size:15px;color:var(--mut)}
+.nph .nt.on{background:var(--soft);color:var(--ink);font-weight:700}
+.nph .sp{flex:1}
+.npb{flex:1;overflow:auto;padding:12px}
+.npb.nn{display:flex;flex-direction:column;overflow:hidden}
+.npb.nn textarea{flex:1;min-height:120px;height:auto;resize:none;}
+.npb.nn .lk,.npb.nn .npm{flex:none}
+.npb.nn #npc{flex:none;max-height:42%;overflow:auto}
+.npb textarea{width:100%;height:150px;resize:vertical;border:1.5px solid var(--line);border-radius:12px;padding:10px;font:inherit;font-size:16px;line-height:1.5}
+.npb .lk{display:flex;gap:6px;margin:10px 0}
+.npb .lk input{flex:1;font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;min-width:0}
+.vc{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;font-size:15px;line-height:1.45}
+.vc .vw{font-weight:700;font-size:16px}
+.vc .vp{color:var(--mut);margin:0 6px}
+.vc .vb{margin-top:6px;border:0;border-radius:16px;background:#111;color:#fff;height:34px;padding:0 14px;font-size:14px}
+.vc .vb[disabled]{background:var(--soft);color:var(--mut)}
+.vc input{width:100%;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:6px 8px;margin-top:6px}
+.npm{color:var(--mut);font-size:14px;margin:6px 0}
+ul.intro{margin:0 0 6px;padding:0 0 0 22px;list-style:disc;text-align:left}ul.intro li{margin:0 0 14px;line-height:2.2}ul.intro li::marker{font-size:1.1em}.in{display:inline-flex;vertical-align:middle;pointer-events:none;margin:0 2px}.tile.sm{width:24px;height:24px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px}.nthi{font-weight:700;background:#f4f5f7;border:1px solid #e4e6ea;border-radius:6px;padding:1px 6px;font-size:12px;white-space:nowrap;line-height:1.6}
+#npsg{position:absolute;left:0;right:0;top:100%;margin-top:2px;background:#fff;border:1.5px solid #111;border-radius:12px;z-index:5;max-height:240px;overflow:auto}#npsg[hidden]{display:none}.sgi{display:grid;grid-template-columns:auto auto 1fr 18px;gap:8px;align-items:baseline;width:100%;border:0;border-bottom:1px solid var(--line);background:none;padding:10px 12px;text-align:left;font:inherit;font-size:15px;min-height:44px}.sgi:last-child{border-bottom:0}.sgw{font-weight:700}.sgp{color:var(--mut);font-size:13px}.sgm{color:#333;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sgn{color:#2e7d4f;font-weight:700}
+.stp{flex:none;margin:0 0 8px}.stk{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border:1.5px solid var(--line);border-radius:12px}.stk::-webkit-scrollbar{display:none}.stc{flex:0 0 100%;scroll-snap-align:start;padding:10px 12px;overflow:hidden;font-size:14px;line-height:1.45}.stn{font-weight:800;font-size:15px;margin:0 0 6px;color:#000}.stb{margin:0;padding:0 0 0 18px;list-style:disc}.stb li{margin:0 0 4px}.stb li::marker{font-size:1em}.stf{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:4px}.sta{border:0;background:none;font-size:22px;line-height:1;width:44px;height:32px}.sta[disabled]{opacity:.25}.std{display:flex;gap:6px}.sdot{width:7px;height:7px;border-radius:50%;background:#ccc}.sdot.on{background:#111}
+#npt{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:39;writing-mode:vertical-rl;border:1.5px solid #111;border-right:0;border-radius:14px 0 0 14px;background:#111;color:#fff;padding:16px 9px;font-size:15px;font-weight:600;cursor:pointer}
+#npt[hidden]{display:none}
+body.np-open #main{margin-right:360px}
+@media (max-width:700px){#np{left:0;width:auto}body.np-open #main{margin-right:0}}
+#selb{position:fixed;z-index:60;display:flex;gap:4px;padding:4px;border-radius:22px;background:#111}#selb[hidden]{display:none}#selb button{height:32px;padding:0 14px;border:0;border-radius:16px;background:none;color:#fff;font:600 14px Aptos,-apple-system,sans-serif}#selb button+button{border-left:1px solid #444}mark.hl{background:#ffe14d;color:inherit;border-radius:3px}#fcard{position:fixed;z-index:60;width:300px;max-height:60dvh;overflow:auto;background:#fff;border:1.5px solid #111;border-radius:14px;padding:6px 10px}#fcard[hidden]{display:none}#fcard .vc{border:0;padding:4px 0;margin:2px 0}#fcard .vw{font-weight:700;font-size:16px}#fcard>.vb{margin-top:6px;border:0;border-radius:16px;background:#111;color:#fff;height:34px;padding:0 14px;font-size:14px}#fcard>input{width:100%;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:6px 8px;margin-top:6px}#fcard>.npm{margin:2px 0}.wl{flex:1 1 0;min-height:0;overflow:auto;margin:0 0 8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.npb.nn textarea{flex:1 1 0!important;min-height:0!important}.wl .none{color:var(--mut);font-size:14px;padding:10px 0}.wr{display:grid;grid-template-columns:30px minmax(0,1fr) 112px 26px 26px;column-gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:15px}.wr .ww{font-weight:700;overflow-wrap:anywhere}.wr .wp{color:var(--mut)}.wr .wi{color:var(--mut);font-size:14px}.wr select{font:inherit;font-size:14px;border:0;border-bottom:1.5px solid var(--line);background:none;color:var(--mut);width:100%;min-width:0;height:30px}.wr .wi{grid-column:2;white-space:nowrap}.wr .wmi{grid-column:3 / 6;font:inherit;font-size:15px;border:0;border-bottom:1.5px solid var(--line);background:none;height:30px;min-width:0;margin-top:2px}.wr .wmi:focus,.wr select:focus{outline:none;border-bottom-color:#111}.wr .ib.bare{min-width:26px;height:26px;padding:0}.wr .wx{font-size:18px;color:var(--mut)}.tnq{margin:6px 0 4px;padding:6px 10px;border-radius:10px;background:#fff1c9;font-size:15px;line-height:1.45;color:#111}
+.ckv{margin-left:8px;font-weight:700}.ckv.ok{color:#1f6b3f}.ckv.bad{color:#a32626}.ckv.blank{color:#888}.tnq b{font-weight:800}
+</style><style id="fitfix">
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,video,canvas{max-width:100%}
+.card:has(ul.intro){max-height:calc(100dvh - 20px);overflow:hidden;padding:14px 16px}
+.card:has(ul.intro) h3{font-size:18px;margin:0 0 6px}
+ul.intro{margin:0 0 4px;padding-left:18px}
+ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
+.card:has(ul.intro) .brow{margin-top:8px}
+@media (max-height:700px){ul.intro li{font-size:13px;margin-bottom:3px}}
+.gap{max-width:100%}
+.tbl{table-layout:fixed;width:100%}.tbl td,.tbl th{word-break:break-word}
+#tiles{overflow-x:visible;gap:8px;padding:6px 10px}
+#tiles .tg{flex:1 1 0;min-width:0;gap:3px;padding:3px 4px}
+#tiles .tile{flex:1 1 0;min-width:0;width:auto;max-width:34px;height:30px}
+@media (max-width:700px){#tiles .tg:not(.cur){display:none}#tiles .tg.cur{flex:1 1 100%}#tiles .tile{height:28px;font-size:12px;max-width:none}}
+#tl .t{min-width:0;flex:1 1 0;padding:0}
+#hd{height:auto;min-height:52px;flex-wrap:wrap;row-gap:4px}
+#hd .tools{flex-wrap:wrap}
+#app{grid-template-columns:minmax(0,1fr);max-width:100vw}
+#app>*{min-width:0}
+.qcell{white-space:normal}
+</style>
+<style id="dgnl">
+u{text-decoration-thickness:2px;text-underline-offset:3px}
+.qi .qt{line-height:1.6}
+.qi{margin:0 0 20px}
+.opt{cursor:pointer;user-select:text;-webkit-user-select:text}
+.opts.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 10px}
+.para.src .pt{font-style:italic;font-size:calc(var(--fs) - 3px);color:var(--mut);text-align:left}
+.para.src{margin-top:6px}
+#main.nop #passage,#main.nop #split{display:none!important}
+#app{grid-template-rows:auto 1fr auto}
+.qi .qt{display:flex;gap:10px;align-items:flex-start}
+.qi .qt .qn{margin-right:0;margin-top:1px}
+body:not(.np-open) #qs{padding-right:48px}
+#main.nop #qs{display:block!important;width:100%;flex:1;padding:20px 32px 90px 32px}
+#main.nop .items{display:block}
+#main.nop .ptag{display:none}
+#main.nop .qi{break-inside:avoid;margin:0 0 18px;padding:0}
+#main.nop .gh{margin:26px 0 14px;padding-top:14px;border-top:1px solid #d9dce2;font-size:18px}
+#main.nop #qs>.grp:first-child .gh,#main.nop #qs .gh:first-child{margin-top:4px;padding-top:0;border-top:0}
+.opts.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.opts.four .opt{min-width:0;gap:6px;padding-left:8px;padding-right:2px}.opts.four .opt b{min-width:0;margin-right:0}
+@media (max-width:900px){body:not(.np-open) #passage{padding-right:46px}}
+@media (max-width:900px){#main.nop .items{column-count:1;column-rule:0}}
+#tiles{flex-wrap:nowrap;align-items:center;position:relative;z-index:5;background:#fff!important}
+#tiles .tile{font-size:13px}
+#tiles .sbar{position:static;order:1;flex:0 0 auto;margin:0 0 0 auto;padding:0 0 0 8px;border:0;background:#fff}
+#tiles .sbar .pill{height:44px}
+.tab .ts{display:none}
+#hd{padding-right:18px!important;padding-top:8px!important;padding-bottom:10px!important;row-gap:8px!important;height:auto!important;min-height:56px}.tools{margin-right:4px}
+@media (max-width:700px){.tab .tl{display:none}.tab .ts{display:inline}.tabs{flex-wrap:nowrap;overflow-x:auto}.tab{white-space:nowrap;flex:1 0 auto;padding:8px 6px;font-size:14px}}
+@media (min-width:1640px){#tiles{justify-content:flex-start}
+#tiles .tg{flex:0 1 auto!important;min-width:0}
+#tiles{gap:0!important}
+#tiles::before,#tiles::after{content:"";flex:1 1 0;min-width:0}
+#tiles .tg{margin:0 7px}
+#tiles .tile{flex:0 1 28px;width:28px;max-width:28px;height:32px}}
+#tiles .tile{padding:0!important;min-width:0!important;font-size:14px!important;font-weight:600;text-align:center}#tiles .tg{margin:0 4px!important;padding:4px 5px!important;gap:5px!important}#tiles .sbar{gap:6px!important}#tiles .sbar .pill{padding:0 16px!important}
+.qi.nostem{display:flex;align-items:flex-start;gap:10px}.qi.nostem .qt{flex:0 0 auto;margin-top:6px}.qi.nostem .opts{flex:1 1 auto;margin-left:0}
+body:not(.np-open) #main.nop #qs{padding-right:52px!important}
+body.np-lock #np .ib.bare[title="Close"]{display:none}
+body.np-lock .tools button[title="Student's notes"]{opacity:.35;pointer-events:none}
+body.np-open #tiles{padding-left:0;padding-right:0}
+body.np-open #tiles .sbar{flex:0 0 360px;box-sizing:border-box;justify-content:center;margin:0;padding:0 12px}
+body.np-open #tiles .tg{padding:3px 2px}
+#main.nop #qs{padding-bottom:24px!important}
+@media (max-width:1639px){#tiles{flex-wrap:wrap;justify-content:center}#tiles .sbar{order:-1;flex:1 0 100%;justify-content:center;margin:0 0 6px;padding:0}}
+@media (max-width:700px){#tiles .tg.cur{flex:1 1 100%}}
+@media (max-width:700px){body.nopass .mv{display:none!important}#main.nop #qs{padding:14px 46px 90px 16px}#main.nop .items{column-count:1;column-rule:0}.opts{margin-left:0}.opts.four{grid-template-columns:repeat(2,minmax(0,1fr))}.opts.two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:700px){#main{position:relative}#main[data-v="p"]:not(.nop) #qs.single{display:block!important;position:absolute;left:0;right:0;bottom:0;width:100%;flex:none;height:auto;max-height:66%;overflow:auto;background:#fff;border-top:1px solid #d8d8d8;padding:0 14px 10px!important;z-index:20}#qs.single .grp{margin-bottom:0!important}#qs.single .qi{margin-bottom:0!important}#qs.single .grp>.gh,#qs.single .grp>.gl,#qs.single .qi,#qs.single .ptag{display:none}#qs.single .qi.pn{display:block}#qs.single .qi.pn .qt .qn{display:none}#qs.single .qi.nostem.pn{display:block}#qs.single .qi.nostem .qt{display:none}.popbar{position:sticky;top:0;background:#fff;display:flex;align-items:center;justify-content:space-between;height:48px;margin:0 -14px 2px;padding:0 44px 0 6px;z-index:2;font-weight:600}.popbar .x{order:-1}.popbar button{width:44px;height:44px;border:0;background:none;font-size:24px;color:#111}#main.popon #passage{padding-bottom:60vh}}
+.ol{display:flex;gap:8px;align-items:flex-start;margin:0 0 6px}.ol0{display:block}.ol-l{flex:0 0 1.4em;font-weight:600;text-align:left}.ol-t{flex:1;min-width:0}.nm{font-weight:700}@media (max-width:700px){#main.nop #qs.single{padding-top:0!important}}
+@media (min-width:701px) and (max-width:1000px){#tiles .tg{flex:1 1 auto!important;justify-content:center}#tiles .tile{flex:0 0 24px!important;width:24px!important;max-width:24px!important}}
+#tiles .tile.act{background:#111!important;color:#fff!important}
+@media (max-width:700px){.osheet{position:absolute;left:0;right:0;bottom:0;max-height:62%;overflow:auto;background:#fff;border-top:1px solid #d8d8d8;padding:0 14px 10px;z-index:20}.osheet .popbar{margin:0 -14px 2px}.osheet .opts{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin:0}.osheet .opts.two,.osheet .opts.four{grid-template-columns:repeat(2,minmax(0,1fr))}#main.ordm:not(.optson) #qs .qi.pn .opts{display:none}#main.ordm.optson #qs .qi.pn .opts{position:absolute;left:0;right:0;bottom:0;margin:0;padding:12px 14px;background:#fff;border-top:1px solid #d8d8d8;z-index:20;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;max-height:62%;overflow:auto}#main.ordm.optson #qs .qi.pn .opts.two,#main.ordm.optson #qs .qi.pn .opts.four{grid-template-columns:repeat(2,minmax(0,1fr))}#main.ordm.optson #qs{padding-bottom:200px!important}}
+@media (max-width:700px){#qs.single .opts,#qs.single .opts.two,#qs.single .opts.four,.osheet .opts,.osheet .opts.two,.osheet .opts.four{display:flex!important;flex-direction:column;gap:8px;margin:0!important}#qs.single .opts .opt,.osheet .opts .opt{width:100%}}
+@media (max-width:700px){.qt,.opt{font-size:16px}.opt{padding:8px 12px}.qt{line-height:1.6}}
+@media (max-width:700px){#qs.single .opts .opt,.osheet .opts .opt{padding:8px 8px 8px 8px!important;gap:6px!important}#qs.single .opts .opt b,.osheet .opts .opt b{min-width:0!important;width:18px;margin:0!important;text-align:left}}
+@media (max-width:700px){body.popopen #npt{display:none!important}}
+@media (max-width:700px){#main[data-v="p"]:not(.nop) #qs.single{height:250px!important;max-height:250px!important}.osheet{height:250px;max-height:250px}}
+</style>
+<style id="lesson-css">
+.sbar,.ib[title="Submit the test"],.ib[title="Retake the whole test"],#sv,#who{display:none!important}
+mark.vw{background:#e8f0fe;color:inherit;border-bottom:2px solid #8fb0f0;border-radius:3px;cursor:pointer}
+.lstip{position:fixed;display:none;z-index:99;background:#111;color:#fff;border-radius:10px;padding:8px 12px;font-size:16px;max-width:280px}
+#np .lh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px 0;font-size:18px}
+#np .lf{padding:2px 14px 6px;color:#666;font-size:16px}
+#np .lseg{display:flex;gap:6px;padding:4px 14px 8px;flex-wrap:wrap}
+#np .lsg{min-height:44px;padding:0 14px;border-radius:22px;background:#f2f2f2;font-size:16px}
+#np .lsg.on{background:#111;color:#fff}
+#np .lbody{flex:1;min-height:0;overflow:auto;padding:4px 14px 16px;font-size:18px}
+#np{display:flex;flex-direction:column}#np[hidden]{display:none}
+.lt{color:#555;margin-bottom:8px}.lw{font-size:20px;font-weight:700;margin:6px 0}
+.lopt{display:flex;gap:10px;width:100%;text-align:left;min-height:46px;padding:8px 12px;border:1px solid #d4d4d4;border-radius:10px;margin-bottom:6px;align-items:center;background:#fff;font-size:17px}
+.lopt b{flex:0 0 20px}.lopt.bad{background:#fde8e8;border-color:#f0b4b4}.lopt.ok{background:#e6f4ea;border-color:#a8d5b4}
+.lex{margin:4px 0 12px;background:#e6f4ea;border-radius:10px;padding:10px 14px;font-size:17px}.lhint{margin:4px 0 12px;color:#b42318;font-size:16px}
+.lq{margin-bottom:14px}.lqn{color:#888;font-size:15px}.lqs{margin:2px 0 8px;line-height:1.45}
+.lctx{background:#f6f6f6;border-radius:12px;padding:10px 14px;margin-bottom:12px;line-height:1.5;font-size:17px}
+ol.lst{list-style:none;counter-reset:s}ol.lst li{counter-increment:s;padding:8px 0;border-bottom:1px solid #eee;display:flex;gap:10px}ol.lst li:before{content:counter(s);flex:0 0 24px;font-weight:700;color:#888}
+.lmemo{margin-top:12px;background:#f6f6f6;border-radius:12px;padding:10px 14px}.lmemo li{margin-left:18px;padding:3px 0}
+.lvl summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}.lvl div{padding:4px 0;border-bottom:1px solid #eee;font-size:17px}.lvl i{color:#888;font-style:normal}
+.ltask{background:#f6f6f6;border-radius:12px;padding:10px 14px;margin-bottom:10px;line-height:1.5}
+#np textarea{width:100%;min-height:120px;font:inherit;font-size:18px;padding:10px;border:1px solid #d4d4d4;border-radius:10px;margin-top:6px;resize:vertical}
+body.lesson #np{width:46vw;min-width:420px}body.lesson.np-open #main{margin-right:46vw}
+body.lesson .mv{display:flex}body.lesson #split{display:none}body.lesson #main{flex-direction:column}
+body.lesson #main #passage,body.lesson #main #qs{width:100%!important;flex:1 1 auto!important;min-height:0}
+body.lesson #main[data-v="p"] #qs,body.lesson #main[data-v="q"] #passage{display:none!important}
+body.lesson.nopass .mv{display:none!important}body.lesson.nopass #main #qs{display:block!important}
+body.lesson #npt{display:none}
+#np .ltabs{display:flex;gap:4px;padding:6px 14px 0;border-bottom:1px solid #eee}
+#np .ltab{min-height:44px;padding:0 14px;border-bottom:3px solid transparent;color:#666;font-size:17px}#np .ltab.on{color:#111;font-weight:700;border-color:#111}
+.lvl{margin-bottom:10px}.lq0{margin-top:6px}
+body.lesson .mvb{flex:0 0 auto;min-height:40px;padding:0 18px;border:0;border-radius:20px;background:#f2f2f2;font-size:16px;font-weight:600;color:#111}body.lesson .mvb.on{background:#111;color:#fff}body.lesson .mv{flex:1 0 100%;padding:0 0 6px}
+body.lesson *{box-shadow:none!important;text-shadow:none!important}
+#np .lsg{border:0!important}#np .ltab{border:0}
+#lwt{position:fixed;top:50%;right:46vw;transform:translateY(-50%);z-index:41;writing-mode:vertical-rl;background:#111;color:#fff;border:0;border-radius:14px 0 0 14px;padding:16px 9px;font-size:15px;font-weight:600}
+#lwp{position:fixed;top:56px;bottom:52px;right:46vw;width:300px;background:#fff;border-left:1.5px solid #111;z-index:42;display:flex;flex-direction:column;overflow:hidden}#lwp[hidden]{display:none}
+#lwp .lh{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-size:18px}
+#lwp .lbody{flex:1;overflow:auto;padding:0 14px 16px}
+.lwh{font-weight:700;background:#f2f2f2;border-radius:8px;padding:6px 10px;margin:10px 0 4px}.lwr{padding:6px 0;border-bottom:1px solid #eee;font-size:17px}.lwr i{color:#888;font-style:normal}
+@media(max-width:700px){#lwt{right:0}#lwp{right:0;left:0;width:auto}}
+body.lesson.lw-open #main{margin-right:calc(46vw + 260px)}body.lesson.lw-open #lwp{width:260px}
+@media(max-width:700px){body.lesson.lw-open #main{margin-right:0}}
+
+#lst{display:none}
+@media(max-width:700px){
+#lst{display:block;position:fixed;right:0;bottom:calc(50% + 44px);z-index:43;writing-mode:vertical-rl;background:#fff;color:#111;border:1.5px solid #111;border-right:0;border-radius:14px 0 0 14px;padding:16px 9px;font-size:15px;font-weight:600}#lst.on{background:#111;color:#fff}body.lesson #np{padding-right:40px}
+body.lesson #main[data-v="s"] #passage,body.lesson #main[data-v="s"] #qs,body.lesson.nopass #main[data-v="s"] #qs{display:none!important}
+body.lesson #np{left:0;right:0;width:auto;min-width:0}
+body.lesson.np-open #main{margin-right:0}
+}
+</style></head>
+<body><div id="app"><header id="hd"></header>
+<div id="main"><div id="passage"></div><div id="split" title="Drag to resize"></div><div id="qs"></div></div>
+<footer id="tiles"></footer></div>
+<script>window.LESSON={"parts": [{"t": "Điền từ vào quảng cáo", "f": "Từ loại, cấu trúc ngữ pháp, collocations và cách diễn đạt tự nhiên.", "learn": ["Đọc cả câu có chỗ trống để hiểu ý, không nhìn riêng phần trống.", "Quan sát vị trí chỗ trống: từ đứng trước và sau thường gợi ý loại từ cần điền.", "Xác định chỗ trống cần danh từ, động từ, tính từ, trạng từ, giới từ hay một mệnh đề.", "Kiểm tra cấu trúc đi kèm và collocation; cuối cùng đọc lại cả câu để kiểm tra nghĩa."], "note": ["Trước danh từ thường cần từ hạn định hoặc tính từ; sau động từ nối có thể cần tính từ.", "Sau giới từ thường là danh từ / cụm danh từ hoặc V-ing.", "Với mệnh đề quan hệ, xác định danh từ được bổ nghĩa và thành phần còn thiếu trong mệnh đề.", "Với cấu trúc động từ, kiểm tra động từ theo sau là to-infinitive, V-ing hay tân ngữ + to-infinitive."], "ctx": null, "qs": [{"s": "The company is looking for a ______ candidate who can work well in a team.", "o": ["create", "creatively", "creative", "creativity"], "a": 2, "e": "Đáp án C: Trước danh từ candidate cần tính từ creative."}, {"s": "Our new application helps users ______ their daily tasks more efficiently.", "o": ["organise", "organisation", "organised", "organising"], "a": 0, "e": "Đáp án A: Sau help + tân ngữ có thể dùng động từ nguyên mẫu không to: helps users organise."}, {"s": "The course provides students ______ practical skills for the workplace.", "o": ["at", "by", "from", "with"], "a": 3, "e": "Đáp án D: Cụm cố định provide somebody with something."}], "apply": "Mở phần điền từ trong quảng cáo của bài kiểm tra. Với mỗi chỗ trống, ghi nhanh: (1) loại từ / cấu trúc cần tìm; (2) manh mối trong câu; (3) lý do loại ít nhất một phương án.", "vocab": [["nestled", "adj", "nằm lọt trong, ẩn mình"], ["recharge", "v", "nạp lại năng lượng"], ["rejuvenate", "v", "làm trẻ lại, làm tươi mới"], ["unwind", "v", "thư giãn"], ["therapist", "n", "chuyên viên trị liệu"], ["wellness", "n", "sức khỏe toàn diện"]], "wu": [{"w": "nestled", "o": ["chuyên viên trị liệu", "nằm lọt trong, ẩn mình", "khả năng phục hồi, sức bền"], "a": 1}, {"w": "recharge", "o": ["nạp lại năng lượng", "đầu tư vào, mua sắm", "thuật toán"], "a": 0}, {"w": "rejuvenate", "o": ["lạc quan", "mong manh", "làm trẻ lại, làm tươi mới"], "a": 2}, {"w": "unwind", "o": ["thư giãn", "trực quan, dễ dùng", "tự thể hiện"], "a": 0}]}, {"t": "Điền từ vào leaflet / tờ thông tin", "f": "Từ vựng theo ngữ cảnh, lượng từ, phrasal verbs, sắc thái nghĩa và collocations.", "learn": ["Đọc tiêu đề và câu xung quanh chỗ trống để xác định chủ đề.", "Xác định ý cần diễn đạt: hành động, trạng thái, nguyên nhân, kết quả hay đánh giá.", "So sánh sắc thái và cách dùng của các từ gần nghĩa; kiểm tra danh từ / giới từ đi kèm.", "Thay phương án vào câu và đọc lại để xem cách diễn đạt có tự nhiên trong ngữ cảnh không."], "note": ["Với lượng từ, kiểm tra danh từ đếm được / không đếm được và số ít / số nhiều.", "Với phrasal verbs, học cả cụm và cách dùng, không dịch rời từng thành phần.", "Với từ gần nghĩa, chú ý đối tượng thường đi cùng động từ và sắc thái tích cực / tiêu cực.", "Nếu gặp từ lạ, dùng thông tin ở câu trước và câu sau để suy ra nghĩa khái quát."], "ctx": null, "qs": [{"s": "There was ______ traffic on the road, so we arrived earlier than expected.", "o": ["a few", "little", "many", "several"], "a": 1, "e": "Đáp án B: Traffic là danh từ không đếm được; little mang nghĩa có ít."}, {"s": "After years of working together, the two departments decided to ______ and form a new team.", "o": ["bring up", "give in", "look after", "set up"], "a": 3, "e": "Đáp án D: Set up nghĩa là thành lập / thiết lập một nhóm mới."}, {"s": "The guide offers useful advice for people who want to ______ a healthy lifestyle.", "o": ["maintain", "persuade", "prevent", "achieve"], "a": 0, "e": "Đáp án A: Maintain a healthy lifestyle là kết hợp từ tự nhiên: duy trì lối sống lành mạnh."}], "apply": "Làm phần điền từ trong leaflet. Với mỗi câu, xác định từ khóa ngữ cảnh và ghi chú vì sao phương án đúng phù hợp hơn các từ gần nghĩa còn lại.", "vocab": [["aquatic", "adj", "sống dưới nước"], ["excessive", "adj", "quá mức"], ["consumption", "n", "sự tiêu thụ"], ["reusable", "adj", "dùng lại được"], ["recyclable", "adj", "tái chế được"], ["invest in", "v", "đầu tư vào, mua sắm"]], "wu": [{"w": "aquatic", "o": ["doanh nghiệp", "sự lạm dụng", "sống dưới nước"], "a": 2}, {"w": "excessive", "o": ["chưa từng có", "quá mức", "làm trẻ lại, làm tươi mới"], "a": 1}, {"w": "reusable", "o": ["cạm bẫy, rủi ro", "hấp dẫn", "dùng lại được"], "a": 2}, {"w": "recyclable", "o": ["thư giãn", "tái chế được", "bộ điều nhiệt"], "a": 1}]}, {"t": "Sắp xếp hội thoại / câu / đoạn văn", "f": "Trình tự giao tiếp, quan hệ hỏi – đáp, liên kết ý và trình tự thời gian.", "learn": ["Xác định câu mở đầu: lời chào, câu hỏi, giới thiệu chủ đề hoặc thông tin mới.", "Tìm các cặp có quan hệ rõ: hỏi – đáp, thông tin – phản ứng, nhận xét – giải thích.", "Nhận diện câu kết: lời cảm ơn, kết quả, lời chúc hoặc nhận định tổng quát.", "Đọc toàn bộ thứ tự đã chọn để kiểm tra tính tự nhiên và sự liên kết."], "note": ["Trong hội thoại, phản ứng cảm xúc thường xuất hiện sau thông tin gây ra phản ứng đó.", "Đại từ this / that / it / they thường cần một nội dung được nhắc đến trước.", "Trong đoạn kể chuyện, chú ý trình tự thời gian và các dấu hiệu như first, later, eventually.", "Trong email, lời mở đầu thường nêu bối cảnh; phần thân phát triển ý; phần cuối thường cảm ơn hoặc kết luận."], "ctx": null, "qs": [{"s": "Sắp xếp các lượt lời sau thành hội thoại hợp lý:<br>a. Mia: That sounds exciting! Where are you going?<br>b. Ben: I'm going to Da Lat this weekend.<br>c. Mia: Hi, Ben! Do you have any plans for the weekend?", "o": ["b – c – a", "a – b – c", "c – b – a", "c – a – b"], "a": 2, "e": "Đáp án C: Câu c mở đầu bằng câu hỏi; Ben trả lời ở b; Mia phản hồi và hỏi tiếp ở a."}, {"s": "Sắp xếp các câu thành một đoạn văn hợp lý:<br>a. As a result, more students are choosing to cycle to school.<br>b. Many schools have introduced bicycle parking areas.<br>c. Cycling is becoming a popular way for students to travel.<br>d. These facilities make cycling more convenient and secure.", "o": ["b – a – c – d", "c – b – d – a", "c – d – a – b", "d – b – c – a"], "a": 1, "e": "Đáp án B: Câu c giới thiệu chủ đề; b nêu ví dụ; these facilities ở d thay cho bicycle parking areas; a nêu kết quả."}], "apply": "Làm phần sắp xếp trong bài kiểm tra. Trước khi chọn thứ tự, hãy đánh dấu câu mở đầu, cặp câu liên kết rõ nhất và câu kết.", "vocab": [["accommodation", "n", "chỗ ở"], ["fascinating", "adj", "hấp dẫn"], ["urban expansion", "n", "mở rộng đô thị"], ["congestion", "n", "tắc nghẽn"], ["persistent", "adj", "dai dẳng"], ["resilience", "n", "khả năng phục hồi, sức bền"], ["optimistic", "adj", "lạc quan"], ["adhere to", "v", "tuân thủ"]], "wu": [{"w": "accommodation", "o": ["chỗ ở", "tái chế được", "xử lý ngôn ngữ tự nhiên"], "a": 0}, {"w": "fascinating", "o": ["thiết bị gia dụng", "hấp dẫn", "thúc đẩy, nuôi dưỡng"], "a": 1}, {"w": "congestion", "o": ["tắc nghẽn", "đa dạng sinh học", "được chọn lọc"], "a": 0}, {"w": "resilience", "o": ["làm suy yếu", "trao quyền", "khả năng phục hồi, sức bền"], "a": 2}]}, {"t": "Điền câu / mệnh đề vào đoạn văn", "f": "Cấu trúc câu, chủ ngữ – động từ, mệnh đề quan hệ và liên kết logic.", "learn": ["Đọc toàn bộ câu chứa chỗ trống, xác định phần câu đã có và phần còn thiếu.", "Kiểm tra chủ ngữ, động từ chính và thành phần cần bổ sung.", "Quan sát dấu câu, liên từ và đại từ quan hệ để nhận diện cấu trúc.", "Đọc câu trước và sau để xác định quan hệ bổ sung, giải thích, đối lập hay nguyên nhân – kết quả."], "note": ["Phân biệt một câu hoàn chỉnh với một mệnh đề phụ thuộc.", "Kiểm tra sự hòa hợp chủ ngữ – động từ và thì của động từ.", "Đừng chọn phương án chỉ vì đúng ngữ pháp; nó còn phải phù hợp mạch ý.", "Đọc lại nguyên câu sau khi điền để phát hiện thiếu chủ ngữ, thừa động từ hoặc liên kết sai."], "ctx": null, "qs": [{"s": "Regular exercise offers several benefits. It ______ improve physical health and reduce stress.", "o": ["which also", "because also", "also to", "can also"], "a": 3, "e": "Đáp án D: Chủ ngữ It và động từ nguyên mẫu improve tạo thành câu hoàn chỉnh; can also diễn đạt khả năng."}, {"s": "Students learn more effectively when they receive clear feedback, ______ helps them understand their mistakes.", "o": ["which", "who", "where", "whose"], "a": 0, "e": "Đáp án A: Which thay cho cả ý phía trước và mở đầu mệnh đề quan hệ không xác định."}, {"s": "______, many people still find it difficult to maintain a regular exercise routine.", "o": ["Because exercise is beneficial", "Despite exercise is beneficial", "Although exercise is beneficial", "Exercise beneficial"], "a": 2, "e": "Đáp án C: Although mở đầu mệnh đề nhượng bộ, nối hợp lý với ý trái chiều ở mệnh đề chính."}], "apply": "Làm phần điền câu trong bài kiểm tra. Gạch chân chủ ngữ và động từ chính sau khi điền; ghi rõ từ nối hoặc đại từ quan hệ tạo liên kết.", "vocab": [["thermostat", "n", "bộ điều nhiệt"], ["appliance", "n", "thiết bị gia dụng"], ["home automation", "n", "tự động hóa nhà"], ["voice-activated", "adj", "kích hoạt bằng giọng nói"], ["algorithm", "n", "thuật toán"], ["intuitive", "adj", "trực quan, dễ dùng"], ["real-time", "adj", "thời gian thực"], ["natural language processing", "n", "xử lý ngôn ngữ tự nhiên"]], "wu": [{"w": "thermostat", "o": ["bộ điều nhiệt", "lòng tự trọng", "sức khỏe toàn diện"], "a": 0}, {"w": "appliance", "o": ["thanh thiếu niên", "chỗ ở", "thiết bị gia dụng"], "a": 2}, {"w": "algorithm", "o": ["sống dưới nước", "thuật toán", "tuân thủ"], "a": 1}, {"w": "intuitive", "o": ["hấp dẫn", "di sản", "trực quan, dễ dùng"], "a": 2}]}, {"t": "Đọc hiểu: câu hỏi theo thông tin trong bài", "f": "Skimming, scanning, từ vựng trong ngữ cảnh, tham chiếu, paraphrase và xác định thông tin.", "learn": ["Đọc lướt để nắm chủ đề và ý chính của từng đoạn; chưa cần dịch từng câu.", "Đọc câu hỏi, gạch chân từ khóa và xác định dạng câu hỏi.", "Quay lại đoạn có khả năng chứa thông tin; đọc kỹ câu chứa manh mối và các câu lân cận.", "So sánh nội dung bài đọc với phương án, chú ý cách diễn đạt lại (paraphrase).", "Chỉ chọn đáp án khi tìm được bằng chứng hoặc xác định rõ phương án không được bài hỗ trợ."], "note": ["NOT mentioned / NOT true: đối chiếu từng lựa chọn; phân biệt thông tin không được nhắc đến với thông tin bị phủ định.", "Reference words: nhìn ngược về trước, kiểm tra số ít / số nhiều và ý nghĩa của từ được thay thế.", "Synonym / antonym: xác định nghĩa của từ trong chính câu văn, không chỉ dựa vào nghĩa quen thuộc.", "Paraphrase: tách câu gốc thành các ý nhỏ rồi kiểm tra phương án có giữ đủ ý không.", "TRUE: toàn bộ thông tin trong lựa chọn phải được bài đọc hỗ trợ; một chi tiết sai cũng khiến phương án sai.", "Which paragraph: tìm ý đặc trưng của câu hỏi và đối chiếu nội dung từng đoạn, không chỉ dò từ trùng lặp."], "ctx": "Many public libraries now offer more than books. Visitors can attend free workshops, use computers and join community events. These services have made libraries useful meeting places for people of different ages.", "qs": [{"s": "Which of the following is NOT mentioned as a service offered by modern libraries?", "o": ["Free workshops", "Language certificates", "Computer access", "Community events"], "a": 1, "e": "Đáp án B: Đoạn văn không đề cập đến việc cấp chứng chỉ ngôn ngữ."}, {"s": "The word “These” refers to ______.", "o": ["public libraries", "books", "the services mentioned", "different ages"], "a": 2, "e": "Đáp án C: These thay cho các dịch vụ vừa được liệt kê: workshops, computers và community events."}, {"s": "Which statement is TRUE according to the passage?", "o": ["Libraries only provide printed books.", "Only young people use modern libraries.", "All library events require payment.", "Libraries offer activities and facilities for visitors."], "a": 3, "e": "Đáp án D: Đoạn văn nêu nhiều dịch vụ và tiện ích ngoài sách."}], "apply": "Làm phần đọc hiểu thứ nhất trong bài kiểm tra. Với mỗi câu, ghi số đoạn và cụm từ làm bằng chứng. Với câu NOT, đánh dấu rõ những lựa chọn đã được nhắc đến.", "vocab": [["biodiversity", "n", "đa dạng sinh học"], ["ecosystem", "n", "hệ sinh thái"], ["heritage", "n", "di sản"], ["fragile", "adj", "mong manh"], ["enterprise", "n", "doanh nghiệp"], ["authentic", "adj", "chân thực"], ["foster", "v", "thúc đẩy, nuôi dưỡng"], ["undermine", "v", "làm suy yếu"], ["infrastructure", "n", "hạ tầng"], ["collaborative", "adj", "hợp tác"]], "wu": [{"w": "biodiversity", "o": ["đa dạng sinh học", "bộ điều nhiệt", "hợp tác"], "a": 0}, {"w": "heritage", "o": ["xử lý ngôn ngữ tự nhiên", "di sản", "cản trở"], "a": 1}, {"w": "fragile", "o": ["tự thể hiện", "mong manh", "nạp lại năng lượng"], "a": 1}, {"w": "undermine", "o": ["sự lạm dụng", "sự tiêu thụ", "làm suy yếu"], "a": 2}]}, {"t": "Đọc hiểu: câu hỏi nâng cao", "f": "Chèn câu, tóm tắt đoạn / bài, suy luận, paraphrase và theo dõi mạch lập luận.", "learn": ["Đọc lướt toàn bài để xác định chủ đề và vai trò của từng đoạn.", "Với câu chèn, xác định câu cần chèn đang giới thiệu, giải thích, bổ sung hay kết luận.", "Với câu tóm tắt, tìm ý chính và các ý hỗ trợ quan trọng; tránh chọn chi tiết nhỏ.", "Với câu suy luận, kết hợp dữ kiện trong bài để rút ra kết luận hợp lý, không dùng giả định ngoài bài.", "Với câu paraphrase, kiểm tra chủ thể, hành động, quan hệ logic và mức độ khẳng định."], "note": ["Chèn câu: đọc cả câu trước và sau vị trí trống; chú ý từ nối, đại từ và từ chỉ định.", "Summary: đáp án phải bao quát ý trung tâm, không chỉ nói về một ví dụ.", "Inference: kết luận phải được dữ kiện trong bài hỗ trợ, dù không được viết nguyên văn.", "Paraphrase: cấu trúc có thể thay đổi nhưng ý nghĩa cốt lõi phải được giữ nguyên.", "Opposite meaning: xác định nghĩa trong ngữ cảnh trước khi chọn từ trái nghĩa."], "ctx": "Urban gardens are becoming more common in large cities. They provide residents with fresh produce and create green spaces where neighbours can meet. Although these gardens require time and regular care, many communities consider the benefits worthwhile.", "qs": [{"s": "Which sentence best summarises the passage?", "o": ["Urban gardens offer food and social benefits despite requiring effort.", "Urban gardens are difficult to maintain and should be avoided.", "Most city residents prefer shopping for vegetables.", "Community gardens are mainly designed for professional farmers."], "a": 0, "e": "Đáp án A: Bao quát cả lợi ích về thực phẩm, không gian cộng đồng và việc cần bỏ công chăm sóc."}, {"s": "What can be inferred from the passage?", "o": ["Urban gardens do not require regular maintenance.", "Community involvement is likely to help urban gardens continue.", "Neighbours never meet outside these gardens.", "Fresh produce is unavailable in large cities."], "a": 1, "e": "Đáp án B: Vì vườn cần thời gian và chăm sóc thường xuyên, sự tham gia của cộng đồng có khả năng giúp duy trì chúng. Đây là suy luận hợp lý từ bài."}, {"s": "Which word is closest in meaning to “worthwhile” as used in the passage?", "o": ["pointless", "expensive", "beneficial enough to justify the effort", "temporary"], "a": 2, "e": "Đáp án C: Worthwhile diễn tả điều đáng làm / đáng bỏ công vì lợi ích nhận được."}], "apply": "Làm phần đọc hiểu thứ hai trong bài kiểm tra. Với câu chèn, ghi mối liên kết giữa câu trước – câu chèn – câu sau. Với câu suy luận và tóm tắt, ghi dữ kiện hỗ trợ lựa chọn.", "vocab": [["self-expression", "n", "tự thể hiện"], ["unprecedented", "adj", "chưa từng có"], ["belonging", "n", "cảm giác thuộc về, gắn kết"], ["curated", "adj", "được chọn lọc"], ["self-esteem", "n", "lòng tự trọng"], ["addictive", "adj", "gây nghiện"], ["interfere with", "v", "cản trở"], ["misuse", "n", "sự lạm dụng"], ["pitfall", "n", "cạm bẫy, rủi ro"], ["harness", "v", "tận dụng"], ["empower", "v", "trao quyền"], ["adolescent", "n", "thanh thiếu niên"]], "wu": [{"w": "self-esteem", "o": ["lòng tự trọng", "làm trẻ lại, làm tươi mới", "tắc nghẽn"], "a": 0}, {"w": "addictive", "o": ["dùng lại được", "tự động hóa nhà", "gây nghiện"], "a": 2}, {"w": "pitfall", "o": ["dai dẳng", "cạm bẫy, rủi ro", "hệ sinh thái"], "a": 1}, {"w": "harness", "o": ["tận dụng", "kích hoạt bằng giọng nói", "hạ tầng"], "a": 0}]}]};</script>
+<script>window.DATA={"mode": "practice", "title": "TN THPT 2026 - Tuần 11 (Lesson)", "code": "tn2627 - w11 - lesson", "tfng": [], "legend": [], "sb": {"url": "https://bumaiagvgpewhvczgwio.supabase.co", "key": "sb_publishable_B563fC34wnTDCGSZv29euw_6P3mFRs5"}, "passages": [{"id": 1, "label": "Câu 1–6", "short": "1–6", "title": "Relax and Renew at Green Valley Spa", "paras": [["", "Feeling stressed and (1) ______? It’s time to take a break! Green Valley Spa offers a peaceful escape from your busy routine. Nestled in beautiful gardens, our spa is the ideal (2) ______ to recharge your mind and body. Choose from a range of luxurious treatments (3) ______ massage, aromatherapy, and facial care designed to rejuvenate your body and mind. Our professional therapists are here to guide you (4) ______ your wellness journey. Whether you’re looking to reduce stress, (5) ______ your energy, or simply unwind, Green Valley Spa has everything you need. Don’t wait – book your appointment today and prepare (6) ______ an unforgettable experience."]], "range": [1, 6], "groups": [{"kind": "mcq", "step": "cloze", "title": "Questions 1-6", "lines": ["Read the following advertisement and mark the letter A, B, C, or D on your answer sheet to indicate the option that best fits each of the numbered blanks from 1 to 6."], "items": [[1, "", [["A", "exhaust"], ["B", "exhausted"], ["C", "exhaustion"], ["D", "exhausting"]]], [2, "", [["A", "amazing relaxing place"], ["B", "relaxing amazing place"], ["C", "relaxing place amazing"], ["D", "place amazing relaxing"]]], [3, "", [["A", "includes"], ["B", "include"], ["C", "including"], ["D", "included"]]], [4, "", [["A", "in"], ["B", "through"], ["C", "on"], ["D", "over"]]], [5, "", [["A", "improve"], ["B", "lift"], ["C", "boost"], ["D", "rise"]]], [6, "", [["A", "enjoying"], ["B", "enjoy"], ["C", "enjoyed"], ["D", "to enjoy"]]]]}]}, {"id": 2, "label": "Câu 7–12", "short": "7–12", "title": "Eco-Friendly Living Starts at Home!", "paras": [["", "Small daily actions can make a significant difference to the planet."], ["", "Environmental impact: Using excessive amounts of water can damage rivers and lakes and harm fish and (7) ______ aquatic animals. Every year, people (8) ______ thousands of liters of water unnecessarily by leaving taps running."], ["", "Practical tips:"], ["", "• Always turn off taps when you’re brushing your teeth or washing dishes. This can help (9) ______ water consumption significantly."], ["", "• (10) ______ using bottled water, invest in a reusable water bottle. This not only saves resources but also cuts down the (11) ______ of plastic waste produced."], ["", "• Sort your household waste carefully and place recyclable (12) ______ into appropriate bins."]], "range": [7, 12], "groups": [{"kind": "mcq", "step": "cloze", "title": "Questions 7-12", "lines": ["Read the following leaflet and mark the letter A, B, C, or D on your answer sheet to indicate the option that best fits each of the numbered blanks from 7 to 12."], "items": [[7, "", [["A", "the others"], ["B", "another"], ["C", "others"], ["D", "other"]]], [8, "", [["A", "throw away"], ["B", "bring up"], ["C", "let down"], ["D", "pass by"]]], [9, "", [["A", "decrease"], ["B", "shorten"], ["C", "increase"], ["D", "rise"]]], [10, "", [["A", "Because of"], ["B", "Despite of"], ["C", "Instead of"], ["D", "In addition to"]]], [11, "", [["A", "number"], ["B", "amount"], ["C", "quality"], ["D", "level"]]], [12, "", [["A", "resources"], ["B", "factors"], ["C", "items"], ["D", "substances"]]]]}]}, {"id": 3, "label": "Câu 13–17", "short": "13–17", "nop": true, "range": [13, 17], "groups": [{"kind": "mcq", "step": "order", "title": "Questions 13-17", "lines": ["Mark the letter A, B, C, or D on your answer sheet to indicate the best arrangement of utterances or sentences to make a meaningful exchange or text in each of the following questions from 13 to 17."], "items": [[13, "a. Jack: I agree. Let’s meet at the café around 5 p.m.<br>b. Jack: Hi Sarah! Are you free tomorrow afternoon?<br>c. Sarah: Yes, Jack. Do you want to discuss the school project?", [["A", "c-b-a"], ["B", "c-a-b"], ["C", "a-b-c"], ["D", "b-c-a"]]], [14, "a. Tim: What movie should we watch?<br>b. Jane: Let’s do it this Saturday.<br>c. Jane: How about going to the cinema?<br>d. Jane: I heard the new sci-fi film is amazing. Let’s watch that one.<br>e. Tim: Sounds exciting!", [["A", "a-d-c-e-b"], ["B", "a-c-e-d-b"], ["C", "c-a-d-e-b"], ["D", "c-b-a-d-e"]]], [15, "Hello Emma,<br>a. I’m really excited about our upcoming trip next month, especially since it will be our first time traveling together to such a fascinating destination!<br>b. To avoid any last-minute stress, we should book our accommodation soon, perhaps within the next few days, to secure the best deals available.<br>c. Have you considered what specific attractions or landmarks you want to prioritize visiting during our stay?<br>d. It’s going to be absolutely wonderful exploring a completely new city together and discovering all the unique places it has to offer.<br>e. By the way, I’ve already done some preliminary research on hotels and managed to find several promising options with excellent reviews and reasonable prices.<br>Best regards,<br>Sophie", [["A", "a-d-c-e-b"], ["B", "d-a-e-c-b"], ["C", "a-c-b-d-e"], ["D", "d-c-e-b-a"]]], [16, "a. In addition, adhering to a balanced diet rich in nutrients and engaging in regular physical activity have been proven to significantly enhance one’s overall well-being and resilience.<br>b. As a result, maintaining an optimistic outlook, even during challenging circumstances, is considered essential to living a happier and more fulfilling life.<br>c. Recent scientific studies have consistently indicated that optimism not only improves mental health but can also positively impact physical health outcomes.<br>d. For example, individuals who demonstrate optimism are often observed to recover faster from illnesses and injuries compared to their more pessimistic counterparts.<br>e. In summary, integrating optimism with healthy lifestyle practices, including proper nutrition and consistent exercise routines, can greatly improve both mental and physical health.", [["A", "c-d-a-b-e"], ["B", "c-d-b-a-e"], ["C", "b-c-a-d-e"], ["D", "d-c-b-a-e"]]], [17, "a. Consequently, severe traffic congestion has become a persistent daily issue, leading to increased frustration and longer commuting times for residents.<br>b. Over the past five years, the city has experienced rapid urban expansion, driven by significant investment in both residential and commercial development projects.<br>c. Unfortunately, this swift and extensive urban growth has not been accompanied by adequate development of essential infrastructure, resulting in various logistical and practical problems.<br>d. Numerous green spaces, previously enjoyed by the community, have been replaced by housing complexes and commercial buildings, drastically changing the city’s landscape.<br>e. In response to these challenges, residents have increasingly called upon local authorities to implement immediate and effective solutions to address the worsening living conditions.", [["A", "b-d-c-a-e"], ["B", "b-c-d-a-e"], ["C", "d-b-a-c-e"], ["D", "c-d-b-e-a"]]]]}]}, {"id": 4, "label": "Câu 18–22", "short": "18–22", "paras": [["", "Smart homes, commonly depicted in futuristic films, are rapidly turning into a practical reality. Google Home, a notable example, (18) ______. Following its initial release, Google Home has continuously expanded its capabilities, integrating with numerous smart devices and appliances worldwide. By 2019, Google Home had successfully established itself as a significant player in home automation, providing users the ability to (19) ______ in ways that were once thought impossible. Its voice-activated assistant, powered by sophisticated artificial intelligence, allows users to perform a variety of tasks ranging from turning off lights to adjusting thermostats with ease."], ["", "The smart devices incorporated into Google Home rely on advanced artificial intelligence (AI) and sophisticated algorithms to manage household tasks effectively. (20) ______. These innovations enable automated lighting, climate control, security management, and even health monitoring, ensuring a comfortable and secure living environment for people of all ages, including the elderly and those with disabilities."], ["", "Google Home devices are crafted to provide user convenience through intuitive voice commands. (21) ______. Additionally, visual interfaces displayed through integrated screens offer real-time feedback, making interactions seamless and enhancing the overall user experience. Users can even schedule reminders, manage shopping lists, and access news briefings without needing to lift a finger."], ["", "Thanks to ongoing improvements in natural language processing technology, (22) ______. Ultimately, the advancement of smart home technology aims to simplify daily tasks, enhance home security, and significantly improve the overall quality of life for users around the globe, setting the foundation for an increasingly connected and intelligent future."]], "range": [18, 22], "groups": [{"kind": "mcq", "step": "cloze2", "title": "Questions 18-22", "lines": ["Read the following passage about smart homes and mark the letter A, B, C or D on your answer sheet to indicate the option that best fits each of the numbered blanks from 18 to 22."], "items": [[18, "", [["A", "having had its first demonstration publicly in May, 2016"], ["B", "was initially demonstrated publicly in May of 2016"], ["C", "whose first public demonstration was held in May 2016"], ["D", "that saw its first demonstration publicly in May of 2016"]]], [19, "", [["A", "monitor their homes effortlessly through smart sensors"], ["B", "manage household environments using simple vocal instructions"], ["C", "easily instruct their home environments via vocal commands"], ["D", "control their household environments with voice commands"]]], [20, "", [["A", "Intelligent systems like these have been developed to help users better control various aspects of household life, including safety, comfortable, and sustainability"], ["B", "This device has been specifically designed to assist users in managing their homes more efficiently and conveniently"], ["C", "The assistance in managing daily home routines and improving comfort levels led to the integration of these systems"], ["D", "Designed to make modern living more secure, convenient, and efficient, these technologies are now integral parts of many households"]]], [21, "", [["A", "Equipped with AI-integrated microphones and speakers, these devices process voice instructions and carry out corresponding tasks accurately"], ["B", "Devices equipping with intelligent sensors and audio systems allow them to hear, interpret, communicate and react to users’ requests in real time"], ["C", "Their responsive programming allow users to communicate naturally with the system as they would with another person"], ["D", "Their voice-recognition features, which combined with sensors and cloud computing, are able to understand commands and respond appropriately"]]], [22, "", [["A", "interactions between Google Home and its users occurred naturally and effectively"], ["B", "effective natural communication between Google Home and users is ensured"], ["C", "communication with users naturally and effectively is achieved by Google Home"], ["D", "Google Home can now communicate naturally and effectively with its users"]]]]}]}, {"id": 5, "label": "Câu 23–30", "short": "23–30", "paras": [["1", "Sustainable tourism aims to minimize the negative impacts of travel while maximizing benefits for local communities, cultures, and environments. Unlike mass tourism, which often prioritizes volume and profit, sustainable practices focus on long-term well-being. This approach recognizes that natural landscapes, cultural heritage, and local economies are valuable assets that need protection. Key principles include conserving resources, supporting local businesses, respecting local customs, and ensuring that tourism contributes positively to the destinations visited, such as fragile ecosystems or historical sites."], ["2", "The benefits of adopting sustainable tourism are significant. Environmentally, it helps protect biodiversity and reduce pollution and waste generated by tourist activities. Economically, it ensures that revenue stays within the local community, supporting small enterprises and creating fair employment opportunities. Its focus on authentic cultural experiences also helps preserve local traditions and crafts, offering visitors deeper, more meaningful interactions. This approach fosters mutual respect between hosts and guests, enhancing the overall travel experience for everyone involved and promoting cross-cultural understanding."], ["3", "However, implementing truly sustainable tourism faces several challenges. Balancing economic development with conservation requires careful planning and regulation, which can be difficult to enforce. “Greenwashing,” where businesses falsely market themselves as sustainable, can mislead consumers and undermine genuine efforts. Educating tourists about responsible behavior and managing visitor numbers to prevent overcrowding in popular destinations like Venice or Machu Picchu remain ongoing struggles. Furthermore, the initial investment required for sustainable infrastructure can be prohibitive for smaller communities or businesses."], ["4", "Despite these difficulties, the movement towards sustainable travel is growing. Consumers are increasingly aware of their impact and seeking more responsible options. Governments and international organizations are developing frameworks and certifications to guide the industry. Innovations in eco-friendly transport and accommodation are also emerging. Ultimately, achieving sustainability in tourism requires a collaborative effort from travelers, businesses, and policymakers to ensure that exploring our world does not come at the cost of damaging it for future generations.", [[167, 278]]]], "range": [23, 30], "groups": [{"kind": "mcq", "step": "read", "title": "Questions 23-30", "lines": ["Read the following passage about sustainable tourism and mark the letter A, B, C or D on your answer sheet to indicate the best answer to each of the following questions from 23 to 30."], "items": [[23, "Which of the following is NOT mentioned as a principle of sustainable tourism?", [["A", "Respecting local customs"], ["B", "Maximizing tourist volume"], ["C", "Conserving natural resources"], ["D", "Supporting local businesses"]]], [24, "The word “Its” in paragraph 2 refers to _______.", [["A", "cultural experience’s"], ["B", "local community’s"], ["C", "mass tourism’s"], ["D", "sustainable tourism’s"]]], [25, "The word “prohibitive” in paragraph 3 is OPPOSITE in meaning to _______.", [["A", "affordable"], ["B", "protective"], ["C", "necessary"], ["D", "expensive"]]], [26, "The word “preserve” in paragraph 2 could be best replaced by _______.", [["A", "display"], ["B", "ignore"], ["C", "protect"], ["D", "change"]]], [27, "Which of the following best paraphrases the underlined sentence in paragraph 4?", [["A", "The tourism industry is guiding governments to develop sustainable frameworks."], ["B", "Consumers are developing frameworks to guide the sustainable tourism industry."], ["C", "Frameworks and certifications are being created by authorities to direct sustainable tourism practices."], ["D", "Businesses are creating their own certifications to guide government policies on the sustainable tourism industry."]]], [28, "Which of the following is TRUE according to the passage?", [["A", "Managing visitor numbers is a challenge for sustainable tourism."], ["B", "Sustainable tourism guarantees that no pollution is generated."], ["C", "“Greenwashing” helps consumers identify genuinely sustainable businesses."], ["D", "Mass tourism focuses primarily on long-term well-being."]]], [29, "In which paragraph does the writer mainly discuss the obstacles or difficulties in implementing sustainable tourism?", [["A", "Paragraph 2"], ["B", "Paragraph 3"], ["C", "Paragraph 1"], ["D", "Paragraph 4"]]], [30, "In which paragraph does the writer primarily define sustainable tourism and its core ideas?", [["A", "Paragraph 2"], ["B", "Paragraph 4"], ["C", "Paragraph 1"], ["D", "Paragraph 3"]]]]}]}, {"id": 6, "label": "Câu 31–40", "short": "31–40", "paras": [["1", "[I] Social media platforms have become deeply integrated into the daily lives of many people worldwide. [II] For many young people, platforms like Instagram, TikTok, and Facebook are primary tools for communication and self-expression. These networks offer unprecedented opportunities for connection and information sharing; however, they also present a unique set of challenges. [III] Understanding both the positive and negative impacts is crucial for navigating this digital landscape effectively. [IV]", [[46, 61]]], ["2", "On the one hand, social media provides significant benefits. It allows teenagers to maintain friendships, especially with those who live far away, and to connect with others who share similar interests, fostering a sense of community and belonging. These platforms can be valuable sources of information and news, exposing young users to diverse perspectives and current events. Furthermore, they offer spaces for creativity and self-discovery, enabling teens to share their talents, opinions, and experiences with a potentially global audience. Social media can also be a powerful tool for social and political engagement, allowing young people to learn about and participate in causes they care about."], ["3", "However, the downsides of social media use among adolescents are considerable and concerning. Cyberbullying, or online harassment, is a significant risk, potentially causing severe emotional distress. Constant exposure to carefully curated and often idealized images of others can lead to social comparison, negatively impacting self-esteem and body image. This comparison culture may contribute to feelings of anxiety and depression. Moreover, the addictive nature of social media, designed to keep users engaged for extended periods, can interfere with sleep, homework, and face-to-face interactions. Concerns about privacy and the potential misuse of personal data are also valid issues associated with heavy usage."], ["4", "Ultimately, achieving a healthy relationship with social media involves mindful usage and balance. It requires recognizing potential pitfalls while harnessing the positive aspects. Open communication between teenagers, parents, and educators about online experiences is vital. Developing digital literacy skills—such as critically evaluating information and understanding privacy settings—empowers teens to use these powerful tools responsibly and protect their well-being in an increasingly connected world. Finding offline hobbies and maintaining real-world connections remain essential for overall adolescent development.", [[0, 98]]]], "range": [31, 40], "groups": [{"kind": "mcq", "step": "read", "title": "Questions 31-40", "lines": ["Read the following passage about the impact of social media on teenagers and mark the letter A, B, C or D on your answer sheet to indicate the best answer to each of the following questions from 31 to 40."], "items": [[31, "Where in paragraph 1 does the following sentence best fit?<br><i>Undeniably, their presence is becoming ubiquitous, especially in modern youth culture.</i>", [["A", "[III]"], ["B", "[II]"], ["C", "[I]"], ["D", "[IV]"]]], [32, "The phrase “integrated into” in paragraph 1 is closest in meaning to ______.", [["A", "removed from"], ["B", "separated from"], ["C", "combined with"], ["D", "interested in"]]], [33, "The word “they” in paragraph 2 refers to ______.", [["A", "current events"], ["B", "diverse perspectives"], ["C", "platforms"], ["D", "young users"]]], [34, "According to paragraph 2, which of the following is NOT mentioned as a positive effect of social media?", [["A", "Improving academic performance."], ["B", "Connecting with people who have similar hobbies."], ["C", "Providing access to information."], ["D", "Offering opportunities for creative expression."]]], [35, "Which of the following best serves as the main idea of paragraph 3?", [["A", "Social media usage among teens has several significant negative consequences."], ["B", "Social media primarily causes emotional distress through cyberbullying."], ["C", "Idealized images on social media only affect body image negatively."], ["D", "The main problem with social media is its addictive design."]]], [36, "The word “Constant” in paragraph 3 is OPPOSITE in meaning to ______.", [["A", "Permanent"], ["B", "Intermittent"], ["C", "Continuous"], ["D", "Frequent"]]], [37, "Which of the following statements is TRUE, according to the passage?", [["A", "Social media offers only challenges and no real benefits for most of the teenagers."], ["B", "Developing digital literacy is suggested as a way to use social media responsibly."], ["C", "Social comparison on social media always leads to severe depression."], ["D", "Using social media guarantees connection with people far away."]]], [38, "Which of the following best paraphrases the underlined sentence in paragraph 4?", [["A", "Social media relationships are healthier if they are balanced with mindful activities."], ["B", "In the end, social media use should be avoided completely to stay healthy."], ["C", "Finally, using social media carefully and not excessively is key to a positive experience."], ["D", "It is ultimately impossible to have a healthy relationship with social media platforms."]]], [39, "What can be inferred from the passage about managing teenagers’ social media use?", [["A", "The negative impacts of social media outweigh any potential benefits."], ["B", "Teenagers require guidance and skill development to navigate social media safely."], ["C", "Strict bans on social media are the most effective solution."], ["D", "Social media platforms themselves are solely responsible for every user’s well-being."]]], [40, "What is the main purpose of the passage?", [["A", "To persuade teenagers to delete their social media accounts."], ["B", "To provide a detailed guide on how to become more popular on social media."], ["C", "To compare the features of different social media platforms."], ["D", "To discuss both the advantages and disadvantages of social media for teenagers."]]]]}]}]};</script>
+
+<script>(function () {
+  "use strict";
+  var D = window.DATA, TEACH = D.mode === "teaching";
+  var state = { p: 0, ans: {}, chk: {}, lock: {}, byId: {}, pres: {}, open: [], vocab: true, code: "", sname: "", saved: "", timer: null, loading: false };
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  function h(tag, a) {
+    var e = document.createElement(tag);
+    if (a) for (var k in a) { if (k === "cls") e.className = a[k]; else if (k === "html") e.innerHTML = a[k]; else if (k === "text") e.textContent = a[k]; else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), a[k]); else e.setAttribute(k, a[k]); }
+    for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c == null) continue; e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); }
+    return e;
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function norm(s) { return String(s == null ? "" : s).toLowerCase().replace(/\s+/g, " ").trim(); }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { } return null; }
+
+  var ICON = {
+    tick: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
+    full: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
+    book: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/></svg>',
+    reset: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5"/></svg>'
+  };
+  function ibtn(name, title, fn, cls) { return h("button", { cls: "ib " + (cls || ""), title: title, "aria-label": title, html: ICON[name], onclick: fn }); }
+
+  var QMAP = {}; // qnum -> {pi, item}
+  D.passages.forEach(function (P, pi) {
+    P.groups.forEach(function (g) {
+      if (g.kind === "multi") { for (var i = 0; i < g.n; i++) QMAP[g.firstq + i] = { pi: pi, g: g }; }
+      else g.items.forEach(function (it) { QMAP[it[0]] = { pi: pi, g: g, it: it }; });
+    });
+  });
+
+  /* ---------- answers ---------- */
+  function multiSel(g) { return state.ans["m" + g.firstq] || []; }
+  function qValue(n) {
+    var m = QMAP[n]; if (m.g.kind === "multi") { var s = multiSel(m.g).slice().sort(); return s[n - m.g.firstq] || ""; }
+    return state.ans[n] || "";
+  }
+  function isAnswered(n) { return qValue(n) !== ""; }
+  function locked(n) { return !!state.lock[QMAP[n].pi]; }
+  function correctOf(n) {
+    var m = QMAP[n]; if (!TEACH) return null;
+    if (m.g.kind === "multi") { var v = qValue(n); return v !== "" && m.g.answer.indexOf(v) > -1; }
+    var it = m.it, v2 = qValue(n);
+    if (m.g.kind === "fill") return it[2].some(function (a) { return norm(a) === norm(v2); });
+    return norm(it[m.g.kind === "mcq" ? 3 : 2]) === norm(v2);
+  }
+  function tileState(n) {
+    if (!TEACH) { var r = state.byId["q" + n]; if (r !== undefined) return r === true ? "ok" : "bad"; }
+    var m = QMAP[n];
+    if (TEACH) {
+      var key = m.g.kind === "multi" ? "g" + m.g.firstq : n;
+      if (state.chk[key]) return correctOf(n) ? "ok" : "bad";
+    }
+    return isAnswered(n) ? "on" : "";
+  }
+
+  /* ---------- passage ---------- */
+  function vocabHTML(text) {
+    var t = esc(text);
+    if (!TEACH) return t;
+    (D.passages[state.p].vocab || []).forEach(function (v, i) {
+      var re = new RegExp("(" + esc(v[0]).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+      t = t.replace(re, '<mark class="v" data-i="' + i + '">$1</mark>');
+    });
+    return t;
+  }
+  function renderPassage() {
+    var P = D.passages[state.p], box = $("#passage"); box.innerHTML = "";
+    if (P.nop) return;
+    box.appendChild(h("div", { cls: "ptag", text: P.label }));
+    if (P.title) box.appendChild(h("h2", { text: P.title }));
+    P.paras.forEach(function (pr, i) {
+      var L = pr[0], T = pr[1], name = null;
+      if (L === "q") { var sp = T.split("|"); T = sp[0]; name = sp[1]; }
+      var row = h("div", { cls: "para" + (L === "q" ? " quote" : "") + (L === "s" ? " src" : "") });
+      var tag = (L && L !== "q") ? L : (TEACH && !L ? String(i + 1) : "");
+      if (L !== "q" && L !== "s" && (L || TEACH)) row.appendChild(h("span", { cls: "pl" + (L ? "" : " pn"), text: tag }));
+      var body = h("div", { cls: "pt" }); body.innerHTML = vocabHTML(T);
+      row.appendChild(body);
+      if (name) body.appendChild(h("div", { cls: "who", text: name }));
+      box.appendChild(row);
+    });
+    if (TEACH && state.vocab) box.classList.add("vh"); else box.classList.remove("vh");
+  }
+
+  /* ---------- questions ---------- */
+  function numTile(n) { return h("span", { cls: "qn", id: "q" + n, text: String(n) }); }
+  function expl(text, ok) { return h("div", { cls: "ex " + (ok ? "ok" : "bad") }, h("b", { text: ok ? "Correct. " : "Not quite. " }), h("span", { text: text })); }
+
+  function chips(it, opts, kind, rerender) {
+    var n = it[0], row = h("div", { cls: "chips" }), done = TEACH && state.chk[n], ans = kind === "para" ? it[2] : it[2];
+    opts.forEach(function (o) {
+      var val = typeof o === "string" ? o : o[0], lab = typeof o === "string" ? o : o[0] + "  " + o[1];
+      var b = h("button", { cls: "chip" + (kind === "tfng" ? " wide" : "") + (state.ans[n] === val ? " sel" : ""), text: kind === "tfng" || kind === "para" ? val : lab,
+        onclick: function () { if (locked(n)) return; state.ans[n] = val; if (TEACH) state.chk[n] = true; rerender(); updateTiles(); } });
+      if (done) { if (val === ans) b.classList.add("right"); else if (state.ans[n] === val) b.classList.add("wrong"); }
+      row.appendChild(b);
+    });
+    return row;
+  }
+
+  function renderGroup(g) {
+    var w = h("section", { cls: "grp" });
+    var head = h("p", { cls: "gh" }, h("b", { text: g.title + ". " }), h("i", { text: g.lines[0] }));
+    w.appendChild(head);
+    for (var i = 1; i < g.lines.length; i++) w.appendChild(h("p", { cls: "gl", text: g.lines[i] }));
+    if (g.kind === "tfng") {
+      var lg = h("div", { cls: "legend" });
+      D.legend.forEach(function (l) { lg.appendChild(h("div", { cls: "lr" }, h("b", { text: l[0] }), h("i", { text: l[1] }))); });
+      w.appendChild(lg);
+    }
+    if (g.kind === "multi") return renderMulti(g, w);
+    if (g.kind === "head") return renderHead(g, w);
+    if (g.tbl || g.flow) return renderCells(g, w);
+    var itemsBox = h("div", { cls: "items" }); w.appendChild(itemsBox);
+    var gmax = 0; g.items.forEach(function (it) { if (Array.isArray(it[2])) it[2].forEach(function (o) { if (o[1].length > gmax) gmax = o[1].length; }); });
+    g.items.forEach(function (it) {
+      var slot = h("div", { cls: "qi" });
+      function draw() {
+        slot.innerHTML = "";
+        var n = it[0];
+        if (g.kind === "fill") {
+          var parts = it[1].split("{}"), line = h("div", { cls: "qt" }, numTile(n), h("span", { text: parts[0] }));
+          var inp = h("input", { cls: "gap", type: "text", autocomplete: "off", spellcheck: "false", "aria-label": "Answer " + n });
+          inp.value = state.ans[n] || "";
+          if (!TEACH && locked(n)) inp.disabled = true;
+          inp.addEventListener("input", function () { state.ans[n] = inp.value; updateTiles(); });
+          if (TEACH) {
+            inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { state.chk[n] = true; draw(); updateTiles(); } });
+            if (state.chk[n]) inp.classList.add(correctOf(n) ? "right" : "wrong");
+          }
+          line.appendChild(inp); line.appendChild(h("span", { text: parts[1] || "" }));
+          if (TEACH) line.appendChild(ibtn("tick", "Check", function () { state.chk[n] = true; draw(); updateTiles(); }, "bare"));
+          slot.appendChild(line);
+          if (TEACH && state.chk[n]) slot.appendChild(expl("Answer: " + it[2][0] + ". " + it[3], correctOf(n)));
+        } else if (g.kind === "para") {
+          slot.appendChild(h("div", { cls: "qt" }, numTile(n), h("span", { text: it[1] })));
+          slot.appendChild(chips(it, g.letters, "para", draw));
+          if (TEACH && state.chk[n]) slot.appendChild(expl("Answer: " + it[2] + ". " + it[3], correctOf(n)));
+        } else if (g.kind === "tfng") {
+          slot.appendChild(h("div", { cls: "qt" }, numTile(n), h("span", { text: it[1] })));
+          slot.appendChild(chips(it, D.tfng, "tfng", draw));
+          if (TEACH && state.chk[n]) slot.appendChild(expl("Answer: " + it[2] + ". " + it[3], correctOf(n)));
+        } else if (g.kind === "mcq") {
+          if (!it[1]) slot.classList.add("nostem");
+          slot.appendChild(h("div", { cls: "qt" }, numTile(n), h("span", { html: g.step === "order" ? fmtOrder(it[1]) : it[1] })));
+          var wide = !!D.passages[state.p].nop, four = wide && gmax <= 15, imax = Math.max.apply(null, it[2].map(function (o) { return o[1].length; })), two = wide ? (!four && gmax <= 26) : imax <= 34;
+          var col = h("div", { cls: "opts" + (four ? " four" : two ? " two" : "") });
+          it[2].forEach(function (o) {
+            var pick = function () { var sg = window.getSelection(); if (sg && !sg.isCollapsed && String(sg).trim()) return; if (locked(n)) return; state.ans[n] = o[0]; if (POP.n && isMob() && ordMode()) { POP.open = false; $("#main").classList.remove("optson"); var os1 = document.querySelector("#main .osheet"); if (os1) os1.parentNode.removeChild(os1); document.body.classList.remove("popopen"); } draw(); updateTiles(); };
+            var b = h("div", { cls: "opt" + (state.ans[n] === o[0] ? " sel" : ""), role: "radio", tabindex: "0", "aria-checked": state.ans[n] === o[0] ? "true" : "false",
+              onclick: pick, onkeydown: function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } } },
+              h("b", { text: o[0] }), h("span", { text: o[1] }));
+            if (TEACH && state.chk[n]) { if (o[0] === it[3]) b.classList.add("right"); else if (state.ans[n] === o[0]) b.classList.add("wrong"); }
+            col.appendChild(b);
+          });
+          slot.appendChild(col);
+          if (TEACH && state.chk[n]) slot.appendChild(expl("Answer: " + it[3] + ". " + it[4], correctOf(n)));
+        }
+      }
+      draw(); itemsBox.appendChild(slot);
+    });
+    return w;
+  }
+
+  function renderMulti(g, w) {
+    var slot = h("div", { cls: "qi" });
+    function draw() {
+      slot.innerHTML = "";
+      var sel = multiSel(g), key = "g" + g.firstq, done = TEACH && state.chk[key];
+      var nums = []; for (var i = 0; i < g.n; i++) nums.push(g.firstq + i);
+      var bar = h("div", { cls: "qt" }, h("span", { cls: "qn wide", id: "q" + g.firstq, text: nums[0] + "–" + nums[nums.length - 1] }),
+        h("span", { cls: "muted", text: "Selected " + sel.length + " of " + g.n }));
+      if (TEACH) bar.appendChild(ibtn("tick", "Check", function () { state.chk[key] = true; draw(); updateTiles(); }, "bare"));
+      slot.appendChild(bar);
+      var col = h("div", { cls: "opts" });
+      g.options.forEach(function (o) {
+        var on = sel.indexOf(o[0]) > -1;
+        var b = h("button", { cls: "opt" + (on ? " sel" : ""), onclick: function () {
+          if (locked(g.firstq)) return;
+          var s = multiSel(g).slice(), k = s.indexOf(o[0]);
+          if (k > -1) s.splice(k, 1); else if (s.length < g.n) s.push(o[0]); else return;
+          state.ans["m" + g.firstq] = s; if (TEACH) delete state.chk[key]; draw(); updateTiles(); } },
+          h("b", { text: o[0] }), h("span", { text: o[1] }));
+        if (done) { var isR = g.answer.indexOf(o[0]) > -1; if (isR) b.classList.add("right"); else if (on) b.classList.add("wrong"); }
+        col.appendChild(b);
+        if (done && (isR || on)) col.appendChild(h("div", { cls: "ex " + (isR ? "ok" : "bad") }, h("span", { text: g.expl[o[0]] || "" })));
+        var isR;
+      });
+      slot.appendChild(col);
+      if (done) {
+        var okc = sel.filter(function (x) { return g.answer.indexOf(x) > -1; }).length;
+        slot.appendChild(h("div", { cls: "ex " + (okc === g.n ? "ok" : "bad") }, h("b", { text: okc + " of " + g.n + " correct. " }), h("span", { text: "Answers: " + g.answer.join(", ") + " (any order)." })));
+      }
+    }
+    draw(); w.appendChild(slot); return w;
+  }
+
+  function renderQuestions() {
+    var P = D.passages[state.p], box = $("#qs"), top = box.scrollTop; box.innerHTML = "";
+    box.appendChild(h("div", { cls: "ptag", text: "Questions " + P.range[0] + "–" + P.range[1] }));
+    P.groups.forEach(function (g) { box.appendChild(renderGroup(g)); });
+    if (!TEACH) {
+      var bar = h("div", { cls: "sbar" });
+      if (isSubmitted()) bar.appendChild(h("span", { cls: "sdone", text: "Test submitted" + (state.res ? "  " + state.res.score + "/" + state.res.total : "") }));
+      else {
+        bar.appendChild(h("button", { cls: "pill ghost", text: "Save progress", onclick: function () { saveNow(false).then(function () { setSave("Saved"); }); } }));
+        bar.appendChild(h("button", { cls: "pill", text: "Submit test", onclick: submit }));
+      }
+      if (state.sbarEl && state.sbarEl.parentNode) state.sbarEl.parentNode.removeChild(state.sbarEl); state.sbarEl = bar; var ft0 = $("#tiles"); if (ft0) ft0.appendChild(bar);
+    }
+    box.scrollTop = top; popDecorate(box);
+  }
+
+  /* ---------- chrome ---------- */
+  function updateTiles() {
+    scheduleSave();
+    var foot = $("#tiles"); foot.innerHTML = "";
+    if (state.sbarEl) foot.appendChild(state.sbarEl);
+    D.passages.forEach(function (P, pi) {
+      var grp = h("div", { cls: "tg" + (pi === state.p ? " cur" : "") }); grp.style.flexGrow = String(P.range[1] - P.range[0] + 1);
+      for (var n = P.range[0]; n <= P.range[1]; n++) (function (n) {
+        grp.appendChild(h("button", { cls: "tile " + tileState(n) + (POP.n === n ? " act" : ""), text: String(n), title: "Question " + n, onclick: function () { go(n); } }));
+      })(n);
+      foot.appendChild(grp);
+    });
+    fitNotes();
+  }
+  var POP = { n: 0, open: false };
+  function fmtOrder(html) {
+    var lines = html.split("<br>");
+    var nm = function (t) { return "<strong class=\"nm\">" + t + "</strong>"; };
+    return lines.map(function (l, i) {
+      var m = l.match(/^([a-e])\.\s+([\s\S]*)$/);
+      if (m) { var t = m[2].replace(/^([A-Z][a-z]+):/, function (x, n) { return nm(n) + ":"; }); return '<span class="ol"><span class="ol-l">' + m[1] + '.</span><span class="ol-t">' + t + '</span></span>'; }
+      var t2 = l.replace(/^((?:Hello|Hi|Dear)\s+)([A-Z][a-z]+)/, function (x, a, n) { return a + nm(n); });
+      if (i > 0 && /^(Best regards|Sincerely|Yours|Regards|Kind regards)/.test(lines[i - 1])) t2 = nm(t2);
+      return '<span class="ol ol0">' + t2 + '</span>';
+    }).join("");
+  }
+  function ordMode() { var P = D.passages[state.p]; return !!(P.nop && P.groups[0] && P.groups[0].step === "order"); }
+  function isMob() { return window.innerWidth <= 700; }
+  function closePop() { if (!POP.n) return; POP.n = 0; popDecorate($("#qs")); }
+  function popDecorate(box) {
+    if (!box) return;
+    if (isMob() && ordMode() && !(POP.n >= D.passages[state.p].range[0] && POP.n <= D.passages[state.p].range[1])) POP.n = D.passages[state.p].range[0];
+    var m = POP.n && QMAP[POP.n]; if (m && m.pi !== state.p) { POP.n = 0; m = null; }
+    var on = !!(m && isMob() && (ordMode() || $("#main").getAttribute("data-v") === "p"));
+    box.classList.toggle("single", on); $("#main").classList.toggle("popon", on && !ordMode());
+    $("#main").classList.toggle("ordm", on && ordMode()); $("#main").classList.toggle("optson", on && ordMode() && POP.open);
+    box.querySelectorAll(".qi").forEach(function (q) { q.classList.toggle("pn", on && !!q.querySelector("#q" + POP.n)); });
+    box.querySelectorAll(".grp").forEach(function (g) { g.style.display = on && !g.querySelector(".pn") ? "none" : ""; });
+    document.querySelectorAll("#tiles .tile").forEach(function (t) { t.classList.toggle("act", on && t.textContent === String(POP.n)); });
+    document.body.classList.toggle("popopen", on && (!ordMode() || POP.open));
+    var old = box.querySelector(".popbar"); if (old) old.parentNode.removeChild(old);
+    var os0 = document.querySelector("#main .osheet"); if (os0) os0.parentNode.removeChild(os0);
+    if (!on) return;
+    var P = D.passages[state.p], n = POP.n;
+    function step(d) { POP.open = true; var lo = D.passages[0].range[0], hi = D.passages[D.passages.length - 1].range[1], k = n + d; while (k >= lo && k <= hi && !(QMAP[k] && QMAP[k].g.kind === "mcq" && (!D.passages[QMAP[k].pi].nop || QMAP[k].g.step === "order"))) k += d; if (k >= lo && k <= hi) { POP.n = k; if (QMAP[k].pi !== state.p) { state.p = QMAP[k].pi; paint(); } else renderQuestions(); } }
+    var bar = h("div", { cls: "popbar" },
+      h("button", { cls: "x", text: "✕", "aria-label": "Close", onclick: function () { if (ordMode()) { POP.open = false; renderQuestions(); } else closePop(); } }),
+      h("button", { text: "‹", "aria-label": "Previous question", onclick: function () { step(-1); } }),
+      h("span", { text: "Question " + n }),
+      h("button", { text: "›", "aria-label": "Next question", onclick: function () { step(1); } }),);
+    if (ordMode()) {
+      var oe = box.querySelector(".qi.pn .opts");
+      if (POP.open && oe) { var sh = h("div", { cls: "osheet" }, bar); sh.appendChild(oe); $("#main").appendChild(sh); }
+      return;
+    }
+    box.insertBefore(bar, box.firstChild); box.scrollTop = 0;
+  }
+  function setView(v) { if (v === "q") closePop(); $("#main").setAttribute("data-v", v); document.querySelectorAll(".mvb").forEach(function (b) { b.classList.toggle("on", b.dataset.v === v); }); }
+  function go(n) {
+    var m = QMAP[n];
+    if (isMob() && m.g.kind === "mcq" && (!D.passages[m.pi].nop || m.g.step === "order")) { if (POP.n === n && $("#qs").classList.contains("single") && !(typeof ordMode === "function" && ordMode())) { closePop(); return; } if (m.pi !== state.p) { state.p = m.pi; paint(); } setView("p"); if (ordMode()) { POP.open = POP.n === n ? !POP.open : true; } POP.n = n; renderQuestions(); return; }
+    setView("q");
+    if (m.pi !== state.p) { state.p = m.pi; paint(); }
+    var id = m.g.kind === "multi" ? m.g.firstq : n, e = document.getElementById("q" + id);
+    if (e) e.scrollIntoView({ block: "center", behavior: "smooth" });
+  }
+  function paint() {
+    document.querySelectorAll(".tab").forEach(function (t, i) { t.classList.toggle("on", i === state.p); });
+    var P0 = D.passages[state.p]; $("#main").classList.toggle("nop", !!P0.nop); document.body.classList.toggle("nopass", !!P0.nop);
+    var lk = false; document.body.classList.toggle("np-lock", lk); if (lk && state.npEl && state.npEl.hasAttribute("hidden")) toggleNotes();
+    renderPassage(); renderQuestions(); updateTiles(); $("#passage").scrollTop = 0; $("#qs").scrollTop = 0; if (state.npEl) renderNotes();
+  }
+  function modal(title, body, btns) {
+    var ov = h("div", { cls: "ov" }), card = h("div", { cls: "card" }, h("h3", { text: title }));
+    if (typeof body === "string") card.appendChild(h("p", { text: body })); else if (body) card.appendChild(body);
+    var row = h("div", { cls: "brow" });
+    btns.forEach(function (b) { row.appendChild(h("button", { cls: "pill" + (b.ghost ? " ghost" : ""), text: b.t, onclick: function () { if (!b.keep) ov.remove(); if (b.f) b.f(); } })); });
+    card.appendChild(row); ov.appendChild(card); document.body.appendChild(ov); return ov;
+  }
+  function fontStep(d) {
+    var cur = parseFloat(store("fs") || (window.innerWidth <= 700 ? "16" : "18")); cur = Math.max(14, Math.min(30, cur + d)); store("fs", String(cur));
+    document.documentElement.style.setProperty("--fs", cur + "px");
+  }
+
+  /* ---------- practice: login + submit ---------- */
+  function rpcNet(fn, body, keep) {
+    return fetch(D.sb.url + "/rest/v1/rpc/" + fn, { method: "POST", keepalive: !!keep, headers: { "Content-Type": "application/json", apikey: D.sb.key }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error((j && (j.message || j.hint)) || "error"); return j; }); });
+  }
+  function errText(e) {
+    var m = String(e && e.message || e);
+    if (m.indexOf("student_not_found") > -1) return "Student code not found. Please check it and try again.";
+    if (m.indexOf("assignment_not_found") > -1) return "This test has not been assigned to your class.";
+    return "Could not reach the server. Check your internet connection and try again.";
+  }
+  function login() {
+    var inp = h("input", { cls: "gap big", type: "text", autocomplete: "off", spellcheck: "false", placeholder: "Student code", "aria-label": "Student code" });
+    var hc = "";
+    try { hc = (new URLSearchParams(location.search).get("s") || decodeURIComponent((location.hash || "").slice(1))).trim(); } catch (e) { }
+    inp.value = hc || store("sc") || "";
+    var msg = h("p", { cls: "err", text: "" });
+    var ov = h("div", { cls: "ov solid" }, h("div", { cls: "card" }, h("h3", { text: D.title }), h("p", { text: "Enter your student code to start the test." }), inp, msg,
+      h("div", { cls: "brow" }, h("button", { cls: "pill", text: "Start", onclick: go1 }))));
+    function go1() {
+      var c = inp.value.trim(); if (!c) { msg.textContent = "Please enter your code."; return; }
+      msg.textContent = "Checking...";
+      rpc("student_assignment", { p_student_code: c, p_assignment_code: D.code }).then(function (j) {
+        state.code = c; state.sname = j.student_name || ""; store("sc", c);
+        return rpc("get_progress", { p_student_code: c, p_assignment_code: D.code }).then(function (pg) {
+          loadProgress(pg); $("#who").textContent = state.sname; ov.remove(); showIntro();
+        });
+      }).catch(function (e) { msg.textContent = errText(e); });
+    }
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go1(); });
+    document.body.appendChild(ov); setTimeout(function () { inp.focus(); }, 50);
+    if (hc) { try { history.replaceState(null, "", location.pathname); } catch (e) { } go1(); }
+  }
+
+  function showIntro() {
+    if (isSubmitted()) return;
+    function T(x) { return document.createTextNode(x); }
+    function I(e) { e.className += " in"; return e; }
+    function li() { var l = h("li", {}); for (var i = 0; i < arguments.length; i++) l.appendChild(arguments[i]); return l; }
+    var ul = h("ul", { cls: "intro" },
+      li(T("Đề gồm 6 phần: Câu 1–6, 7–12, 13–17, 18–22, 23–30 và 31–40. Chuyển phần bằng các tab ở trên.")),
+      li(T("Bài đọc nằm bên trái, câu hỏi bên phải. Kéo thanh ở giữa để đổi kích thước hai khung. Phần 13–17 không có bài đọc nên câu hỏi chiếm cả chiều rộng.")),
+      li(T("Bôi đen chữ để Look up. Trong bài đọc còn có Highlight, dùng nút "), I(ibtn("undo", "", null, "")), T(" để hoàn tác highlight.")),
+      li(T("Bấm nút "), I(ibtn("note", "", null, "")), T(" để mở khung "), I(h("span", { cls: "nthi", text: "Student's notes" })), T(": các bước làm bài đã điền sẵn, bạn có thể ghi chú và tra từ ngay trong đó.")),
+      li(T("Số câu "), I(h("span", { cls: "tile on sm", text: "1" })), T(" chuyển màu khi bạn đã trả lời. Bấm vào số để nhảy tới câu đó.")),
+      li(T("Bài làm được lưu tự động.")),
+      li(T("Làm xong cả đề, bấm "), I(ibtn("tick", "", null, "dark")), T(" để nộp một lần. Chỉ lần nộp đầu tiên được tính điểm.")));
+    modal("Trước khi làm bài", ul, [{ t: "Bắt đầu làm bài" }]);
+  }
+  function pr(pi) { return D.passages[pi].range; }
+  function allQ() { var a = []; D.passages.forEach(function (P) { for (var n = P.range[0]; n <= P.range[1]; n++) a.push(n); }); return a; }
+  function isSubmitted() { return !!state.res; }
+  function lockAll() { D.passages.forEach(function (P, i) { state.lock[i] = true; }); }
+  function loadProgress(pg) {
+    state.loading = true;
+    var d = pg.answers || {}; state.ans = d.ans || {}; state.open = d.open || []; state.notes = d.notes || {}; state.words = d.words || {}; state.hl = d.hl || {};
+    state.lock = {}; state.byId = {}; state.pres = {}; state.res = null;
+    var x = null; (pg.parts || []).forEach(function (y) { if (y.part === 1) x = y; });
+    if (x && !state.open.length) {
+      state.res = x.latest; lockAll();
+      (x.latest.items || []).forEach(function (it) { state.byId[it.id] = it.correct; });
+    }
+    state.p = 0; state.saved = JSON.stringify(draftBody()); state.loading = false;
+    paint(); tabMarks(); setSave(""); renderNotes(); tnPoll();
+  }
+  function draftBody() { return { ans: state.ans, open: state.open, notes: state.notes || {}, words: state.words || {}, hl: state.hl || {} }; }
+  function setSave(t) { var e = $("#sv"); if (e) e.textContent = t; }
+  function scheduleSave() {
+    if (TEACH || !state.code || state.loading) return;
+    var cur = JSON.stringify(draftBody()); if (cur === state.saved) return;
+    setSave("Saving..."); clearTimeout(state.timer); state.timer = setTimeout(function () { saveNow(false); }, 1200);
+  }
+  function saveNow(keep) {
+    if (TEACH || !state.code) return Promise.resolve();
+    clearTimeout(state.timer);
+    var body = draftBody(), cur = JSON.stringify(body); if (cur === state.saved) { setSave("Saved"); return Promise.resolve(); }
+    return rpc("save_draft", { p_student_code: state.code, p_assignment_code: D.code, p_answers: body }, keep)
+      .then(function () { state.saved = cur; setSave("Saved"); })
+      .catch(function () { setSave("Not saved"); });
+  }
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") saveNow(true); });
+  window.addEventListener("pagehide", function () { saveNow(true); });
+  function tabMarks() {
+    document.querySelectorAll(".tab").forEach(function (t, i) {
+      var P = D.passages[i], c = 0, tot = P.range[1] - P.range[0] + 1;
+      if (isSubmitted()) for (var n = P.range[0]; n <= P.range[1]; n++) if (state.byId["q" + n] === true) c++;
+      var sc = isSubmitted() ? "  " + c + "/" + tot : ""; t.innerHTML = ""; t.appendChild(h("span", { cls: "tl", text: P.label + sc })); t.appendChild(h("span", { cls: "ts", text: (P.short || P.label) + sc }));
+    });
+  }
+  function partAnswers() { var a = {}; allQ().forEach(function (n) { a["q" + n] = qValue(n); }); return a; }
+  function submit() {
+    if (isSubmitted()) return;
+    var un = 0; allQ().forEach(function (n) { if (!isAnswered(n)) un++; });
+    modal("Submit the test?", un ? un + " question" + (un > 1 ? "s are" : " is") + " still unanswered. You cannot change your answers after submitting." : "You cannot change your answers after submitting.",
+      [{ t: "Keep working", ghost: true }, { t: "Submit", f: doSubmit }]);
+  }
+  function doSubmit() {
+    var wait = modal("Submitting...", "Please wait.", []);
+    rpc("submit_assignment_part", { p_student_code: state.code, p_assignment_code: D.code, p_part: 1, p_answers: partAnswers() })
+      .then(function (j) {
+        wait.remove(); lockAll(); state.res = { score: j.score, total: j.total, is_late: j.is_late, counts_for_score: j.counts_for_score, items: j.items };
+        j.items.forEach(function (x) { state.byId[x.id] = x.correct; });
+        state.open = [];
+        saveNow(false); paint(); tabMarks(); showResult(j);
+      }).catch(function (e) { wait.remove(); modal("Could not submit", errText(e), [{ t: "OK" }]); });
+  }
+  function showResult(j) {
+    var body = h("div", null,
+      h("p", { cls: "score", text: j.score + " / " + j.total }),
+      h("p", { text: j.counts_for_score ? "This is your first attempt, so this score counts." : "This is a retake. Only your first attempt counts for your score." }),
+      j.is_late ? h("p", { cls: "err", text: "Submitted after the deadline (marked as late)." }) : null,
+      h("p", { cls: "muted", text: "Green tiles are correct, red tiles are wrong. Correct answers are not shown." }));
+    modal("Test result", body, [{ t: "Review", ghost: true }, { t: "Try again", ghost: true, f: retakeNow }]);
+  }
+  function retakeNow() {
+    allQ().forEach(function (n) { delete state.ans[n]; delete state.byId["q" + n]; });
+    state.lock = {}; state.res = null; state.open = [0];
+    state.p = 0; saveNow(false); paint(); tabMarks();
+  }
+  function retakeAll() {
+    if (!isSubmitted()) { modal("Nothing to retake yet", "Submit the test first.", [{ t: "OK" }]); return; }
+    modal("Retake the whole test?", "All your answers will be cleared. Only your first attempt counts for your score; retakes do not count.",
+      [{ t: "Cancel", ghost: true }, { t: "Retake", f: retakeNow }]);
+  }
+  /* ---------- teaching ---------- */
+  function reset() { modal("Start again?", "All your answers on this page will be cleared.", [{ t: "Cancel", ghost: true }, { t: "Clear all", f: function () { state.ans = {}; state.chk = {}; paint(); } }]); }
+  var tip;
+  function setupVocab() {
+    tip = h("div", { cls: "tip" }); document.body.appendChild(tip);
+    var box = $("#passage");
+    function show(m) {
+      var v = D.passages[state.p].vocab[+m.dataset.i]; tip.innerHTML = "<b>" + esc(v[0]) + "</b> " + esc(v[1]);
+      var r = m.getBoundingClientRect(); tip.style.display = "block";
+      tip.style.left = Math.max(8, Math.min(innerWidth - tip.offsetWidth - 8, r.left)) + "px"; tip.style.top = (r.bottom + 6) + "px";
+    }
+    box.addEventListener("mouseover", function (e) { if (e.target.classList && e.target.classList.contains("v") && state.vocab) show(e.target); });
+    box.addEventListener("mouseout", function (e) { if (e.target.classList && e.target.classList.contains("v")) tip.style.display = "none"; });
+  }
+
+  /* ---------- splitter ---------- */
+  function setupSplit() {
+    var sp = $("#split"), main = $("#main"), drag = false;
+    sp.addEventListener("pointerdown", function (e) { drag = true; sp.setPointerCapture(e.pointerId); });
+    sp.addEventListener("pointermove", function (e) {
+      if (!drag) return; var r = main.getBoundingClientRect(), p = ((e.clientX - r.left) / r.width) * 100;
+      main.style.setProperty("--lw", Math.max(25, Math.min(75, p)) + "%");
+    });
+    sp.addEventListener("pointerup", function () { drag = false; });
+  }
+
+  /* ---------- gap input, table, flowchart ---------- */
+  function gapInput(n) {
+    var inp = h("input", { cls: "gap", type: "text", autocomplete: "off", spellcheck: "false", "aria-label": "Answer " + n });
+    inp.value = state.ans[n] || ""; if (locked(n)) inp.disabled = true;
+    inp.addEventListener("input", function () { state.ans[n] = inp.value; updateTiles(); });
+    return inp;
+  }
+  function cellNodes(str) {
+    var out = [], re = /\{(\d+)\}/g, last = 0, m;
+    while ((m = re.exec(str))) {
+      if (m.index > last) out.push(document.createTextNode(str.slice(last, m.index)));
+      var n = +m[1]; out.push(h("span", { cls: "qcell" }, numTile(n), gapInput(n))); last = re.lastIndex;
+    }
+    if (last < str.length) out.push(document.createTextNode(str.slice(last)));
+    return out;
+  }
+  function renderCells(g, w) {
+    if (g.tbl) {
+      var t = h("table", { cls: "tbl" }), hr = h("tr");
+      g.tbl.head.forEach(function (c) { hr.appendChild(h("th", { text: c })); }); t.appendChild(hr);
+      g.tbl.rows.forEach(function (r) {
+        var tr = h("tr");
+        r.forEach(function (c, i) { var td = h(i === 0 ? "th" : "td"); if (i === 0) td.textContent = c; else cellNodes(c).forEach(function (x) { td.appendChild(x); }); tr.appendChild(td); });
+        t.appendChild(tr);
+      });
+      w.appendChild(t);
+    }
+    if (g.flow) {
+      w.appendChild(h("div", { cls: "ftit", text: g.flow.title }));
+      var f = h("div", { cls: "flow" });
+      g.flow.boxes.forEach(function (b, i) {
+        if (i) f.appendChild(h("div", { cls: "farr", text: "↓" }));
+        var bx = h("div", { cls: "fbox" }); cellNodes(b).forEach(function (x) { bx.appendChild(x); }); f.appendChild(bx);
+      });
+      w.appendChild(f);
+    }
+    return w;
+  }
+
+  /* ---------- matching headings: one shared bank, drag or tap ---------- */
+  function renderHead(g, w) {
+    var box = h("div", { cls: "qi" }), pick = null, lockedAll = locked(g.items[0][0]);
+    function place(n, val) {
+      if (lockedAll || !val) return;
+      g.items.forEach(function (it) { if (state.ans[it[0]] === val) delete state.ans[it[0]]; });
+      state.ans[n] = val; pick = null; draw(); updateTiles();
+    }
+    function draw() {
+      box.innerHTML = "";
+      var used = {}; g.items.forEach(function (it) { if (state.ans[it[0]]) used[state.ans[it[0]]] = 1; });
+      var lg = h("div", { cls: "legend" }, h("b", { text: "List of headings" }));
+      var bank = h("div", { cls: "bank" });
+      g.bank.forEach(function (b) {
+        var c = h("div", { cls: "hchip" + (used[b[0]] ? " used" : "") + (pick === b[0] ? " pick" : ""), draggable: lockedAll ? "false" : "true", role: "button", tabindex: "0" }, h("b", { text: b[0] }), h("span", { text: b[1] }));
+        c.addEventListener("dragstart", function (e) { e.dataTransfer.setData("text/plain", b[0]); });
+        c.addEventListener("click", function () { if (lockedAll) return; pick = pick === b[0] ? null : b[0]; draw(); });
+        bank.appendChild(c);
+      });
+      lg.appendChild(bank); box.appendChild(lg);
+      if (g.example) box.appendChild(h("div", { cls: "hex", text: "Example:  " + g.example[0] + "    Answer: " + g.example[1] }));
+      g.items.forEach(function (it) {
+        var n = it[0], v = state.ans[n], row = h("div", { cls: "hrow" });
+        var slot = h("div", { cls: "hslot" + (v ? " fill" : ""), role: "button", tabindex: "0", "aria-label": "Heading for " + it[1] });
+        if (v) {
+          var hb = g.bank.filter(function (b) { return b[0] === v; })[0];
+          slot.appendChild(h("b", { text: v })); slot.appendChild(h("span", { text: hb ? hb[1] : "" }));
+          if (!lockedAll) slot.appendChild(h("button", { cls: "hx", text: "×", title: "Clear", "aria-label": "Clear", onclick: function (e) { e.stopPropagation(); delete state.ans[n]; draw(); updateTiles(); } }));
+        } else slot.appendChild(h("span", { cls: "muted", text: "Drop a heading here" }));
+        slot.addEventListener("dragover", function (e) { e.preventDefault(); slot.classList.add("over"); });
+        slot.addEventListener("dragleave", function () { slot.classList.remove("over"); });
+        slot.addEventListener("drop", function (e) { e.preventDefault(); slot.classList.remove("over"); place(n, e.dataTransfer.getData("text/plain")); });
+        slot.addEventListener("click", function () { if (pick) place(n, pick); });
+        row.appendChild(numTile(n)); row.appendChild(h("span", { cls: "hl", text: it[1] })); row.appendChild(slot); box.appendChild(row);
+      });
+    }
+    draw(); w.appendChild(box); return w;
+  }
+
+  /* ---------- local grading (only for the file that still has the key + code 0000) ---------- */
+  var KEYEL = document.getElementById("gb-key"), KEY = null;
+  try { KEY = KEYEL ? JSON.parse(KEYEL.textContent) : null; } catch (e) { KEY = null; }
+  function keyOk(k, v) {
+    var a = (k && typeof k === "object" && !Array.isArray(k)) ? k.a : k; v = norm(v); if (v === "") return false;
+    return (Array.isArray(a) ? a : [a]).some(function (x) { return norm(x) === v; });
+  }
+  var LOCAL = {
+    student_assignment: function () { return { student_name: "Teacher" }; },
+    get_progress: function () { return { answers: state.ld || {}, parts: state.lp || [] }; },
+    save_draft: function (b) { state.ld = b.p_answers; return {}; },
+    submit_assignment_part: function (b) {
+      var items = [], sc = 0;
+      allQ().forEach(function (n) { var ok = keyOk(KEY["q" + n], (b.p_answers || {})["q" + n]); if (ok) sc++; items.push({ id: "q" + n, correct: ok }); });
+      var res = { score: sc, total: items.length, is_late: false, counts_for_score: true, items: items };
+      state.lp = [{ part: 1, latest: res }];
+      return res;
+    }
+  };
+  function rpc(fn, body, keep) {
+    if (KEY && String(body && body.p_student_code || "").trim() === "0000" && LOCAL[fn]) return Promise.resolve(LOCAL[fn](body));
+    return rpcNet(fn, body, keep);
+  }
+
+  /* ---------- student's notes + vocabulary notebook ---------- */
+  ICON.note = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5zM9 11h6M9 15h6"/></svg>';
+
+  var STEPTXT = {
+    choose: ["Chọn từ hoặc cụm từ", ["Đọc cả câu, xác định chỗ trống cần loại từ nào: noun, verb, preposition, mệnh đề...", "Nhìn các từ trước và sau chỗ trống: mạo từ, giới từ, chủ ngữ, thì của câu.", "Loại các options sai ngữ pháp hoặc sai nghĩa.", "Đọc lại cả câu với đáp án đã chọn."]],
+    error: ["Tìm lỗi sai", ["Đọc cả câu một lần để hiểu nghĩa.", "Kiểm tra từng phần gạch chân: thì, hòa hợp chủ vị, giới từ, từ loại, đại từ.", "Chọn phần duy nhất sai. Các phần còn lại phải đúng."]],
+    restate: ["Câu đồng nghĩa", ["Xác định cấu trúc và thì của câu gốc: điều kiện, tường thuật, so sánh, bị động...", "Loại các options đổi nghĩa hoặc sai ngữ pháp.", "Với các options còn lại, đối chiếu nghĩa với câu gốc."]],
+    cloze: ["Điền chỗ trống", ["Đọc cả câu chứa chỗ trống, xác định loại từ cần điền: noun, verb, adjective, preposition...", "Nhìn các từ trước và sau chỗ trống: mạo từ, giới từ, chủ ngữ, thì của câu.", "Loại options sai ngữ pháp hoặc sai nghĩa, rồi đọc lại cả câu với đáp án đã chọn."]],
+    cloze2: ["Chọn câu hoặc mệnh đề", ["Đọc câu trước và sau chỗ trống để nắm ý và chủ ngữ.", "Kiểm tra cấu trúc: mệnh đề, rút gọn, chủ động hay bị động, hòa hợp chủ vị.", "Chọn option vừa đúng ngữ pháp vừa hợp mạch nghĩa với cả đoạn."]],
+    order: ["Sắp xếp câu", ["Tìm câu mở đầu: lời chào, câu giới thiệu chủ đề hoặc câu hỏi đầu tiên.", "Nối các câu bằng từ nối và đại từ: however, as a result, this, these...", "Đọc lại cả thứ tự đã chọn xem có mạch lạc và logic không."]],
+    read: ["Reading questions", ["Đọc câu hỏi, gạch chân keywords và số đoạn được hỏi.", "Đọc đoạn tương ứng, khoanh câu liên quan.", "Loại các options sai hoặc không được nhắc đến.", "Câu hỏi từ vựng hoặc đại từ: đọc cả câu chứa từ đó."]]
+  };
+  function stepCards(pi) {
+    var P = D.passages[pi], seen = {}, out = [];
+    P.groups.forEach(function (g) {
+      var k = g.step; if (!STEPTXT[k] || seen[k]) return; seen[k] = 1;
+      out.push({ n: STEPTXT[k][0], c: STEPTXT[k][1].map(function (t, i) { return (i + 1) + ". " + t; }) });
+    });
+    return out;
+  }
+
+  /* step cards: horizontal swipe strip between My words and the notes box */
+  function stripEl(cards) {
+    var wrap = h("div", { cls: "stp" }), tk = h("div", { cls: "stk" }), dots = h("div", { cls: "std" }), cur = 0;
+    cards.forEach(function (c, i) {
+      var body = h("ul", { cls: "stb" }); c.c.forEach(function (ln) { body.appendChild(h("li", { text: ln.replace(/^\d+\.\s*/, "") })); });
+      tk.appendChild(h("div", { cls: "stc" }, h("div", { cls: "stn", text: "Step " + (i + 1) + ": " + c.n }), body));
+      dots.appendChild(h("span", { cls: "sdot" + (i === 0 ? " on" : "") }));
+    });
+    function go(d) { var w = tk.clientWidth; tk.scrollTo({ left: Math.max(0, Math.min(cards.length - 1, cur + d)) * w, behavior: "smooth" }); }
+    var prev = h("button", { cls: "sta", text: "‹", "aria-label": "Previous step", onclick: function () { go(-1); } }), next = h("button", { cls: "sta", text: "›", "aria-label": "Next step", onclick: function () { go(1); } });
+    tk.addEventListener("scroll", function () {
+      var w = tk.clientWidth || 1; cur = Math.round(tk.scrollLeft / w);
+      [].forEach.call(dots.children, function (d, i) { d.classList.toggle("on", i === cur); });
+      prev.disabled = cur === 0; next.disabled = cur === cards.length - 1;
+    });
+    prev.disabled = true; if (cards.length < 2) next.disabled = true;
+    wrap.appendChild(tk); wrap.appendChild(h("div", { cls: "stf" }, prev, dots, next));
+    function fit() { var m = 0; [].forEach.call(tk.children, function (c) { c.style.height = "auto"; m = Math.max(m, c.offsetHeight); }); if (m) { [].forEach.call(tk.children, function (c) { c.style.height = m + "px"; }); tk.style.height = m + "px"; } }
+    wrap.fit = fit; setTimeout(fit, 0); setTimeout(fit, 200); window.addEventListener("resize", fit);
+    return wrap;
+  }
+  var FILEKEY = "ac12/w11/ac12-tn-11.html";
+  state.notes = {}; state.nview = "notes"; state.vc = {}; state.shown = []; state.nb = null; state.nbf = "";
+  function buildNotes() {
+    var p = h("div", { id: "np", hidden: "hidden", role: "dialog", "aria-label": "Student's notes" });
+    var t = h("button", { id: "npt", text: "Student's notes", "aria-label": "Open student's notes", onclick: toggleNotes });
+    document.body.appendChild(p); document.body.appendChild(t); state.npEl = p; state.npTab = t; renderNotes();
+    window.addEventListener("resize", fitNotes); if (window.ResizeObserver) { var ro = new ResizeObserver(fitNotes); ro.observe($("#hd")); ro.observe($("#tiles")); }
+  }
+  function fitNotes() {
+    var p = state.npEl, hd = $("#hd"), ft = $("#tiles"); if (!p) return;
+    p.style.top = (hd ? hd.offsetHeight : 56) + "px"; p.style.bottom = (ft ? ft.offsetHeight : 52) + "px";
+  }
+  function toggleNotes() {
+    var p = state.npEl; if (!p) return;
+    var open = p.hasAttribute("hidden");
+    if (!open && document.body.classList.contains("np-lock")) return;
+    if (open) { p.removeAttribute("hidden"); fitNotes(); renderNotes(); } else p.setAttribute("hidden", "hidden");
+    document.body.classList.toggle("np-open", open); state.npTab.hidden = open;
+  }
+  function tokensOf(text) {
+    var t = String(text || ""), ws = t.match(/[A-Za-z][A-Za-z'-]{2,}/g) || [];
+    if (ws.length && /[A-Za-z'-]$/.test(t)) ws.pop();
+    var seen = {}, out = []; ws.forEach(function (w) { w = w.toLowerCase(); if (!seen[w]) { seen[w] = 1; out.push(w); } }); return out;
+  }
+  function lookup(w, count) {
+    if (!state.code) return Promise.resolve([]);
+    if (!count && Object.prototype.hasOwnProperty.call(state.vc, w)) return Promise.resolve(state.vc[w]);
+    return rpc("student_vocab_lookup", { p_student_code: state.code, p_word: w, p_count: !!count }).then(function (r) { state.vc[w] = r || []; return state.vc[w]; }).catch(function () { return []; });
+  }
+  var scanTimer = null;
+  function scanNotes() {
+    clearTimeout(scanTimer);
+    scanTimer = setTimeout(function () {
+      var ws = tokensOf(state.notes[state.p]).filter(function (w) { return !Object.prototype.hasOwnProperty.call(state.vc, w); }).slice(0, 12);
+      Promise.all(ws.map(function (w) { return lookup(w, false); })).then(function () { drawCards(); });
+      drawCards();
+    }, 700);
+  }
+  function cardEntries() {
+    var list = [], seen = {};
+    state.shown.concat(tokensOf(state.notes[state.p])).forEach(function (w) {
+      if (seen[w]) return; seen[w] = 1;
+      var r = state.vc[w]; if (r && r.length) list.push({ w: w, r: r });
+    });
+    return list;
+  }
+  function addWord(e, btn, own) {
+    btn.disabled = true; btn.textContent = "Adding...";
+    rpc("student_vocab_add", { p_student_code: state.code, p_word: e.word || own.word, p_pos: e.pos || "", p_ipa: e.ipa || null, p_meaning: own ? own.meaning : (e.meaning || null), p_definition: e.definition || null, p_file_key: FILEKEY })
+      .then(function () { e.in_notebook = true; state.nb = null; btn.textContent = "In notebook"; if (own) { state.vc[own.word.toLowerCase()] = [{ word: own.word, pos: "", meaning: own.meaning, in_notebook: true }]; drawCards(); } })
+      .catch(function () { btn.disabled = false; btn.textContent = "Try again"; });
+  }
+  function drawCards() {
+    var box = document.getElementById("npc"); if (!box) return; box.innerHTML = "";
+    cardEntries().forEach(function (x) {
+      x.r.forEach(function (e) {
+        var c = h("div", { cls: "vc" }, h("span", { cls: "vw", text: e.word }), h("span", { cls: "vp", text: [e.pos, e.ipa].filter(Boolean).join("  ") }), h("div", { text: e.meaning || "No meaning saved yet" }));
+        if (e.definition) c.appendChild(h("div", { cls: "npm", text: e.definition }));
+        var b = h("button", { cls: "vb", text: e.in_notebook ? "In notebook" : "Add to notebook" });
+        if (e.in_notebook) b.disabled = true; else b.addEventListener("click", function () { addWord(e, b); });
+        c.appendChild(b); box.appendChild(c);
+      });
+    });
+    var miss = document.getElementById("npmiss"); if (miss && miss.dataset.w) {
+      var w = miss.dataset.w; if (state.vc[w] && !state.vc[w].length) {
+        miss.innerHTML = ""; miss.appendChild(h("div", { cls: "npm", text: "“" + w + "” is not in the word bank yet. Add it with your own meaning:" }));
+        var mi = h("input", { type: "text", placeholder: "Your meaning", autocomplete: "off", spellcheck: "false" }), mb = h("button", { cls: "vb", text: "Add to notebook" });
+        mb.addEventListener("click", function () { addWord({}, mb, { word: w, meaning: mi.value.trim() }); });
+        miss.appendChild(mi); miss.appendChild(mb);
+      } else miss.innerHTML = "";
+    }
+  }
+  function renderNotes() {
+    var p = state.npEl; if (!p) return; p.innerHTML = "";
+    var head = h("div", { cls: "nph" });
+    [["notes", "Notes"], ["nb", "Notebook"]].forEach(function (v) { head.appendChild(h("button", { cls: "nt" + (state.nview === v[0] ? " on" : ""), text: v[1], onclick: function () { state.nview = v[0]; renderNotes(); } })); });
+    head.appendChild(h("span", { cls: "sp" })); head.appendChild(h("button", { cls: "ib bare", text: "×", title: "Close", "aria-label": "Close", onclick: toggleNotes }));
+    p.appendChild(head);
+    var body = h("div", { cls: "npb" + (state.nview === "notes" ? " nn" : "") }); p.appendChild(body);
+    if (state.nview === "notes") {
+      body.appendChild(h("div", { cls: "npm", text: D.passages[state.p].label + " notes" }));
+      var ta = h("textarea", { placeholder: "Write your notes here. Type a word and it appears below if it is in the word bank.", spellcheck: "false", autocapitalize: "off", autocomplete: "off" });
+      ta.value = state.notes[state.p] || "";
+      ta.addEventListener("input", function () { state.notes[state.p] = ta.value; scheduleSave(); scanNotes(); });
+      body.appendChild(ta);
+      var inp = h("input", { type: "text", placeholder: "Look up a word", autocomplete: "off", spellcheck: "false", "aria-label": "Look up a word" });
+      function go() {
+        var w = inp.value.trim().toLowerCase(); if (!w) return;
+        lookup(w, true).then(function () { if (state.shown.indexOf(w) < 0) state.shown.unshift(w); var m = document.getElementById("npmiss"); if (m) m.dataset.w = w; drawCards(); });
+      }
+      state.goLookup = go;
+      inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+      body.appendChild(h("div", { cls: "lk" }, inp, h("button", { cls: "pill", text: "Look up", onclick: go })));
+      body.appendChild(h("div", { id: "npmiss" })); body.appendChild(h("div", { id: "npc" })); drawCards();
+    } else {
+      var f = h("input", { type: "text", placeholder: "Search my notebook", autocomplete: "off", spellcheck: "false", value: state.nbf });
+      body.appendChild(h("div", { cls: "lk" }, f)); var lst = h("div"); body.appendChild(lst);
+      function paintNb() {
+        lst.innerHTML = ""; var q = norm(f.value);
+        (state.nb || []).filter(function (e) { return !q || norm(e.word + " " + (e.meaning || "")).indexOf(q) > -1; }).forEach(function (e) {
+          lst.appendChild(h("div", { cls: "vc" }, h("span", { cls: "vw", text: e.word }), h("span", { cls: "vp", text: [e.pos, e.ipa].filter(Boolean).join("  ") }), h("div", { text: e.meaning || "" })));
+        });
+        if (state.nb && !lst.childNodes.length) lst.appendChild(h("div", { cls: "npm", text: state.nb.length ? "No matching words." : "Your notebook is empty." }));
+      }
+      f.addEventListener("input", function () { state.nbf = f.value; paintNb(); });
+      if (state.nb) paintNb(); else {
+        lst.appendChild(h("div", { cls: "npm", text: "Loading..." }));
+        rpc("student_vocab_list", { p_student_code: state.code }).then(function (r) { state.nb = r || []; paintNb(); }).catch(function () { lst.innerHTML = ""; lst.appendChild(h("div", { cls: "npm err", text: "Could not load your notebook." })); });
+      }
+    }
+  }
+  /* ---------- demo v2: floating word card ---------- */
+  var bl = h("button", { text: "Look up" }), bh = h("button", { text: "Highlight" }), bc = h("button", { text: "Clear" });
+  var selb = h("div", { id: "selb", hidden: "hidden" }, bl, bh, bc); document.body.appendChild(selb);
+  var selWord = "", selRect = null, selHl = null;
+  function hideSel() { selb.setAttribute("hidden", "hidden"); selWord = ""; selHl = null; }
+  /* highlights: state.hl[passage][paragraph] = [[start,end],...] (character offsets in the paragraph) */
+  state.hl = {};
+  function hlOf(p) { return state.hl[p] || (state.hl[p] = {}); }
+  function applyHl() {
+    var H = state.hl[state.p] || {}, P = D.passages[state.p];
+    [].forEach.call(document.querySelectorAll("#passage .pt"), function (pt, i) {
+      var list = (H[i] || []).slice().sort(function (a, b) { return a[0] - b[0]; });
+      var ul = (P.paras && P.paras[i] && P.paras[i][2]) || [];
+      if (!list.length && !ul.length) return;
+      var t = pt.textContent, cuts = [0, t.length];
+      list.concat(ul).forEach(function (r) { cuts.push(r[0], r[1]); });
+      cuts = cuts.filter(function (x, k, a) { return x >= 0 && x <= t.length && a.indexOf(x) === k; }).sort(function (a, b) { return a - b; });
+      var html = "";
+      for (var k = 0; k < cuts.length - 1; k++) {
+        var s = cuts[k], e = cuts[k + 1], seg = esc(t.slice(s, e));
+        if (ul.some(function (r) { return r[0] <= s && r[1] >= e; })) seg = "<u>" + seg + "</u>";
+        if (list.some(function (r) { return r[0] <= s && r[1] >= e; })) seg = '<mark class="hl">' + seg + "</mark>";
+        html += seg;
+      }
+      pt.innerHTML = html;
+    });
+  }
+  var renderPassage0 = renderPassage;
+  renderPassage = function () { renderPassage0(); applyHl(); };
+  function ptOf(n) { var e = n && (n.nodeType === 1 ? n : n.parentNode); return e && e.closest ? e.closest(".pt") : null; }
+  function offIn(pt, node, off) { var r = document.createRange(); r.selectNodeContents(pt); r.setEnd(node, off); return r.toString().length; }
+  function selInfo() {
+    var s = window.getSelection(); if (!s || !s.rangeCount || s.isCollapsed) return null;
+    var rg = s.getRangeAt(0), a = ptOf(rg.startContainer), b = ptOf(rg.endContainer); if (!a || a !== b) return null;
+    var idx = [].indexOf.call(document.querySelectorAll("#passage .pt"), a); if (idx < 0) return null;
+    var st = offIn(a, rg.startContainer, rg.startOffset), en = offIn(a, rg.endContainer, rg.endOffset); if (en <= st) return null;
+    return { i: idx, s: st, e: en };
+  }
+  function overlaps(inf) { return (hlOf(state.p)[inf.i] || []).some(function (r) { return r[0] < inf.e && r[1] > inf.s; }); }
+  state.hlUndo = [];
+  ICON.undo = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
+  function undoBtn() { var b = document.querySelector('button[title="Undo highlight"]'); if (b) b.classList.toggle("off", !state.hlUndo.length); }
+  function undoHl() { if (!state.hlUndo.length) return; state.hl = JSON.parse(state.hlUndo.pop()); renderPassage(); scheduleSave(); undoBtn(); }
+  document.addEventListener("keydown", function (e) { var a = document.activeElement; if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === "z" && !(a && (a.tagName === "TEXTAREA" || a.tagName === "INPUT"))) { e.preventDefault(); undoHl(); } });
+  function setHl(inf, add) {
+    state.hlUndo.push(JSON.stringify(state.hl)); if (state.hlUndo.length > 50) state.hlUndo.shift(); setTimeout(undoBtn, 0);
+    var H = hlOf(state.p), L = (H[inf.i] || []).slice(), out = [];
+    if (add) { L.push([inf.s, inf.e]); L.sort(function (a, b) { return a[0] - b[0]; }); L.forEach(function (r) { var l = out[out.length - 1]; if (l && r[0] <= l[1]) l[1] = Math.max(l[1], r[1]); else out.push([r[0], r[1]]); }); }
+    else L.forEach(function (r) { if (r[1] <= inf.s || r[0] >= inf.e) out.push(r); else { if (r[0] < inf.s) out.push([r[0], inf.s]); if (r[1] > inf.e) out.push([inf.e, r[1]]); } });
+    H[inf.i] = out; try { window.getSelection().removeAllRanges(); } catch (e) { } hideSel(); renderPassage(); scheduleSave();
+  }
+  var fcard = h("div", { id: "fcard", hidden: "hidden" }); document.body.appendChild(fcard);
+  state.fc = null; state.dis = {};
+  function hideCard() { if (state.fc && state.fc.w) state.dis[state.fc.w] = 1; state.fc = null; var m = document.getElementById("npmiss"); if (m) m.dataset.w = ""; fcard.setAttribute("hidden", "hidden"); }
+  function showCard(w, rect) { state.fc = { w: w, rect: rect }; drawCards(); }
+  function place(rect) {
+    fcard.removeAttribute("hidden"); var ch = fcard.offsetHeight, cw = fcard.offsetWidth;
+    var top = rect.bottom + 8; if (top + ch > innerHeight - 8) top = Math.max(60, rect.top - ch - 8);
+    fcard.style.left = Math.max(8, Math.min(innerWidth - cw - 8, rect.left)) + "px"; fcard.style.top = top + "px";
+  }
+  function drawCards() {
+    var miss = document.getElementById("npmiss"), w = state.fc && state.fc.w, rect = state.fc && state.fc.rect;
+    if (!w && miss && miss.dataset.w) { w = miss.dataset.w; var li = state.npEl && state.npEl.querySelector(".lk input"); if (li) { var r0 = li.getBoundingClientRect(); rect = { left: r0.left, top: r0.top, bottom: r0.bottom }; } }
+    if (!w) {
+      var ta = state.npEl && state.npEl.querySelector("textarea"), hit = null;
+      if (ta) tokensOf(state.notes[state.p]).forEach(function (t) { var r = state.vc[t]; if (r && r.length && !state.dis[t] && !r.every(function (e) { return e.in_notebook; })) hit = t; });
+      if (hit) { var r1 = ta.getBoundingClientRect(); w = hit; rect = { left: r1.left, top: r1.top + 4, bottom: r1.top + 4 }; state.fc = { w: w, rect: rect }; }
+    }
+    if (!w || !rect) { fcard.setAttribute("hidden", "hidden"); return; }
+    var res = state.vc[w] || []; fcard.innerHTML = "";
+    if (res.length) {
+      res.forEach(function (e) {
+        var c = h("div", { cls: "vc" }, h("button", { cls: "ib bare", title: "Listen", "aria-label": "Listen", html: ICON.spk, onclick: function () { speak(e.word); } }), h("span", { cls: "vw", text: e.word }), h("span", { cls: "vp", text: [e.pos, e.ipa].filter(Boolean).join("  ") }), h("div", { text: e.meaning || "No meaning saved yet" }));
+        if (e.definition) c.appendChild(h("div", { cls: "npm", text: e.definition }));
+        var b = h("button", { cls: "vb", text: e.in_notebook ? "In notebook" : "Add to notebook" });
+        if (e.in_notebook) b.disabled = true; else b.addEventListener("click", function () { addWord(e, b); setTimeout(hideCard, 1000); });
+        c.appendChild(b); fcard.appendChild(c);
+      });
+    } else {
+      fcard.appendChild(h("div", { cls: "vw", text: w })); fcard.appendChild(h("div", { cls: "npm", text: "Not in the word bank yet. Choose its part of speech and write the meaning in My words, then press + to add it to your notebook." }));
+    }
+    place(rect);
+  }
+  function checkSel() {
+    var t = "", rect = null, a = document.activeElement, inf = null;
+    if (a && a.tagName === "TEXTAREA" && state.npEl && state.npEl.contains(a) && a.selectionEnd > a.selectionStart) {
+      t = a.value.slice(a.selectionStart, a.selectionEnd); var r = a.getBoundingClientRect(); rect = { left: r.left, top: r.top + 4, bottom: r.top + 4 };
+    } else {
+      var s = window.getSelection(); if (s && s.rangeCount && !s.isCollapsed && ($("#passage").contains(s.anchorNode) || $("#qs").contains(s.anchorNode))) { t = s.toString(); rect = s.getRangeAt(0).getBoundingClientRect(); inf = selInfo(); }
+    }
+    t = String(t).replace(/\s+/g, " ").trim();
+    var word = /^[A-Za-z][A-Za-z' -]{1,38}$/.test(t) && t.split(" ").length <= 3;
+    if (!rect || (!word && !inf)) { return; }
+    selWord = word ? t.toLowerCase() : ""; selRect = rect; selHl = inf;
+    bl.style.display = word ? "" : "none"; bh.style.display = inf ? "" : "none"; bc.style.display = inf && overlaps(inf) ? "" : "none";
+    selb.removeAttribute("hidden");
+    selb.style.left = Math.max(8, Math.min(innerWidth - 270, rect.left)) + "px"; selb.style.top = Math.max(60, rect.top - 44) + "px";
+  }
+  ["mouseup", "touchend"].forEach(function (ev) { document.addEventListener(ev, function () { setTimeout(checkSel, 20); }); });
+  document.addEventListener("mousedown", function (e) {
+    if (!selb.contains(e.target)) hideSel();
+    if (!fcard.contains(e.target) && !fcard.hasAttribute("hidden")) hideCard();
+  });
+  selb.addEventListener("mousedown", function (e) { e.preventDefault(); });
+  bl.addEventListener("click", function () {
+    var w = selWord; hideSel(); if (!w) return;
+    state.nview = "notes"; if (state.npEl.hasAttribute("hidden")) toggleNotes(); else if (state.npEl.querySelector(".npb.nn") == null) renderNotes();
+    delete state.dis[w];
+    var li = state.npEl.querySelector(".lk input"); if (li) li.value = w;
+    if (state.goLookup) state.goLookup(); else lookup(w, true).then(function () { drawCards(); });
+  });
+  bh.addEventListener("click", function () { if (selHl) setHl(selHl, true); });
+  bc.addEventListener("click", function () { if (selHl) setHl(selHl, false); });
+  /* each explicit look-up also adds a row to "My words" (pos, ipa, meaning, pronunciation) */
+  ICON.spk = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+  state.words = {};
+  function speak(w) { try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(w); u.lang = "en-US"; u.rate = 0.9; speechSynthesis.speak(u); } catch (e) { } }
+  function wlist() { return state.words[state.p] || (state.words[state.p] = []); }
+  function addWords(w, r) {
+    var rows = (r && r.length) ? r.map(function (e) { return { word: e.word, pos: e.pos || "", ipa: e.ipa || "", meaning: e.meaning || "" }; }) : [{ word: w, pos: "", ipa: "", meaning: "" }];
+    var L = wlist(); rows.forEach(function (x) { if (!L.some(function (y) { return y.word.toLowerCase() === x.word.toLowerCase() && y.pos === x.pos; })) L.push(x); });
+    state.dis[w] = 1; scheduleSave(); drawWords();
+  }
+  var POS = ["noun", "verb", "adjective", "adverb", "preposition", "pronoun", "conjunction", "phrase"];
+  function drawWords() {
+    var box = document.getElementById("npw"); if (!box) return; box.innerHTML = "";
+    var L = wlist(); if (!L.length) box.appendChild(h("div", { cls: "none", text: "Words you look up appear here." }));
+    L.forEach(function (x, i) {
+      var sel = h("select", { "aria-label": "Part of speech of " + x.word });
+      var opts = POS.slice(); if (x.pos && opts.indexOf(x.pos) < 0) opts.push(x.pos);
+      sel.appendChild(h("option", { value: "", text: "Word class" }));
+      opts.forEach(function (o) { var op = h("option", { value: o, text: o }); if (o === x.pos) op.selected = true; sel.appendChild(op); });
+      sel.addEventListener("change", function () { x.pos = sel.value; x.added = false; scheduleSave(); drawWords(); });
+      var mi = h("input", { cls: "wmi", type: "text", placeholder: "Meaning", autocomplete: "off", spellcheck: "false", value: x.meaning || "", "aria-label": "Meaning of " + x.word });
+      mi.addEventListener("input", function () { x.meaning = mi.value; x.added = false; scheduleSave(); });
+      var add = h("button", { cls: "ib bare", title: x.added ? "In notebook" : "Add to notebook", "aria-label": "Add " + x.word + " to notebook", text: x.added ? "✓" : "+" });
+      if (x.added) add.disabled = true; else add.addEventListener("click", function () {
+        add.disabled = true; add.textContent = "…";
+        rpc("student_vocab_add", { p_student_code: state.code, p_word: x.word, p_pos: x.pos || "", p_ipa: x.ipa || null, p_meaning: x.meaning || null, p_file_key: FILEKEY })
+          .then(function () { x.added = true; state.nb = null; scheduleSave(); drawWords(); }).catch(function () { add.disabled = false; add.textContent = "!"; });
+      });
+      box.appendChild(h("div", { cls: "wr" },
+        h("button", { cls: "ib bare", title: "Listen", "aria-label": "Listen to " + x.word, html: ICON.spk, onclick: function () { speak(x.word); } }),
+        h("span", { cls: "ww", text: x.word }), sel, add,
+        h("button", { cls: "ib bare wx", text: "×", title: "Remove", "aria-label": "Remove " + x.word, onclick: function () { L.splice(i, 1); scheduleSave(); drawWords(); } }),
+        h("span", { cls: "wi", text: x.ipa }), mi));
+    });
+  }
+  var lookup0 = lookup;
+  function autoAdd(r) {
+    (r || []).forEach(function (e) {
+      if (!e || e.in_notebook) return;
+      rpc("student_vocab_add", { p_student_code: state.code, p_word: e.word, p_pos: e.pos || "", p_ipa: e.ipa || null, p_meaning: e.meaning || null, p_definition: e.definition || null, p_file_key: FILEKEY })
+        .then(function () { e.in_notebook = true; state.nb = null; wlist().forEach(function (x) { if (x.word.toLowerCase() === String(e.word).toLowerCase() && (x.pos || "") === (e.pos || "")) x.added = true; }); scheduleSave(); drawWords(); drawCards(); }).catch(function () { });
+    });
+  }
+  lookup = function (w, count) { return lookup0(w, count).then(function (r) { if (count) { addWords(w, r); autoAdd(r); } return r; }); };
+
+  /* suggestions while typing in the look-up bar */
+  function attachSuggest(lk, getGo) {
+    var inp = lk.querySelector("input"); if (!inp) return;
+    lk.style.position = "relative";
+    var sg = h("div", { id: "npsg", hidden: "hidden" }); lk.appendChild(sg);
+    var tmr = null;
+    function hide() { sg.setAttribute("hidden", "hidden"); sg.innerHTML = ""; }
+    inp.addEventListener("input", function () {
+      clearTimeout(tmr); var q = inp.value.trim();
+      if (q.length < 2 || !state.code) { hide(); return; }
+      tmr = setTimeout(function () {
+        rpc("student_vocab_suggest", { p_student_code: state.code, p_q: q }).then(function (r) {
+          if (inp.value.trim() !== q) return; sg.innerHTML = "";
+          (Array.isArray(r) ? r : []).forEach(function (e) {
+            sg.appendChild(h("button", { cls: "sgi", onclick: function () { inp.value = e.w; hide(); getGo()(); } },
+              h("span", { cls: "sgw", text: e.w }), h("span", { cls: "sgp", text: e.pos || "" }), h("span", { cls: "sgm", text: e.meaning || "" }), h("span", { cls: "sgn", text: e.in_notebook ? "✓" : "" })));
+          });
+          if (sg.childNodes.length) sg.removeAttribute("hidden"); else hide();
+        }).catch(hide);
+      }, 200);
+    });
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") hide(); });
+    inp.addEventListener("blur", function () { setTimeout(hide, 250); });
+  }
+  /* look-up bar on top, notes below */
+  var renderNotes0 = renderNotes;
+  renderNotes = function () {
+    renderNotes0(); var b = state.npEl && state.npEl.querySelector(".npb.nn"); if (!b) return;
+    var lk = b.querySelector(".lk"); if (lk) b.insertBefore(lk, b.firstChild);
+    var w = h("div", { id: "npw", cls: "wl" }); if (lk) { lk.after(w); attachSuggest(lk, function () { return state.goLookup; }); var sp = stripEl(stepCards(state.p)); w.after(sp); } drawWords();
+  };
+
+
+  /* ---------- teacher's notes per question (sent from the In-class page) ---------- */
+  var TNS = {}, tnMo = null, tnBusy = false, tnSig = "";
+  function tnDecor() {
+    var qs = document.getElementById("qs"); if (!qs || tnBusy) return; tnBusy = true; if (tnMo) tnMo.disconnect();
+    [].forEach.call(qs.querySelectorAll(".tnq"), function (e) { e.remove(); });
+    [].forEach.call(qs.querySelectorAll(".qn"), function (t) {
+      var n = parseInt((t.id || "").slice(1), 10); if (!n) return; var it = TNS["q" + n]; if (!it || !it[0] || !it[0].note) return;
+      var host = t.closest(".qt,.hrow,.qcell"); if (!host) return;
+      var el = h("div", { cls: "tnq" }, h("b", { text: "Teacher: " }), document.createTextNode(it[0].note));
+      if (host.classList.contains("qcell")) { var g = t.closest(".grp"); if (g) g.appendChild(el); }
+      else if (host.classList.contains("hrow")) host.parentNode.insertBefore(el, host.nextSibling);
+      else { var qi = t.closest(".qi"); (qi || host.parentNode).appendChild(el); }
+    });
+    if (!tnMo) tnMo = new MutationObserver(function () { if (tnBusy) return; clearTimeout(tnMo.t); tnMo.t = setTimeout(tnDecor, 30); });
+    tnMo.observe(qs, { childList: true, subtree: true });
+    tnBusy = false;
+  }
+  function tnPoll() {
+    if (!state.code || document.visibilityState !== "visible") return;
+    rpc("student_notes", { p_student_code: state.code, p_assignment_code: D.code }).then(function (r) {
+      var m = {}; (r || []).forEach(function (x) { m[x.ref] = x.items || []; });
+      var sig = JSON.stringify(m); if (sig === tnSig) return; tnSig = sig; TNS = m; tnDecor();
+    }).catch(function () { });
+  }
+  setInterval(tnPoll, 6000);
+
+  /* ---------- results the teacher opened in class (first Check only) ---------- */
+  var CKS = {}, ckMo = null, ckBusy = false, ckSig = "";
+  function ckDecor() {
+    var qs = document.getElementById("qs"); if (!qs || ckBusy) return; ckBusy = true; if (ckMo) ckMo.disconnect();
+    [].forEach.call(qs.querySelectorAll(".ckv"), function (e) { e.remove(); });
+    [].forEach.call(qs.querySelectorAll(".qn"), function (t) {
+      var n = parseInt((t.id || "").slice(1), 10); if (!n || !(n in CKS)) return;
+      var host = t.closest(".qt,.hrow,.qcell"); if (!host) return; var c = CKS[n];
+      host.appendChild(h("span", { cls: "ckv " + (c === true ? "ok" : c === false ? "bad" : "blank"), title: "Checked in class", text: c === true ? "\u2713" : c === false ? "\u2717" : "\u2013" }));
+    });
+    if (!ckMo) ckMo = new MutationObserver(function () { if (ckBusy) return; clearTimeout(ckMo.t); ckMo.t = setTimeout(ckDecor, 30); });
+    ckMo.observe(qs, { childList: true, subtree: true });
+    ckBusy = false;
+  }
+  function ckPoll() {
+    if (!state.code || document.visibilityState !== "visible") return;
+    rpc("student_checks", { p_student_code: state.code, p_assignment_code: D.code }).then(function (r) {
+      var m = {}; (r || []).forEach(function (x) { m[x.q] = x.correct; });
+      var sig = JSON.stringify(m); if (sig === ckSig) return; ckSig = sig; CKS = m; ckDecor();
+    }).catch(function () { });
+  }
+  setInterval(ckPoll, 5000);
+
+  /* ---------- boot ---------- */
+  function boot() {
+    var fs = parseFloat(store("fs") || (window.innerWidth <= 700 ? "16" : "18")); document.documentElement.style.setProperty("--fs", fs + "px");
+    var tabs = h("nav", { cls: "tabs" });
+    D.passages.forEach(function (P, i) { tabs.appendChild(h("button", { cls: "tab" + (i === 0 ? " on" : ""), onclick: function () { state.p = i; paint(); } }, h("span", { cls: "tl", text: P.label }), h("span", { cls: "ts", text: P.short || P.label }))); });
+    var tools = h("div", { cls: "tools" }, h("span", { id: "sv", cls: "who2" }), h("span", { id: "who", cls: "who2" }),
+      h("button", { cls: "fsb", text: "A−", title: "Smaller text", onclick: function () { fontStep(-1); } }),
+      h("button", { cls: "fsb", text: "A+", title: "Larger text", onclick: function () { fontStep(1); } }));
+    if (TEACH) {
+      tools.appendChild(ibtn("book", "Show or hide new words", function (e) { state.vocab = !state.vocab; e.currentTarget.classList.toggle("off", !state.vocab); renderPassage(); }));
+      tools.appendChild(ibtn("reset", "Start again", reset));
+    } else tools.appendChild(ibtn("tick", "Submit the test", submit, "dark"));
+    if (!TEACH) tools.appendChild(ibtn("reset", "Retake the whole test", retakeAll));
+    tools.appendChild(ibtn("undo", "Undo highlight", function () { undoHl(); }, "off"));
+    tools.appendChild(ibtn("note", "Student's notes", toggleNotes));
+    tools.appendChild(ibtn("full", "Full screen", function () {
+      try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { }
+    }, "hide-m"));
+    $("#hd").appendChild(h("div", { cls: "brand", text: D.title })); $("#hd").appendChild(tabs); $("#hd").appendChild(tools);
+    var mv = h("div", { cls: "mv" }); ["p", "q"].forEach(function (v) { mv.appendChild(h("button", { cls: "mvb" + (v === "p" ? " on" : ""), "data-v": v, text: v === "p" ? "Passage" : "Questions", onclick: function () { setView(v); } })); });
+    $("#hd").appendChild(mv); $("#main").setAttribute("data-v", "p");
+    setupSplit(); if (TEACH) setupVocab(); buildNotes();
+    paint();
+    if (!TEACH && !window.LESSON) login();
+  }
+  document.addEventListener("DOMContentLoaded", boot);
+
+  /* ---------- lesson layer ---------- */
+  var LS = { s: "wu", a: {} }, LSST = [["wu", "Từ vựng"], ["learn", "Learn"], ["mini", "Mini Practice"], ["apply", "Apply"]], LL = "ABCD";
+  function lsLS(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function lsOpts(key, o, a) {
+    var st = LS.a[key] || { bad: [], done: false }, box = h("div", { cls: "lo" });
+    o.forEach(function (t, i) {
+      var c = "lopt" + (st.done && i === a ? " ok" : (!st.done || i !== a) && st.bad.indexOf(i) > -1 ? " bad" : "");
+      var b = h("button", { cls: c, onclick: function () { if (st.done) return; var s2 = LS.a[key] = LS.a[key] || { bad: [], done: false }; if (i === a) s2.done = true; else if (s2.bad.indexOf(i) < 0) s2.bad.push(i); renderNotes(); } },
+        h("b", { text: LL[i] }), h("span", { html: esc(t).replace(/&lt;br&gt;/g, "<br>") }));
+      if (st.done) b.disabled = true; box.appendChild(b);
+    });
+    return box;
+  }
+  function renderNotes() {
+    var p = state.npEl; if (!p) return; var PT = window.LESSON.parts[state.p]; if (!PT) return;
+    var top = p.querySelector(".lbody") ? p.querySelector(".lbody").scrollTop : 0; p.innerHTML = "";
+    var hd = h("div", { cls: "lh" }, h("b", { text: "Part " + (state.p + 1) + ". " + PT.t }), h("button", { cls: "ib bare", title: "Close", "aria-label": "Close", text: "×", onclick: function () { if (isMob()) setView("p"); else toggleNotes(); } }));
+    p.appendChild(hd);
+    p.appendChild(h("div", { cls: "lf", text: "Trọng tâm: " + PT.f }));
+    var sg = h("div", { cls: "lseg" }); LSST.forEach(function (x, i) { sg.appendChild(h("button", { cls: "lsg" + (LS.s === x[0] ? " on" : ""), text: (i + 1) + ". " + x[1], onclick: function () { LS.s = x[0]; renderNotes(); } })); }); p.appendChild(sg);
+    var B = h("div", { cls: "lbody" }); p.appendChild(B);
+    if (LS.s === "wu") {
+      B.appendChild(h("div", { cls: "lt", text: "Chọn nghĩa đúng của từ. Danh sách đầy đủ ở tab Words bên phải." }));
+      PT.wu.forEach(function (w, i) { var k = "w" + state.p + "_" + i; B.appendChild(h("div", { cls: "lwu" }, h("div", { cls: "lw", text: w.w }), lsOpts(k, w.o, w.a))); });
+    } else if (LS.s === "learn") {
+      var ol = h("ol", { cls: "lst" }); PT.learn.forEach(function (t) { ol.appendChild(h("li", { text: t })); }); B.appendChild(ol);
+      var m = h("div", { cls: "lmemo" }, h("b", { text: "Ghi nhớ" })); var ul = h("ul"); PT.note.forEach(function (t) { ul.appendChild(h("li", { text: t })); }); m.appendChild(ul); B.appendChild(m);
+    } else if (LS.s === "mini") {
+      if (PT.ctx) B.appendChild(h("div", { cls: "lctx", text: PT.ctx }));
+      PT.qs.forEach(function (q, i) {
+        var k = "m" + state.p + "_" + i, st = LS.a[k] || { bad: [], done: false };
+        var d = h("div", { cls: "lq" }, h("div", { cls: "lqn", text: "Câu " + (i + 1) }), h("div", { cls: "lqs", html: esc(q.s).replace(/&lt;br&gt;/g, "<br>") }), lsOpts(k, q.o, q.a));
+        if (st.done) d.appendChild(h("div", { cls: "lex", text: q.e })); else if (st.bad.length) d.appendChild(h("div", { cls: "lhint", text: "Chưa đúng. Đọc lại manh mối và thử phương án khác." }));
+        B.appendChild(d);
+      });
+    } else {
+      B.appendChild(h("div", { cls: "ltask", html: "<b>Nhiệm vụ.</b> " + esc(PT.apply) }));
+      B.appendChild(h("b", { text: "Ghi chú / lỗi cần tránh" }));
+      var ta = h("textarea", { "aria-label": "Ghi chú" }); ta.value = lsLS("tnls_note" + state.p) || ""; ta.oninput = function () { lsLS("tnls_note" + state.p, ta.value); }; B.appendChild(ta);
+    }
+    B.scrollTop = top;
+  }
+  /* vocab highlight */
+  function lsRe(w) {
+    var tk = w.split(" "), last = tk[tk.length - 1], ph = ["to", "in", "with"].indexOf(last) > -1 && tk.length > 1, si = ph ? 0 : tk.length - 1, parts = tk.map(function (t, i) {
+      var e = t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); if (i !== si) return e;
+      return /e$/.test(t) ? e.slice(0, -1) + "(?:e|es|ed|ing|d)" : e + "\\w{0,4}";
+    });
+    return new RegExp("(^|[^A-Za-z])(" + parts.join("\\s+") + ")(?![A-Za-z])", "i");
+  }
+  var lsTip = null, lsMo = null, lsBusy = false;
+  function lsMark() {
+    if (lsBusy || !window.LESSON) return; lsBusy = true; if (lsMo) lsMo.disconnect();
+    var V = window.LESSON.parts[state.p].vocab.map(function (v) { return { v: v, re: lsRe(v[0]) }; });
+    [].forEach.call(document.querySelectorAll("mark.vw"), function (m) { var t = document.createTextNode(m.textContent); m.parentNode.replaceChild(t, m); });
+    [$("#passage"), $("#qs")].forEach(function (root) {
+      if (!root) return; var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), nodes = [], n;
+      while ((n = w.nextNode())) { if (!n.parentNode.closest("button,input,textarea,.opt,.chips")) nodes.push(n); }
+      nodes.forEach(function (tn) {
+        var txt = tn.nodeValue, hits = [];
+        V.forEach(function (o) { var re = new RegExp(o.re.source, "ig"), m; while ((m = re.exec(txt))) { var s = m.index + m[1].length; hits.push([s, s + m[2].length, o.v]); } });
+        if (!hits.length) return; hits.sort(function (a, b) { return a[0] - b[0]; });
+        var f = document.createDocumentFragment(), pos = 0;
+        hits.forEach(function (x) { if (x[0] < pos) return; f.appendChild(document.createTextNode(txt.slice(pos, x[0]))); var mk = document.createElement("mark"); mk.className = "vw"; mk.textContent = txt.slice(x[0], x[1]); mk.dataset.w = x[2][0]; mk.dataset.m = x[2][1] + " · " + x[2][2]; f.appendChild(mk); pos = x[1]; });
+        f.appendChild(document.createTextNode(txt.slice(pos))); tn.parentNode.replaceChild(f, tn);
+      });
+    });
+    ["#passage", "#qs"].forEach(function (s) { var r = $(s); if (r && lsMo) lsMo.observe(r, { childList: true, subtree: true }); });
+    lsBusy = false;
+  }
+  document.addEventListener("click", function (e) {
+    var m = e.target.closest && e.target.closest("mark.vw");
+    if (!lsTip) { lsTip = document.createElement("div"); lsTip.className = "lstip"; document.body.appendChild(lsTip); }
+    if (!m) { lsTip.style.display = "none"; return; }
+    lsTip.innerHTML = "<b>" + esc(m.dataset.w) + "</b> " + esc(m.dataset.m); lsTip.style.display = "block";
+    var r = m.getBoundingClientRect(); lsTip.style.left = Math.max(8, Math.min(innerWidth - lsTip.offsetWidth - 8, r.left)) + "px"; lsTip.style.top = (r.bottom + 6) + "px";
+  });
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function () {
+      document.body.classList.add("lesson"); setView("p"); lsSkillBtn();
+      lsMo = new MutationObserver(function () { if (lsBusy) return; clearTimeout(lsMo.t); lsMo.t = setTimeout(lsMark, 30); });
+      lsMark(); var nb = document.querySelector('.ib[title="Student\'s notes"]'); if (nb) nb.setAttribute("title", "Lesson steps");
+      if (innerWidth >= 1000 && state.npEl && state.npEl.hasAttribute("hidden")) toggleNotes(); renderNotes();
+    }, 80);
+  });
+
+  
+  /* Mobile: tab "Kĩ năng làm bài" cạnh Passage / Questions */
+  var lsSetView0 = setView;
+  setView = function (v) {
+    var mob = isMob(), np = state.npEl, hd = document.getElementById("hd");
+    if (v === "s" && mob && np) {
+      lsSetView0("p"); $("#main").setAttribute("data-v", "s");
+      document.querySelectorAll(".mvb").forEach(function (b) { b.classList.toggle("on", b.dataset.v === "s"); });
+      np.style.top = (hd ? hd.getBoundingClientRect().bottom : 56) + "px";
+      if (np.hasAttribute("hidden")) toggleNotes(); else renderNotes();
+      var tb = document.getElementById("lst"); if (tb) tb.classList.add("on"); return;
+    }
+    if (v === "s") v = "p";
+    lsSetView0(v);
+    var tb2 = document.getElementById("lst"); if (tb2) tb2.classList.remove("on");
+    if (mob && np && !np.hasAttribute("hidden")) toggleNotes();
+  };
+  function lsSkillBtn() {
+    if (document.getElementById("lst")) return;
+    document.body.appendChild(h("button", { id: "lst", text: "Kĩ năng làm bài", "aria-label": "Kĩ năng làm bài", onclick: function () { setView($("#main").getAttribute("data-v") === "s" ? "p" : "s"); } }));
+  }
+  /* Words tab (whole test), collapsible */
+  function lsWords() {
+    var P = $("#lwp"); if (!P) return; P.innerHTML = "";
+    P.appendChild(h("div", { cls: "lh" }, h("b", { text: "Words" }), h("button", { cls: "ib bare", title: "Close", "aria-label": "Close", text: "×", onclick: function () { P.hidden = true; document.body.classList.remove("lw-open"); } })));
+    var B = h("div", { cls: "lbody" }); P.appendChild(B);
+    window.LESSON.parts.forEach(function (pt, i) {
+      var g = h("div", { cls: "lwg", id: "lwg" + i }, h("div", { cls: "lwh", text: "Part " + (i + 1) }));
+      pt.vocab.forEach(function (v) { g.appendChild(h("div", { cls: "lwr", html: "<b>" + esc(v[0]) + "</b> <i>" + v[1] + "</i><br>" + esc(v[2]) })); });
+      B.appendChild(g);
+    });
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function () {
+      var P = h("div", { id: "lwp", hidden: "hidden", role: "dialog", "aria-label": "Words" }), T = h("button", { id: "lwt", text: "Words", "aria-label": "Open words", onclick: function () { P.hidden = !P.hidden; document.body.classList.toggle("lw-open", !P.hidden); if (!P.hidden) { lsWords(); if (state.npEl) { P.style.top = state.npEl.style.top || ""; P.style.bottom = state.npEl.style.bottom || ""; } var g = $("#lwg" + state.p); if (g) g.scrollIntoView({ block: "start" }); } } });
+      document.body.appendChild(P); document.body.appendChild(T);
+    }, 90);
+  });
+})();
+</script><script src="../../back-to-portal.js"></script>
+</body></html>
