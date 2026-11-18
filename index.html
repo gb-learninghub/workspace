@@ -18,12 +18,14 @@
   <script src="lms.js"></script><script src="lms-tiles.js"></script><script src="lms-att.js"></script>
   <script>document.documentElement.dataset.lmsView=location.hash==='#schedule'?'schedule':location.hash==='#lib'?'lib':'overview';</script>
   <style>
-    #qs-menu{max-width:calc(100vw - 16px);position:fixed;z-index:95;width:190px;padding:6px;background:#fff;border:1px solid #E4E6EA;border-radius:14px;animation:qsPop .16s ease both}
-    #qs-menu button{display:flex;align-items:center;width:100%;height:40px;padding:0 12px;border:0;border-radius:9px;background:transparent;color:#1B1D22;font:inherit;font-size:.9rem;font-weight:600;text-align:left;cursor:pointer;transition:background-color .15s ease}
-    #qs-menu button:hover{background:#F4F5F7}#qs-menu button:active{background:#E9EBEF}
-    #qs-menu button.on{background:#e7f6ec;color:#1d7a3e}#qs-menu button.on:after{content:"\2713";margin-left:auto}
-    #qs-menu button.dl{color:#b42318}#qs-menu hr{border:0;border-top:1px solid #E4E6EA;margin:6px 4px}
-    @keyframes qsPop{from{opacity:0;transform:translateY(-4px) scale(.96)}to{opacity:1;transform:none}}
+    [class~=qs-menu]{max-width:calc(100vw - 16px);position:fixed;z-index:95;width:190px;padding:6px;background:#fff;border:1px solid #E4E6EA;border-radius:14px;animation:qsIn .18s cubic-bezier(.2,.8,.2,1) both}
+    .qs-menu.out{animation:qsOut .14s ease-in both;pointer-events:none}
+    [class~=qs-menu] button{display:flex;align-items:center;width:100%;height:40px;padding:0 12px;border:0;border-radius:9px;background:transparent;color:#1B1D22;font:inherit;font-size:.9rem;font-weight:600;text-align:left;cursor:pointer;transition:background-color .15s ease}
+    [class~=qs-menu] button:hover{background:#F4F5F7}[class~=qs-menu] button:active{background:#E9EBEF}
+    [class~=qs-menu] button.on{background:#e7f6ec;color:#1d7a3e}[class~=qs-menu] button.on:after{content:"\2713";margin-left:auto}
+    [class~=qs-menu] button.dl{color:#b42318}[class~=qs-menu] hr{border:0;border-top:1px solid #E4E6EA;margin:6px 4px}
+    @keyframes qsIn{from{opacity:0;transform:translateY(-6px);clip-path:inset(0 0 100% 0 round 14px)}to{opacity:1;transform:none;clip-path:inset(0 0 0 0 round 14px)}}
+    @keyframes qsOut{from{opacity:1;transform:none;clip-path:inset(0 0 0 0 round 14px)}to{opacity:0;transform:translateY(-6px);clip-path:inset(0 0 100% 0 round 14px)}}
     html[data-lms-view="schedule"] #view-overview,html[data-lms-view="lib"] #view-overview,html[data-lms-view="lib"] #view-schedule{display:none!important}
     html[data-lms-view="schedule"] #view-schedule{display:block!important}
     html[data-lms-view="lib"] #view-lib{display:block!important}
@@ -1471,11 +1473,12 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       }
       const lessonOf = s => autoLesson(s) || s.lesson || '';
       /* Menu nhanh cho buổi đã qua / hôm nay: Hoàn thành, Hủy, Sửa chi tiết */
-      function closeQs() { const m = document.getElementById('qs-menu'); if (m) m.remove(); }
+      function closeQs() { const m = document.getElementById('qs-menu'); if (!m || m.classList.contains('out')) return; m.removeAttribute('id'); m.classList.add('out'); setTimeout(() => m.remove(), 150); }
       function openQs(chip, s) {
         const cur = document.getElementById('qs-menu'), same = cur && cur.dataset.sid === String(s.id);
+        document.querySelectorAll('.qs-menu.out').forEach(x => x.remove());
         closeQs(); if (same) return;
-        const m = document.createElement('div'); m.id = 'qs-menu'; m.dataset.sid = s.id; m.setAttribute('role', 'menu');
+        const m = document.createElement('div'); m.id = 'qs-menu'; m.className = 'qs-menu'; m.dataset.sid = s.id; m.setAttribute('role', 'menu');
         m.innerHTML = [['planned', 'Chưa dạy'], ['done', 'Hoàn thành'], ['makeup', 'Bù'], ['cancel', 'Hủy'], ['holiday', 'Nghỉ lễ']].map(([k, t]) => `<button type="button" data-q="${k}" class="${s.status === k ? 'on' : ''}">${t}</button>`).join('') + '<hr><button type="button" data-q="edit">Sửa chi tiết</button><button type="button" data-q="del" class="dl">Xóa buổi</button>';
         document.body.appendChild(m);
         const r = chip.getBoundingClientRect(), w = m.offsetWidth, h = m.offsetHeight;
