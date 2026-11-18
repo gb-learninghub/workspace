@@ -585,6 +585,13 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           .gte('session_date', ymd(d[0])).lte('session_date', ymd(d[6])).order('start_time');
         if (r.error) throw r.error;
         st.sessions = r.data || [];
+        /* Buổi học sắp tới luôn theo tuần hiện tại, không đổi theo thanh chuyển tuần */
+        if (st.week === NOW_WEEK) st.nowSessions = st.sessions;
+        else {
+          const dn = weekDates(NOW_WEEK), rn = await st.c.from('sessions').select('id,class_id,session_no,session_date,start_time,end_time,status,lesson,note,mode')
+            .gte('session_date', ymd(dn[0])).lte('session_date', ymd(dn[6])).order('start_time');
+          if (!rn.error) st.nowSessions = rn.data || [];
+        }
       }
       async function refresh(msg) {
         try { await Promise.all([loadWeek(), loadMats(), st.view === 'lib' ? loadLib(true) : null]); render(); if (msg) LMS.toast(msg); }
@@ -758,9 +765,9 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         ].map(x => `<div class="overview-money"${f ? ` data-fin="${x[3]}" role="button" tabindex="0"` : ''}><i data-lucide="${x[2]}"></i><span>${x[0]}</span>${x[1] ? `<b class="money-hidden" role="button" tabindex="0" data-money="${x[1]}" aria-label="Bấm để hiện số tiền"><i data-lucide="eye-off"></i></b>` : '<b>–</b>'}</div>`).join('')}</div>`;
         if (!window.__finOpen) { window.__finOpen = true; const op = e => { const it = e.target.closest('.overview-money[data-fin]'); if (!it || e.target.closest('b[data-money]')) return; if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return; e.preventDefault(); openFinList(it.dataset.fin); }; document.addEventListener('click', op); document.addEventListener('keydown', op); }
         if (!window.__moneyToggle) { window.__moneyToggle = true; const tg = e => { const b = e.target.closest('.overview-money > b[data-money]'); if (!b) return; if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return; e.preventDefault(); const hide = !b.classList.contains('money-hidden'); b.classList.toggle('money-hidden', hide); b.innerHTML = hide ? '<i data-lucide="eye-off"></i>' : b.dataset.money; b.setAttribute('aria-label', hide ? 'Bấm để hiện số tiền' : 'Bấm để ẩn số tiền'); if (hide) icons(); }; document.addEventListener('click', tg); document.addEventListener('keydown', tg); }
-        const dates = weekDates(st.week), first = dates[0], last = dates[6];
+        const dates = weekDates(NOW_WEEK), first = dates[0], last = dates[6];
         $('overview-week-label').textContent = pad(first.getDate()) + '/' + pad(first.getMonth() + 1) + ' – ' + pad(last.getDate()) + '/' + pad(last.getMonth() + 1);
-        const today = ymd(new Date()), upcoming = st.sessions.filter(s => s.session_date >= today && !['cancel', 'holiday', 'done'].includes(s.status)).sort((a, b) => a.session_date.localeCompare(b.session_date) || a.start_time.localeCompare(b.start_time)).slice(0, 5);
+        const today = ymd(new Date()), upcoming = (st.nowSessions || (st.week === NOW_WEEK ? st.sessions : [])).filter(s => s.session_date >= today && !['cancel', 'holiday', 'done'].includes(s.status)).sort((a, b) => a.session_date.localeCompare(b.session_date) || a.start_time.localeCompare(b.start_time)).slice(0, 5);
         $('overview-upcoming').innerHTML = upcoming.length ? upcoming.map(s => { const c = st.classes.find(x => x.id === s.class_id), d = new Date(s.session_date + 'T00:00:00'); return `<a class="overview-session" href="${esc(c && (c.page_url || 'class.html?class=' + encodeURIComponent(c.class_code)) || 'classes.html')}"><span class="overview-session-date"><b>${pad(d.getDate())}</b><small>${DAY[(d.getDay() + 6) % 7].replace('Thứ ', 'T')}</small></span><span class="overview-session-info"><b>${esc(c ? c.class_code : 'Lớp')}</b><small>${esc(s.lesson || s.note || 'Buổi học')}</small></span><span class="overview-session-time">${t5(s.start_time)}</span></a>`; }).join('') : '<p class="overview-empty">Không còn buổi học sắp tới trong tuần này.</p>';
         icons();
       }
