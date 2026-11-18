@@ -22,6 +22,9 @@
   function weekDates(w) { var m = new Date(BASE_MONDAY); m.setDate(m.getDate() + (w - 1) * 7); return Array.from({ length: 7 }, function (_, i) { var d = new Date(m); d.setDate(m.getDate() + i); return d; }); }
   function nowWeek() { var n = new Date(), dow = (n.getDay() + 6) % 7, mon = new Date(n.getFullYear(), n.getMonth(), n.getDate() - dow); return 1 + Math.round((mon - BASE_MONDAY) / (7 * DAY)); }
   function dayNow() { var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+  function todayIdx() { return (dayNow().getDay() + 6) % 7; }
+  function selKey() { return ymd(weekDates(S.week)[S.day]); }
+  function daySes(cid) { var k = selKey(); return (S.byClass[cid] || []).filter(function (x) { return x.session_date === k; }); }
   function t5(v) { return (v || '').slice(0, 5); }
 
   function css() {
@@ -44,7 +47,7 @@
 #lms-att .att-wk{min-width:150px;text-align:center;font-weight:800;font-size:.9rem;line-height:1.15}#lms-att .att-wk small{display:block;color:#778597;font-weight:600;font-size:.75rem}\
 #lms-att .att-wrap{flex:1;min-height:0;overflow-x:auto;display:flex;flex-direction:column}\
 #lms-att .att-table{flex:1;min-height:0;min-width:640px;display:flex;flex-direction:column}\
-#lms-att .att-row{display:grid;grid-template-columns:minmax(150px,1.3fr) 84px repeat(var(--n,3),84px) minmax(140px,1.2fr);gap:10px;align-items:center;padding:4px 8px}\
+#lms-att .att-row{display:grid;grid-template-columns:minmax(150px,1.3fr) 84px repeat(var(--n,1),84px) minmax(140px,1.2fr);gap:10px;align-items:center;padding:4px 8px}\
 #lms-att .att-head{flex:none;background:#fff;border-bottom:1px solid #d5d9e0;color:#778597;font-size:.8rem;font-weight:700;min-height:40px}\
 #lms-att .att-head .c{text-align:center}\
 #lms-att .att-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}\
@@ -54,7 +57,7 @@
 #lms-att .att-body .att-row:hover{background:#f7f8fa}\
 #lms-att .att-name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\
 #lms-att .att-cls{color:#778597;font-size:.85rem;font-weight:700;text-decoration:none}#lms-att a.att-cls:hover{color:#16181D;text-decoration:underline}\
-#lms-att .att-days{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}#lms-att .att-days b{font-size:.8rem;color:#778597;margin-right:2px}#lms-att .att-dy{height:40px;padding:0 12px;flex-direction:column;justify-content:center;gap:0;line-height:1.1}#lms-att .att-dy small{font-size:.68rem;font-weight:600;opacity:.7}#lms-att .att-dy.today{border-color:#16181D}\
+#lms-att .att-days{display:flex;gap:4px;justify-content:space-between;margin-bottom:12px}#lms-att .att-dp{flex:1;max-width:96px;min-height:84px;border:0;border-radius:999px;background:transparent;color:#1B1D22;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:background-color .15s ease,transform .12s ease}#lms-att .att-dp:active{transform:scale(.95)}#lms-att .att-dp:hover{background:#f7f8fa}#lms-att .att-dp span{font-size:.8rem;font-weight:700;color:#5a6577}#lms-att .att-dp b{font-size:1.25rem;font-weight:800;line-height:1}#lms-att .att-dp i{width:6px;height:6px;border-radius:50%;background:transparent;margin-top:2px}#lms-att .att-dp.has i{background:#B07F2C}#lms-att .att-dp.on{background:#F6F0DF}#lms-att .att-dp.on span,#lms-att .att-dp.on b{color:#A87D2E}#lms-att .att-btn.cur{background:#F3E9C6;border-color:#F3E9C6;color:#7a5a12;cursor:default}\
 #lms-att .att-cell{display:flex;flex-direction:column;align-items:center;gap:2px}\
 #lms-att .att-c{width:44px;height:36px;border:1px solid #E4E6EA;border-radius:10px;background:#fff;color:#b8c0cc;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;transition:transform .12s ease,background-color .15s ease,border-color .15s ease}\
 #lms-att .att-c:active{transform:scale(.88)}\
@@ -91,6 +94,8 @@
 <button type="button" class="att-btn" data-a="now" id="att-now">Tuần này</button>\
 <span class="sp"></span>\
 <select class="att-sel" id="att-class" aria-label="Lọc theo lớp"></select>\
+<button type="button" class="att-btn" data-a="all" title="Có mặt cho mọi ô trống trong ngày">Có mặt tất cả</button>\
+<button type="button" class="att-btn" data-a="none" title="Xóa điểm danh của mọi học viên trong ngày">Bỏ chọn tất cả</button>\
 </div>\
 <div class="att-days" id="att-days"></div></div>\
 <div class="att-wrap"><div class="att-table"><div class="att-row att-head" id="att-head"></div><div class="att-body" id="att-body"></div></div></div>\
@@ -101,8 +106,9 @@
       var a = e.target.closest('[data-a]');
       if (a) {
         var k = a.dataset.a;
-        if (k === 'prev') { S.week--; load(true); } else if (k === 'next') { S.week++; load(true); } else if (k === 'now') { S.week = nowWeek(); load(true); }
-        else if (k === 'day') bulkDay(a);
+        if (k === 'prev') { S.week--; load(true); } else if (k === 'next') { S.week++; load(true); } else if (k === 'now') { if (S.week !== nowWeek()) { S.week = nowWeek(); S.day = todayIdx(); load(true); } }
+        else if (k === 'dpick') { S.day = Number(a.dataset.i); paint(true); }
+        else if (k === 'all') markDay(a, true); else if (k === 'none') markDay(a, false);
         return;
       }
       var c = e.target.closest('.att-c'); if (c && !c.disabled) cycle(c);
@@ -144,44 +150,43 @@
 
   function visible() {
     return S.stu.filter(function (s) {
-      var ss = S.byClass[s.class_id]; if (!ss || !ss.length) return false;
+      if (!daySes(s.class_id).length) return false;
       return S.cls === 'all' || String(s.class_id) === S.cls;
     }).sort(function (a, b) { return natural((S.cmap[a.class_id] || {}).class_code, (S.cmap[b.class_id] || {}).class_code) || String(a.student_name).localeCompare(String(b.student_name), 'vi'); });
   }
-
   function paint(animate) {
-    var d = weekDates(S.week), fmt = function (x) { return pad(x.getDate()) + '.' + pad(x.getMonth() + 1); };
-    document.getElementById('att-wk').innerHTML = 'Tuần ' + pad(S.week) + '<small>' + fmt(d[0]) + ' – ' + fmt(d[6]) + '</small>';
-    document.getElementById('att-now').classList.toggle('on', S.week === nowWeek());
+    var d = weekDates(S.week), cur = S.week === nowWeek(), nb = document.getElementById('att-now');
+    document.getElementById('att-wk').textContent = 'Tuần ' + pad(S.week);
+    nb.classList.toggle('cur', cur); nb.setAttribute('aria-disabled', cur ? 'true' : 'false');
     var sel = document.getElementById('att-class'), codes = S.classes.filter(function (c) { return S.byClass && S.byClass[c.id]; }).sort(function (a, b) { return natural(a.class_code, b.class_code); });
     if (S.cls !== 'all' && !codes.some(function (c) { return String(c.id) === S.cls; })) S.cls = 'all';
     sel.innerHTML = '<option value="all">Tất cả lớp</option>' + codes.map(function (c) { return '<option value="' + c.id + '"' + (String(c.id) === S.cls ? ' selected' : '') + '>' + esc(c.class_code) + '</option>'; }).join('');
 
-    var rows = visible(), n = 3;
-    rows.forEach(function (s) { n = Math.max(n, (S.byClass[s.class_id] || []).length); });
-    var dh = '<b>Điểm danh theo ngày</b>', tk = ymd(dayNow());
-    d.forEach(function (x) {
-      var k = ymd(x), st = dayState(rows, k);
-      dh += '<button type="button" class="att-btn att-dy' + (st === 'all' ? ' on' : '') + (k === tk ? ' today' : '') + '" data-a="day" data-d="' + k + '"' + (st === 'none' || k > tk ? ' disabled' : '') + ' title="' + (st === 'all' ? 'Bỏ điểm danh cả ngày' : 'Có mặt cả ngày') + '">' + WD[x.getDay()] + '<small>' + fmt(x) + '</small></button>';
+    var rows = visible(), n = 1;
+    rows.forEach(function (s) { n = Math.max(n, daySes(s.class_id).length); });
+    var dh = '';
+    d.forEach(function (x, i) {
+      var k = ymd(x), has = S.stu.length && S.classes.some(function (c) { return (S.byClass[c.id] || []).some(function (y) { return y.session_date === k; }); });
+      dh += '<button type="button" class="att-dp' + (i === S.day ? ' on' : '') + (has ? ' has' : '') + '" data-a="dpick" data-i="' + i + '"><span>' + WD[x.getDay()].replace('CN', 'CN') + '</span><b>' + x.getDate() + '</b><i></i></button>';
     });
     document.getElementById('att-days').innerHTML = dh;
     var head = document.getElementById('att-head'); head.style.setProperty('--n', n);
-    var h = '<span>Tên</span><span>Lớp</span>'; for (var i = 1; i <= n; i++) h += '<span class="c">Buổi ' + i + '</span>'; h += '<span>Ghi chú</span>';
+    var h = '<span>Tên</span><span>Lớp</span>'; for (var i = 1; i <= n; i++) h += '<span class="c">Buổi' + (n > 1 ? ' ' + i : '') + '</span>'; h += '<span>Ghi chú</span>';
     head.innerHTML = h;
 
     var body = document.getElementById('att-body'), keep = body.scrollTop, html = '';
     rows.forEach(function (s, idx) {
-      var ss = S.byClass[s.class_id] || [], cl = S.cmap[s.class_id] || {};
+      var ss = daySes(s.class_id), cl = S.cmap[s.class_id] || {};
       html += '<div class="att-row' + (animate ? ' in' : '') + '" style="--n:' + n + ';--i:' + Math.min(idx, 14) + '" data-stu="' + s.id + '"><span class="att-name" title="' + esc(s.student_name) + '">' + esc(s.student_name) + '</span><a class="att-cls" href="' + esc(cl.page_url || ('class.html?class=' + encodeURIComponent(cl.class_code))) + '" title="Mở lớp ' + esc(cl.class_code) + '">' + esc(cl.class_code) + '</a>';
       for (var j = 0; j < n; j++) {
         var x = ss[j];
         if (!x) { html += '<span class="att-none">–</span>'; continue; }
-        var dt = new Date(x.session_date + 'T00:00:00'), v = S.att[x.id + ':' + s.id] || '', fut = x.session_date > ymd(dayNow());
-        html += '<span class="att-cell"><button type="button" class="att-c" data-s="' + x.id + '" data-u="' + s.id + '" data-st="' + v + '"' + (fut ? ' disabled' : '') + ' aria-label="' + esc(s.student_name) + (v ? ' · ' + LABEL[v] : '') + '">' + (v ? ICON[v] : '') + '</button><span class="att-d">' + WD[dt.getDay()] + ' ' + pad(dt.getDate()) + '/' + pad(dt.getMonth() + 1) + '</span></span>';
+        var v = S.att[x.id + ':' + s.id] || '', fut = x.session_date > ymd(dayNow());
+        html += '<span class="att-cell"><button type="button" class="att-c" data-s="' + x.id + '" data-u="' + s.id + '" data-st="' + v + '"' + (fut ? ' disabled' : '') + ' aria-label="' + esc(s.student_name) + (v ? ' · ' + LABEL[v] : '') + '">' + (v ? ICON[v] : '') + '</button><span class="att-d">' + t5(x.start_time) + '</span></span>';
       }
       html += '<input class="att-note" type="text" value="' + esc(s.note || '') + '" data-u="' + s.id + '" placeholder="Ghi chú" aria-label="Ghi chú ' + esc(s.student_name) + '" autocomplete="off"></div>';
     });
-    body.innerHTML = html || '<div class="att-empty">' + (S.loading ? 'Đang tải…' : 'Không có buổi học nào trong tuần này.') + '</div>';
+    body.innerHTML = html || '<div class="att-empty">' + (S.loading ? 'Đang tải…' : 'Ngày này không có buổi học.') + '</div>';
     body.scrollTop = keep;
     sum(rows);
   }
@@ -189,7 +194,7 @@
   function sum(rows) {
     rows = rows || visible();
     var p = 0, l = 0, a = 0;
-    rows.forEach(function (s) { (S.byClass[s.class_id] || []).forEach(function (x) { var v = S.att[x.id + ':' + s.id]; if (v === 'present') p++; else if (v === 'late') l++; else if (v === 'absent') a++; }); });
+    rows.forEach(function (s) { daySes(s.class_id).forEach(function (x) { var v = S.att[x.id + ':' + s.id]; if (v === 'present') p++; else if (v === 'late') l++; else if (v === 'absent') a++; }); });
     document.getElementById('att-sum').textContent = rows.length + ' học viên · ' + p + ' có mặt · ' + l + ' trễ · ' + a + ' vắng';
   }
 
@@ -216,28 +221,28 @@
     if (r.error) { if (prev) S.att[key] = prev; else delete S.att[key]; setCell(sid, uid, prev); sum(); err(r.error); return; }
     syncSession(sid);
   }
-  function daySessions(rows, k) { var out = []; rows.forEach(function (u) { (S.byClass[u.class_id] || []).forEach(function (x) { if (x.session_date === k) out.push({ x: x, u: u }); }); }); return out; }
-  function dayState(rows, k) {
-    var l = daySessions(rows, k); if (!l.length) return 'none';
-    return l.every(function (o) { return S.att[o.x.id + ':' + o.u.id] === 'present'; }) ? 'all' : 'some';
-  }
-  async function bulkDay(btn) {
-    var k = btn.dataset.d, rows = visible(), l = daySessions(rows, k); if (!l.length) return;
-    var clear = dayState(rows, k) === 'all', sids = {}; btn.disabled = true;
-    if (clear) {
-      for (var i = 0; i < l.length; i++) {
-        var o = l[i], r = await S.c.from('attendance').delete().eq('session_id', o.x.id).eq('student_id', o.u.id);
-        if (r.error) { btn.disabled = false; return err(r.error); }
-        delete S.att[o.x.id + ':' + o.u.id]; setCell(o.x.id, o.u.id, ''); sids[o.x.id] = 1;
-      }
+  async function markDay(btn, on) {
+    var l = []; visible().forEach(function (u) { daySes(u.class_id).forEach(function (x) { l.push({ x: x, u: u }); }); });
+    var sids = {}, today = ymd(dayNow());
+    btn.disabled = true;
+    if (on) {
+      var add = l.filter(function (o) { return o.x.session_date <= today && !S.att[o.x.id + ':' + o.u.id]; }).map(function (o) { return { session_id: o.x.id, student_id: o.u.id, status: 'present', updated_at: new Date().toISOString() }; });
+      if (!add.length) { btn.disabled = false; return toast('Không còn ô trống nào để điểm danh.'); }
+      var r = await S.c.from('attendance').upsert(add);
+      if (r.error) { btn.disabled = false; return err(r.error); }
+      add.forEach(function (a) { S.att[a.session_id + ':' + a.student_id] = 'present'; sids[a.session_id] = 1; });
     } else {
-      var add = l.filter(function (o) { return !S.att[o.x.id + ':' + o.u.id]; }).map(function (o) { return { session_id: o.x.id, student_id: o.u.id, status: 'present', updated_at: new Date().toISOString() }; });
-      var r2 = await S.c.from('attendance').upsert(add);
-      if (r2.error) { btn.disabled = false; return err(r2.error); }
-      add.forEach(function (a) { S.att[a.session_id + ':' + a.student_id] = 'present'; setCell(a.session_id, a.student_id, 'present'); sids[a.session_id] = 1; });
+      var del = l.filter(function (o) { return S.att[o.x.id + ':' + o.u.id]; });
+      if (!del.length) { btn.disabled = false; return toast('Ngày này chưa có điểm danh nào.'); }
+      for (var sid in (function () { var m = {}; del.forEach(function (o) { m[o.x.id] = 1; }); return m; })()) {
+        var ids = del.filter(function (o) { return o.x.id === Number(sid); }).map(function (o) { return o.u.id; });
+        var r2 = await S.c.from('attendance').delete().eq('session_id', Number(sid)).in('student_id', ids);
+        if (r2.error) { btn.disabled = false; paint(false); return err(r2.error); }
+        ids.forEach(function (u) { delete S.att[sid + ':' + u]; }); sids[sid] = 1;
+      }
     }
     for (var id in sids) await syncSession(Number(id));
-    paint(false);
+    btn.disabled = false; paint(false);
   }
   async function saveNote(inp) {
     var uid = Number(inp.dataset.u), s = S.stu.find(function (x) { return x.id === uid; }); if (!s) return;
@@ -250,7 +255,7 @@
   window.LMSAtt = {
     open: function (o) {
       if (!box) build();
-      S = { c: o.c, classes: o.classes || [], week: nowWeek(), cls: 'all', byClass: {}, sess: {}, att: {}, stu: [], cmap: {}, loading: true };
+      S = { c: o.c, classes: o.classes || [], week: nowWeek(), day: todayIdx(), cls: 'all', byClass: {}, sess: {}, att: {}, stu: [], cmap: {}, loading: true };
       box.classList.remove('out'); box.hidden = false; box.style.animation = 'none'; void box.offsetWidth; box.style.animation = '';
       paint(true);
       load(true);
