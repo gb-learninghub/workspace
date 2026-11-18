@@ -18,11 +18,11 @@
   <script src="lms.js"></script><script src="lms-tiles.js"></script><script src="lms-att.js"></script>
   <script>document.documentElement.dataset.lmsView=location.hash==='#schedule'?'schedule':location.hash==='#lib'?'lib':'overview';</script>
   <style>
-    #qs-menu{position:fixed;z-index:95;display:flex;gap:6px;padding:6px;background:#fff;border:1px solid #E4E6EA;border-radius:999px;animation:qsPop .16s ease both}
+    #qs-menu{max-width:calc(100vw - 16px);position:fixed;z-index:95;display:flex;gap:6px;padding:6px;background:#fff;border:1px solid #E4E6EA;border-radius:999px;animation:qsPop .16s ease both}
     #qs-menu button{height:36px;padding:0 14px;border:1px solid #E4E6EA;border-radius:999px;background:#fff;color:#1B1D22;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:transform .12s ease,background-color .15s ease}
     #qs-menu button:hover{background:#F4F5F7}#qs-menu button:active{transform:scale(.94)}
     #qs-menu button.dl{color:#b42318;margin-left:4px}#qs-menu button.ic{width:36px;padding:0}#qs-menu button.ic svg{width:16px;height:16px}
-    #qs-menu button[data-q=done].on{background:#e7f6ec;border-color:#9bd3ad;color:#1d7a3e}#qs-menu button[data-q=cancel].on{background:#fde8e6;border-color:#eba39d;color:#b42318}
+    #qs-menu button[data-q=holiday].on{background:#fff6e0;border-color:#e8c777;color:#8a5a00}#qs-menu button[data-q=planned].on,#qs-menu button[data-q=makeup].on{background:#eef2ff;border-color:#b6c3f5;color:#3b4fb8}#qs-menu button[data-q=done].on{background:#e7f6ec;border-color:#9bd3ad;color:#1d7a3e}#qs-menu button[data-q=cancel].on{background:#fde8e6;border-color:#eba39d;color:#b42318}
     @keyframes qsPop{from{opacity:0;transform:translateY(-4px) scale(.96)}to{opacity:1;transform:none}}
     html[data-lms-view="schedule"] #view-overview,html[data-lms-view="lib"] #view-overview,html[data-lms-view="lib"] #view-schedule{display:none!important}
     html[data-lms-view="schedule"] #view-schedule{display:block!important}
@@ -1475,7 +1475,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       function openQs(chip, s) {
         closeQs();
         const m = document.createElement('div'); m.id = 'qs-menu'; m.setAttribute('role', 'menu');
-        m.innerHTML = `<button type="button" data-q="done" class="${s.status === 'done' ? 'on' : ''}">Hoàn thành</button><button type="button" data-q="cancel" class="${s.status === 'cancel' ? 'on' : ''}">Hủy</button><button type="button" data-q="edit" class="ic" aria-label="Sửa chi tiết" title="Sửa chi tiết"><i data-lucide="pencil"></i></button><button type="button" data-q="del" class="ic dl" aria-label="Xóa buổi" title="Xóa buổi"><i data-lucide="trash-2"></i></button>`;
+        m.innerHTML = `${[['planned', 'Chưa dạy'], ['done', 'Hoàn thành'], ['makeup', 'Bù'], ['cancel', 'Hủy'], ['holiday', 'Nghỉ lễ']].map(([k, t]) => `<button type="button" data-q="${k}" class="${s.status === k ? 'on' : ''}">${t}</button>`).join('')}<button type="button" data-q="edit" class="ic" aria-label="Sửa chi tiết" title="Sửa chi tiết"><i data-lucide="pencil"></i></button><button type="button" data-q="del" class="ic dl" aria-label="Xóa buổi" title="Xóa buổi"><i data-lucide="trash-2"></i></button>`;
         document.body.appendChild(m); icons();
         const r = chip.getBoundingClientRect(), w = m.offsetWidth;
         m.style.top = Math.min(window.innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px';
@@ -1488,7 +1488,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           if (s.status === q) return;
           const res = await st.c.from('sessions').update({ status: q, updated_at: new Date().toISOString() }).eq('id', s.id);
           if (res.error) { LMS.toast(LMS.friendlyError(res.error)); return; }
-          await refresh(q === 'done' ? 'Buổi học đã hoàn thành.' : 'Đã hủy buổi học.');
+          await refresh('Đã chuyển sang: ' + STATUS_TXT[q] + '.');
         });
       }
       document.addEventListener('click', e => { if (!e.target.closest('#qs-menu') && !e.target.closest('[data-sid]')) closeQs(); });
