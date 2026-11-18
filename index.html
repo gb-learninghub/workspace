@@ -868,8 +868,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           if (!r.ok) throw new Error('github ' + r.status);
           const j = await r.json(), out = [];
           (j.tree || []).forEach(t => {
-            const m = t.type === 'blob' && /^(ielts|toeic|gs|gt)\/w(\d{1,2})\/([^\/]+)\.html$/i.exec(t.path);
-            if (m) out.push({ scan: true, kind: 'lesson', skill: '', path: t.path.toLowerCase(), url: SCAN_BASE + t.path.split('/').map(encodeURIComponent).join('/'), prog: SCAN_DIR[m[1].toLowerCase()], week_start: ymd(weekDates(Number(m[2]))[0]), class_ids: [], title: m[3].replace(/[-_]+/g, ' ').replace(/^./, c => c.toUpperCase()) });
+            const m = t.type === 'blob' && /^(ielts|toeic|gs|gt|ac\d{2})\/w(\d{1,2})\/([^\/]+)\.html$/i.exec(t.path);
+            if (m) out.push({ scan: true, kind: 'lesson', skill: '', path: t.path.toLowerCase(), url: SCAN_BASE + t.path.split('/').map(encodeURIComponent).join('/'), prog: SCAN_DIR[m[1].toLowerCase()] || (m[1].toLowerCase() === 'ac12' ? 'ac12' : 'gs'), week_start: ymd(weekDates(Number(m[2]))[0]), class_ids: [], title: m[3].replace(/[-_]+/g, ' ').replace(/^./, c => c.toUpperCase()) });
           });
           await Promise.all(out.slice(0, 60).map(async x => {
             try {
