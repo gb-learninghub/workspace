@@ -149,19 +149,20 @@
       }
       const asgRow = a => {
         const due = a.due_at ? new Date(a.due_at) : null, late = due && due < now;
-        const cell = (l, v) => `<div class="asg-cell"><span>${l}</span><b>${v}</b></div>`;
+        const cell = (l, v) => `<div class="asg-cell"><span>${l}</span><b${v === '' ? ' class="asg-empty"' : ''}>${v === '' ? '–' : v}</b></div>`;
         const multi = a.kind === 'homework' && a.parts_total > 1, partsDone = a.parts_done || 0;
+        const done = multi ? `${partsDone}/${a.parts_total} phần` : (a.question_count ? `${a.question_count} câu` : '');
         const cells = [
-          a.question_count ? cell('Số câu', a.question_count) : '',
           cell('Trạng thái', a.attempts ? `Đã làm ${a.attempts} lần` : 'Chưa làm'),
-          a.first_score != null ? cell('Điểm lần đầu', `${a.first_score}/${a.first_total || a.question_count}`) : '',
-          multi ? cell('Đã nộp', `${partsDone}/${a.parts_total} phần`) : '',
-          due ? cell('Hạn', pad(due.getDate()) + '/' + pad(due.getMonth() + 1) + (late ? ' <i class="asg-late">quá hạn</i>' : '')) : ''
+          cell('Đã làm', done),
+          cell('Điểm', a.first_score != null ? `${a.first_score}/${a.first_total || a.question_count}` : ''),
+          cell('Hạn', due ? pad(due.getDate()) + '/' + pad(due.getMonth() + 1) + (late ? ' <i class="asg-late">quá hạn</i>' : '') : '')
         ].join('');
         const bandNote = multi ? `<div class="asg-note">${partsDone < a.parts_total ? 'Hoàn thành đủ các phần để quy đổi band' : 'Đã đủ phần để quy đổi band'}</div>` : '';
-        return `<div class="row"><div style="flex:1 1 200px;min-width:0"><div class="font-bold text-slate-800" style="overflow-wrap:anywhere">${esc(a.name)}</div>
-          <div class="asg-meta">${cells}</div>${bandNote}</div>
-          ${dayTag(a.session_dates)}${resBtn(a)}${a.page_path ? `<a class="icon-btn" href="${esc(LMS.withStudent(new URL(a.page_path, location.href).href, S.code))}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : `<a class="icon-btn" href="#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>`}</div>`;
+        const href = a.page_path ? LMS.withStudent(new URL(a.page_path, location.href).href, S.code) : `#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}`;
+        const open = `<a class="icon-btn" href="${esc(href)}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>`;
+        return `<div class="row asg-row"><div class="asg-top"><div class="font-bold text-slate-800" style="overflow-wrap:anywhere;min-width:0">${esc(a.name)}</div>${dayTag(a.session_dates)}</div>
+          <div class="asg-meta">${cells}<div class="asg-act"><span class="asg-slot">${resBtn(a)}</span><span class="asg-slot">${open}</span></div></div>${bandNote}</div>`;
       };
       const wkOf = a => a.week_start ? mondayKey(dOf(a.week_start)) : mondayKey(now);
       const materialMap = {};

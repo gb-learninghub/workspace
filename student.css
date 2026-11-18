@@ -1343,3 +1343,22 @@ html body.student-dashboard-view .g-profile .profile-name,html body.student-dash
 .asg-empty{color:#b6bcc6;font-weight:600}
 .asg-act{display:flex;justify-content:flex-end;gap:4px}
 .asg-slot{display:inline-flex;width:38px;height:38px;align-items:center;justify-content:center}
+
+/* Cột cố định cho dòng bài tập: không đổi vị trí khi dữ liệu thay đổi */
+.asg-meta{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,.85fr) minmax(0,1.1fr) 84px!important}
+.asg-cell span,.asg-cell b,.asg-name,.asg-top>div:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asg-cell b{overflow-wrap:normal}
+.asg-top>div:first-child{flex:1 1 auto}
+/* Kho bài tập / bài học: 2 cột như tuần này */
+.student-library-week>.space-y-2{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px;align-items:start}
+.student-library-week>.space-y-2>*{margin:0!important}
+.student-library-week>.space-y-2>:not(.asg-row){grid-column:1/-1}
+@media(max-width:780px){.student-library-week>.space-y-2{grid-template-columns:minmax(0,1fr)}}
+/* Thẻ tuần này ở tổng quan: gọn, mỗi mục một hàng ngang */
+.student-week-only .asg-row{padding:8px 0!important}
+.student-week-only .asg-meta{margin-top:4px;gap:4px 8px!important;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,.8fr) minmax(0,1.2fr) 76px!important}
+.student-week-only .asg-note{display:none}
+.student-week-only .asg-cell span{font-size:.625rem}
+.student-week-only .asg-cell b{font-size:.75rem}
+.student-week-only .asg-slot{width:34px;height:34px}
+.student-week-only .asg-act{gap:2px}
