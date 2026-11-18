@@ -57,7 +57,8 @@
 #lms-att .att-body .att-row:hover{background:#f7f8fa}\
 #lms-att .att-name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\
 #lms-att .att-cls{color:#778597;font-size:.85rem;font-weight:700;text-decoration:none}#lms-att a.att-cls:hover{color:#16181D;text-decoration:underline}\
-#lms-att .att-days{display:flex;gap:4px;justify-content:space-between;margin-bottom:12px}#lms-att .att-dp{flex:1;max-width:96px;min-height:84px;border:0;border-radius:999px;background:transparent;color:#1B1D22;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:background-color .15s ease,transform .12s ease}#lms-att .att-dp:active{transform:scale(.95)}#lms-att .att-dp:hover{background:#f7f8fa}#lms-att .att-dp span{font-size:.8rem;font-weight:700;color:#5a6577}#lms-att .att-dp b{font-size:1.25rem;font-weight:800;line-height:1}#lms-att .att-dp i{width:6px;height:6px;border-radius:50%;background:transparent;margin-top:2px}#lms-att .att-dp.has i{background:#B07F2C}#lms-att .att-dp.on{background:#F6F0DF}#lms-att .att-dp.on span,#lms-att .att-dp.on b{color:#A87D2E}#lms-att .att-btn.cur{background:#F3E9C6;border-color:#F3E9C6;color:#7a5a12;cursor:default}\
+#lms-att .att-cal{background:#F4F5F7;border-radius:20px;padding:12px 14px 10px;margin-bottom:12px}#lms-att .att-cal .att-bar{margin-bottom:6px}#lms-att .att-cal .att-btn{background:#fff}#lms-att .att-cal .att-btn.cur{background:#F3E9C6;border-color:#F3E9C6}#lms-att .att-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}#lms-att .att-acts .sp{flex:1}\
+#lms-att .att-days{display:flex;gap:6px}#lms-att .att-dp{flex:1;min-width:0;min-height:76px;border:0;border-radius:999px;background:transparent;color:#1B1D22;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:background-color .15s ease,transform .12s ease}#lms-att .att-dp:active{transform:scale(.95)}#lms-att .att-dp:hover{background:#eceef2}#lms-att .att-dp span{font-size:.8rem;font-weight:700;color:#5a6577}#lms-att .att-dp b{font-size:1.25rem;font-weight:800;line-height:1}#lms-att .att-dp i{width:6px;height:6px;border-radius:50%;background:transparent;margin-top:2px}#lms-att .att-dp.has i{background:#B07F2C}#lms-att .att-dp.on{background:#F3E9C6}#lms-att .att-dp.on span,#lms-att .att-dp.on b{color:#7a5a12}#lms-att .att-dp.today b{text-decoration:underline;text-underline-offset:4px}\
 #lms-att .att-cell{display:flex;flex-direction:column;align-items:center;gap:2px}\
 #lms-att .att-c{width:44px;height:36px;border:1px solid #E4E6EA;border-radius:10px;background:#fff;color:#b8c0cc;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;transition:transform .12s ease,background-color .15s ease,border-color .15s ease}\
 #lms-att .att-c:active{transform:scale(.88)}\
@@ -87,17 +88,20 @@
     box = document.createElement('div'); box.id = 'lms-att'; box.hidden = true; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Điểm danh');
     box.innerHTML = '<div class="att-card">\
 <div class="att-top"><h2>Điểm danh</h2>\
-<div class="att-bar">\
+<div class="att-cal"><div class="att-bar">\
 <button type="button" class="att-btn ic" data-a="prev" aria-label="Tuần trước" title="Tuần trước"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>\
 <div class="att-wk" id="att-wk"></div>\
 <button type="button" class="att-btn ic" data-a="next" aria-label="Tuần sau" title="Tuần sau"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>\
-<button type="button" class="att-btn" data-a="now" id="att-now">Tuần này</button>\
 <span class="sp"></span>\
-<select class="att-sel" id="att-class" aria-label="Lọc theo lớp"></select>\
-<button type="button" class="att-btn" data-a="all" title="Có mặt cho mọi ô trống trong ngày">Có mặt tất cả</button>\
-<button type="button" class="att-btn" data-a="none" title="Xóa điểm danh của mọi học viên trong ngày">Bỏ chọn tất cả</button>\
+<button type="button" class="att-btn" data-a="now" id="att-now">Tuần này</button>\
 </div>\
 <div class="att-days" id="att-days"></div></div>\
+<div class="att-acts">\
+<select class="att-sel" id="att-class" aria-label="Lọc theo lớp"></select>\
+<span class="sp"></span>\
+<button type="button" class="att-btn" data-a="all">Điểm danh tất cả</button>\
+<button type="button" class="att-btn" data-a="none">Hủy điểm danh tất cả</button>\
+</div></div>\
 <div class="att-wrap"><div class="att-table"><div class="att-row att-head" id="att-head"></div><div class="att-body" id="att-body"></div></div></div>\
 <div class="att-foot"><span class="sum" id="att-sum"></span><button type="button" class="att-close">Đóng</button></div></div>';
     document.body.appendChild(box);
@@ -127,7 +131,7 @@
   function err(e) { toast(window.LMS && LMS.friendlyError ? LMS.friendlyError(e) : (e && e.message) || 'Có lỗi xảy ra.'); }
 
   async function load(animate) {
-    var wd = weekDates(S.week), active = S.classes.filter(function (c) { return !c.is_archived && c.is_active; });
+    var wd = weekDates(S.week), active = S.classes.filter(function (c) { return !c.is_archived && c.is_active && !/teacher/i.test(c.class_code || ''); });
     var ids = active.map(function (c) { return c.id; });
     S.loading = true; paint(false);
     var rs = await S.c.from('students').select('id,student_name,class_id,note').eq('is_active', true).in('class_id', ids);
@@ -156,7 +160,7 @@
   }
   function paint(animate) {
     var d = weekDates(S.week), cur = S.week === nowWeek(), nb = document.getElementById('att-now');
-    document.getElementById('att-wk').textContent = 'Tuần ' + pad(S.week);
+    document.getElementById('att-wk').innerHTML = 'Tuần ' + pad(S.week) + '<small>' + pad(d[0].getDate()) + '.' + pad(d[0].getMonth() + 1) + ' – ' + pad(d[6].getDate()) + '.' + pad(d[6].getMonth() + 1) + '</small>';
     nb.classList.toggle('cur', cur); nb.setAttribute('aria-disabled', cur ? 'true' : 'false');
     var sel = document.getElementById('att-class'), codes = S.classes.filter(function (c) { return S.byClass && S.byClass[c.id]; }).sort(function (a, b) { return natural(a.class_code, b.class_code); });
     if (S.cls !== 'all' && !codes.some(function (c) { return String(c.id) === S.cls; })) S.cls = 'all';
@@ -167,7 +171,7 @@
     var dh = '';
     d.forEach(function (x, i) {
       var k = ymd(x), has = S.stu.length && S.classes.some(function (c) { return (S.byClass[c.id] || []).some(function (y) { return y.session_date === k; }); });
-      dh += '<button type="button" class="att-dp' + (i === S.day ? ' on' : '') + (has ? ' has' : '') + '" data-a="dpick" data-i="' + i + '"><span>' + WD[x.getDay()].replace('CN', 'CN') + '</span><b>' + x.getDate() + '</b><i></i></button>';
+      dh += '<button type="button" class="att-dp' + (i === S.day ? ' on' : '') + (has ? ' has' : '') + (ymd(x) === ymd(dayNow()) ? ' today' : '') + '" data-a="dpick" data-i="' + i + '"><span>' + WD[x.getDay()].replace('CN', 'CN') + '</span><b>' + x.getDate() + '</b><i></i></button>';
     });
     document.getElementById('att-days').innerHTML = dh;
     var head = document.getElementById('att-head'); head.style.setProperty('--n', n);
