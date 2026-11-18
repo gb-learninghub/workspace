@@ -1362,3 +1362,14 @@ html body.student-dashboard-view .g-profile .profile-name,html body.student-dash
 .student-week-only .asg-cell b{font-size:.75rem}
 .student-week-only .asg-slot{width:34px;height:34px}
 .student-week-only .asg-act{gap:2px}
+
+/* Màn hình rộng: thu thấp các thẻ để 3 thẻ dưới không bị hụt chân */
+@media(min-width:1280px){
+body.student-dashboard-view .student-overview-view{padding-top:18px!important;padding-bottom:12px!important}
+body.student-dashboard-view .student-overview-content{gap:12px!important}
+body.student-dashboard-view .student-overview-highlight{gap:12px!important}
+body.student-dashboard-view .student-overview-highlight .g-info .stat-grid{gap:10px!important}
+body.student-dashboard-view .student-overview-highlight .g-info .stat{min-height:72px!important;padding:11px 14px!important}
+body.student-dashboard-view .student-overview-highlight .g-info .stat svg{width:32px!important;height:32px!important}
+body.student-dashboard-view .student-overview-highlight .g-week-sched,body.student-dashboard-view .student-overview-highlight .g-tuition,body.student-dashboard-view .student-overview-highlight .g-prog{height:236px!important;min-height:236px!important;max-height:236px!important}
+}
