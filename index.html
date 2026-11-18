@@ -1473,8 +1473,9 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       /* Menu nhanh cho buổi đã qua / hôm nay: Hoàn thành, Hủy, Sửa chi tiết */
       function closeQs() { const m = document.getElementById('qs-menu'); if (m) m.remove(); }
       function openQs(chip, s) {
-        closeQs();
-        const m = document.createElement('div'); m.id = 'qs-menu'; m.setAttribute('role', 'menu');
+        const cur = document.getElementById('qs-menu'), same = cur && cur.dataset.sid === String(s.id);
+        closeQs(); if (same) return;
+        const m = document.createElement('div'); m.id = 'qs-menu'; m.dataset.sid = s.id; m.setAttribute('role', 'menu');
         m.innerHTML = [['planned', 'Chưa dạy'], ['done', 'Hoàn thành'], ['makeup', 'Bù'], ['cancel', 'Hủy'], ['holiday', 'Nghỉ lễ']].map(([k, t]) => `<button type="button" data-q="${k}" class="${s.status === k ? 'on' : ''}">${t}</button>`).join('') + '<hr><button type="button" data-q="edit">Sửa chi tiết</button><button type="button" data-q="del" class="dl">Xóa buổi</button>';
         document.body.appendChild(m);
         const r = chip.getBoundingClientRect(), w = m.offsetWidth, h = m.offsetHeight;
