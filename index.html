@@ -18,6 +18,12 @@
   <script src="lms.js"></script><script src="lms-tiles.js"></script><script src="lms-att.js"></script>
   <script>document.documentElement.dataset.lmsView=location.hash==='#schedule'?'schedule':location.hash==='#lib'?'lib':'overview';</script>
   <style>
+    #qs-menu{position:fixed;z-index:95;display:flex;gap:6px;padding:6px;background:#fff;border:1px solid #E4E6EA;border-radius:999px;animation:qsPop .16s ease both}
+    #qs-menu button{height:36px;padding:0 14px;border:1px solid #E4E6EA;border-radius:999px;background:#fff;color:#1B1D22;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:transform .12s ease,background-color .15s ease}
+    #qs-menu button:hover{background:#F4F5F7}#qs-menu button:active{transform:scale(.94)}
+    #qs-menu button.dl{color:#b42318;margin-left:4px}#qs-menu button.ic{width:36px;padding:0}#qs-menu button.ic svg{width:16px;height:16px}
+    #qs-menu button[data-q=done].on{background:#e7f6ec;border-color:#9bd3ad;color:#1d7a3e}#qs-menu button[data-q=cancel].on{background:#fde8e6;border-color:#eba39d;color:#b42318}
+    @keyframes qsPop{from{opacity:0;transform:translateY(-4px) scale(.96)}to{opacity:1;transform:none}}
     html[data-lms-view="schedule"] #view-overview,html[data-lms-view="lib"] #view-overview,html[data-lms-view="lib"] #view-schedule{display:none!important}
     html[data-lms-view="schedule"] #view-schedule{display:block!important}
     html[data-lms-view="lib"] #view-lib{display:block!important}
@@ -320,20 +326,10 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         <div><label for="ds-start">Bắt đầu</label><input id="ds-start" type="time" class="field" required></div>
         <div><label for="ds-end">Kết thúc</label><input id="ds-end" type="time" class="field" required></div>
       </div>
-      <label for="dc-program">Chương trình</label>
-      <select id="dc-program" class="field">
-        <option value="">Chưa gắn chương trình</option>
-        <option value="gs">GS</option>
-        <option value="ac12">AC12</option>
-        <option value="ielts">IE</option>
-        <option value="toeic">TO</option>
-        <option value="comm">GT</option>
-        <option value="all">Tất cả</option>
-      </select>
       <label for="ds-status">Trạng thái</label>
       <select id="ds-status" class="field">
         <option value="planned">Chưa dạy</option>
-        <option value="done">Đã dạy</option>
+        <option value="done">Hoàn thành</option>
         <option value="cancel">Hủy (tính nợ)</option>
         <option value="makeup">Bù (trừ nợ)</option>
         <option value="holiday">Nghỉ lễ (không tính nợ)</option>
@@ -369,6 +365,16 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       <input id="dc-name" type="text" class="field" autocomplete="off" required>
       <label for="dc-url">Link trang lớp riêng (để trống = trang lớp mặc định)</label>
       <input id="dc-url" type="text" class="field" autocomplete="off" placeholder="class.html?class=...">
+      <label for="dc-program">Chương trình</label>
+      <select id="dc-program" class="field">
+        <option value="">Tự động theo mã lớp</option>
+        <option value="gs">GS</option>
+        <option value="ac12">AC12</option>
+        <option value="ielts">IE</option>
+        <option value="toeic">TO</option>
+        <option value="comm">GT</option>
+        <option value="all">Tất cả</option>
+      </select>
       <label for="dc-state">Trạng thái</label>
       <select id="dc-state" class="field">
         <option value="active">Đang hoạt động</option>
@@ -507,7 +513,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       const icons = () => { if (window.lucide) lucide.createIcons(); };
       const DAY = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
       const BASE_MONDAY = new Date(2026, 8, 7);   // tuần 1 bắt đầu thứ 2 07/09/2026
-      const STATUS_TXT = { planned: 'Chưa dạy', done: 'Đã dạy', cancel: 'Hủy', makeup: 'Bù', holiday: 'Nghỉ lễ' };
+      const STATUS_TXT = { planned: 'Chưa dạy', done: 'Hoàn thành', cancel: 'Hủy', makeup: 'Bù', holiday: 'Nghỉ lễ' };
       const DEF_BLOCKED = ['07:00 - 22:30', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 17:00', '08:00 - 19:00', '20:30 - 22:00', '18:00 - 22:30'];
       const st = { c: null, classes: [], counts: {}, activeStudentCount: 0, unassignedCount: 0, programs: {}, sessions: [], blocked: DEF_BLOCKED.slice(), week: 1, selDay: 0, busy: false, view: 'overview', mats: [], lib: [], libAsg: [], libLoaded: false, libProg: '', libWeek: 'all', libCollapsed: {}, scanAll: [], scanAt: 0, overviewFinance: null };
       const CLASS_PROGRAM = { gs: 'GS', ac12: 'AC12', ielts: 'IE', toeic: 'TO', comm: 'GT', all: 'Tất cả' };
@@ -562,7 +568,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const set = {}; (cs.data || []).forEach(r => { set[r.class_id] = r; });
         st.classes = (c.data || []).map(r => Object.assign({}, r, {
           page_url: (set[r.id] || {}).page_url || '', is_archived: !!(set[r.id] || {}).is_archived,
-          program: st.programs[r.id] || ''
+          program: st.programs[r.id] || (/^00\./.test(r.class_code || '') ? 'all' : LMS.score.programOf(r.class_code))
         }));
         st.counts = {}; st.roster = {}; st.activeStudentCount = (s.data || []).length; st.unassignedCount = 0;
         (s.data || []).forEach(r => { if (r.class_id) { st.counts[r.class_id] = (st.counts[r.class_id] || 0) + 1; (st.roster[r.class_id] = st.roster[r.class_id] || []).push(r.student_name || ''); } else st.unassignedCount += 1; });
@@ -677,7 +683,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
             + keys.map((k, i) => {
               const ss = sessionsOf(c.id, k);
               return `<td class="day dcol d${i}${k === todayKey ? ' today' : ''}" data-class="${c.id}" data-date="${k}">` + ss.map(x =>
-                `<button type="button" class="chip ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${[x.status === 'cancel' ? 'Hủy' : '', x.status === 'done' ? 'Đã dạy' : x.status === 'makeup' ? 'Bù' : x.status === 'holiday' ? 'Nghỉ lễ' : '', x.lesson ? esc(x.lesson) : '', x.note ? esc(x.note) : ''].filter(Boolean).join(' · ')}</small></button>`).join('') + '</td>';
+                `<button type="button" class="chip ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${[x.status === 'cancel' ? 'Hủy' : '', x.status === 'done' ? 'Hoàn thành' : x.status === 'makeup' ? 'Bù' : x.status === 'holiday' ? 'Nghỉ lễ' : '', lessonOf(x) ? esc(lessonOf(x)) : '', x.note ? esc(x.note) : ''].filter(Boolean).join(' · ')}</small></button>`).join('') + '</td>';
             }).join('') + '</tr>';
         });
         $('grid-body').innerHTML = html;
@@ -769,7 +775,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const dates = weekDates(NOW_WEEK), first = dates[0], last = dates[6];
         $('overview-week-label').textContent = pad(first.getDate()) + '/' + pad(first.getMonth() + 1) + ' – ' + pad(last.getDate()) + '/' + pad(last.getMonth() + 1);
         const today = ymd(new Date()), upcoming = (st.nowSessions || (st.week === NOW_WEEK ? st.sessions : [])).filter(s => s.session_date >= today && !['cancel', 'holiday', 'done'].includes(s.status)).sort((a, b) => a.session_date.localeCompare(b.session_date) || a.start_time.localeCompare(b.start_time)).slice(0, 5);
-        $('overview-upcoming').innerHTML = upcoming.length ? upcoming.map(s => { const c = st.classes.find(x => x.id === s.class_id), d = new Date(s.session_date + 'T00:00:00'); return `<a class="overview-session" href="${esc(c && (c.page_url || 'class.html?class=' + encodeURIComponent(c.class_code)) || 'classes.html')}"><span class="overview-session-date"><b>${pad(d.getDate())}</b><small>${DAY[(d.getDay() + 6) % 7].replace('Thứ ', 'T')}</small></span><span class="overview-session-info"><b>${esc(c ? c.class_code : 'Lớp')}</b><small>${esc(s.lesson || s.note || 'Buổi học')}</small></span><span class="overview-session-time">${t5(s.start_time)}</span></a>`; }).join('') : '<p class="overview-empty">Không còn buổi học sắp tới trong tuần này.</p>';
+        $('overview-upcoming').innerHTML = upcoming.length ? upcoming.map(s => { const c = st.classes.find(x => x.id === s.class_id), d = new Date(s.session_date + 'T00:00:00'); return `<a class="overview-session" href="${esc(c && (c.page_url || 'class.html?class=' + encodeURIComponent(c.class_code)) || 'classes.html')}"><span class="overview-session-date"><b>${pad(d.getDate())}</b><small>${DAY[(d.getDay() + 6) % 7].replace('Thứ ', 'T')}</small></span><span class="overview-session-info"><b>${esc(c ? c.class_code : 'Lớp')}</b><small>${esc(lessonOf(s) || s.note || 'Buổi học')}</small></span><span class="overview-session-time">${t5(s.start_time)}</span></a>`; }).join('') : '<p class="overview-empty">Không còn buổi học sắp tới trong tuần này.</p>';
         icons();
       }
 
@@ -1458,19 +1464,48 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       function closeDlgs() { document.querySelectorAll('.dlg').forEach(d => { d.hidden = true; }); }
       const classLabel = id => { const c = st.classes.find(x => x.id === Number(id)); return c ? c.class_code : ''; };
 
+      /* Bài học của buổi: tự lấy từ Học liệu (lớp + ngày đã giao), nếu chưa có thì dùng chữ nhập tay */
+      function autoLesson(s) {
+        if (!s || toMon(s.session_date) !== weekKey()) return '';
+        return (st.mats || []).filter(m => m.kind !== 'homework' && m.kind !== 'slide' && (m.class_ids || []).includes(s.class_id) && Array.isArray(m.session_dates) && m.session_dates.includes(s.session_date)).map(m => m.title).join(' · ');
+      }
+      const lessonOf = s => autoLesson(s) || s.lesson || '';
+      /* Menu nhanh cho buổi đã qua / hôm nay: Hoàn thành, Hủy, Sửa chi tiết */
+      function closeQs() { const m = document.getElementById('qs-menu'); if (m) m.remove(); }
+      function openQs(chip, s) {
+        closeQs();
+        const m = document.createElement('div'); m.id = 'qs-menu'; m.setAttribute('role', 'menu');
+        m.innerHTML = `<button type="button" data-q="done" class="${s.status === 'done' ? 'on' : ''}">Hoàn thành</button><button type="button" data-q="cancel" class="${s.status === 'cancel' ? 'on' : ''}">Hủy</button><button type="button" data-q="edit" class="ic" aria-label="Sửa chi tiết" title="Sửa chi tiết"><i data-lucide="pencil"></i></button><button type="button" data-q="del" class="ic dl" aria-label="Xóa buổi" title="Xóa buổi"><i data-lucide="trash-2"></i></button>`;
+        document.body.appendChild(m); icons();
+        const r = chip.getBoundingClientRect(), w = m.offsetWidth;
+        m.style.top = Math.min(window.innerHeight - m.offsetHeight - 8, r.bottom + 6) + 'px';
+        m.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + 'px';
+        m.addEventListener('click', async e => {
+          const b = e.target.closest('[data-q]'); if (!b) return;
+          const q = b.dataset.q; closeQs();
+          if (q === 'edit') return openSession(s.id);
+          if (q === 'del') return deleteSession(s.id);
+          if (s.status === q) return;
+          const res = await st.c.from('sessions').update({ status: q, updated_at: new Date().toISOString() }).eq('id', s.id);
+          if (res.error) { LMS.toast(LMS.friendlyError(res.error)); return; }
+          await refresh(q === 'done' ? 'Buổi học đã hoàn thành.' : 'Đã hủy buổi học.');
+        });
+      }
+      document.addEventListener('click', e => { if (!e.target.closest('#qs-menu') && !e.target.closest('[data-sid]')) closeQs(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQs(); });
       function openSession(sid, classId, date) {
         $('ds-err').textContent = '';
         if (sid) {
           const s = st.sessions.find(x => x.id === Number(sid)); if (!s) return;
           $('ds-id').value = s.id; $('ds-class').value = s.class_id; $('ds-date').value = s.session_date;
           $('ds-start').value = t5(s.start_time); $('ds-end').value = t5(s.end_time); $('ds-status').value = s.status;
-          $('ds-lesson').value = s.lesson || ''; $('ds-note').value = s.note || ''; $('ds-mode').value = s.mode || 'offline';
+          $('ds-lesson').value = s.lesson || ''; $('ds-lesson').placeholder = autoLesson(s) || 'Tự lấy từ Học liệu nếu đã giao'; $('ds-note').value = s.note || ''; $('ds-mode').value = s.mode || 'offline';
           $('ds-title').textContent = 'Sửa buổi học'; $('ds-del').hidden = false;
           $('ds-info').textContent = classLabel(s.class_id) + (s.session_no ? ' · Buổi ' + s.session_no : '');
         } else {
           $('ds-id').value = ''; $('ds-class').value = classId; $('ds-date').value = date;
           $('ds-start').value = ''; $('ds-end').value = ''; $('ds-status').value = 'planned';
-          $('ds-lesson').value = ''; $('ds-note').value = ''; $('ds-mode').value = 'offline';
+          $('ds-lesson').value = ''; $('ds-lesson').placeholder = 'Tự lấy từ Học liệu nếu đã giao'; $('ds-note').value = ''; $('ds-mode').value = 'offline';
           $('ds-title').textContent = 'Thêm buổi học'; $('ds-del').hidden = true;
           $('ds-info').textContent = classLabel(classId);
         }
@@ -1526,11 +1561,15 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         if (res.error) { err.textContent = LMS.friendlyError(res.error); return; }
         closeDlgs(); await refresh(id ? 'Đã cập nhật buổi học.' : 'Đã thêm buổi học.');
       }
-      async function deleteSession() {
-        const id = Number($('ds-id').value); if (!id) return;
-        if (!(await LMS.confirm('Xóa buổi học này? Điểm danh của buổi cũng bị xóa.', { ok: 'Xóa', danger: true }))) return;
+      async function deleteSession(sid) {
+        const id = Number(typeof sid === 'number' || typeof sid === 'string' ? sid : $('ds-id').value); if (!id) return;
+        const ss = st.sessions.find(x => x.id === id), c = ss && st.classes.find(x => x.id === ss.class_id);
+        const cnt = await st.c.from('attendance').select('student_id', { count: 'exact', head: true }).eq('session_id', id);
+        const n = cnt.count || 0;
+        const msg = 'Xóa buổi' + (c ? ' ' + c.class_code : '') + (ss ? ' (' + ss.session_date.split('-').reverse().join('/') + ')' : '') + '?\n\n' + (n ? 'Buổi này có ' + n + ' lượt điểm danh, xóa sẽ mất hết và không khôi phục được.' : 'Buổi này chưa có điểm danh.') + ' Nếu chỉ nghỉ, hãy chọn Hủy.';
+        if (!(await LMS.confirm(msg, { ok: n ? 'Xóa ' + n + ' điểm danh' : 'Xóa', danger: true }))) return;
         const res = await st.c.from('sessions').delete().eq('id', id);
-        if (res.error) { $('ds-err').textContent = LMS.friendlyError(res.error); return; }
+        if (res.error) { if ($('ds-err')) $('ds-err').textContent = LMS.friendlyError(res.error); LMS.toast(LMS.friendlyError(res.error)); return; }
         closeDlgs(); await refresh('Đã xóa buổi học.');
       }
 
@@ -1624,12 +1663,12 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('grid-body').addEventListener('click', e => {
           const ec = e.target.closest('[data-edit-class]'); if (ec) return openClass(ec.dataset.editClass);
           const rb = e.target.closest('[data-roster]'); if (rb) return openRoster(rb.dataset.roster);
-          const ch = e.target.closest('[data-sid]'); if (ch) return openSession(ch.dataset.sid);
+          const ch = e.target.closest('[data-sid]'); if (ch) { const ss = st.sessions.find(x => x.id === Number(ch.dataset.sid)); if (ss && ss.session_date <= ymd(new Date())) return openQs(ch, ss); return openSession(ch.dataset.sid); }
           const bl = e.target.closest('[data-blocked]'); if (bl) return openBlocked(Number(bl.dataset.blocked));
           const td = e.target.closest('td.day'); if (td) openSession(null, td.dataset.class, td.dataset.date);
         });
         $('dlg-session').querySelector('form').addEventListener('submit', saveSession);
-        $('ds-del').addEventListener('click', deleteSession);
+        $('ds-del').addEventListener('click', () => deleteSession());
         $('ds-date').addEventListener('change', showFree);
         $('ds-free').addEventListener('click', e => {
           const b = e.target.closest('[data-free]'); if (!b) return;
