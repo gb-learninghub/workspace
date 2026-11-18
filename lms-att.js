@@ -1,4 +1,4 @@
-/* Điểm danh hàng loạt: một cửa sổ duy nhất, chọn ngày, điểm danh cả bảng; buổi có điểm danh tự chuyển Hoàn thành.
+/* Điểm danh hàng loạt: một cửa sổ duy nhất, xem theo tuần, bấm từng ngày để điểm danh/bỏ điểm danh đồng loạt; buổi có điểm danh tự chuyển Hoàn thành.
    LMSAtt.open({ c: supabaseClient, classes: [...] }) */
 (function () {
   'use strict';
@@ -18,6 +18,9 @@
 
   var box, S = null;
 
+  var BASE_MONDAY = new Date(2026, 8, 7);
+  function weekDates(w) { var m = new Date(BASE_MONDAY); m.setDate(m.getDate() + (w - 1) * 7); return Array.from({ length: 7 }, function (_, i) { var d = new Date(m); d.setDate(m.getDate() + i); return d; }); }
+  function nowWeek() { var n = new Date(), dow = (n.getDay() + 6) % 7, mon = new Date(n.getFullYear(), n.getMonth(), n.getDate() - dow); return 1 + Math.round((mon - BASE_MONDAY) / (7 * DAY)); }
   function dayNow() { var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
   function t5(v) { return (v || '').slice(0, 5); }
 
@@ -38,10 +41,10 @@
 #lms-att .att-btn.ic{width:40px;padding:0;justify-content:center}\
 #lms-att .att-btn:disabled{opacity:.5;cursor:default}\
 #lms-att .att-sel{padding-right:28px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23778597\' stroke-width=\'3\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'m6 9 6 6 6-6\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}\
-#lms-att .att-wk{min-width:130px;text-align:center;font-weight:800;font-size:.9rem;line-height:1.15}#lms-att .att-wk small{display:block;color:#778597;font-weight:600;font-size:.75rem}\
+#lms-att .att-wk{min-width:150px;text-align:center;font-weight:800;font-size:.9rem;line-height:1.15}#lms-att .att-wk small{display:block;color:#778597;font-weight:600;font-size:.75rem}\
 #lms-att .att-wrap{flex:1;min-height:0;overflow-x:auto;display:flex;flex-direction:column}\
 #lms-att .att-table{flex:1;min-height:0;min-width:640px;display:flex;flex-direction:column}\
-#lms-att .att-row{display:grid;grid-template-columns:minmax(150px,1.3fr) 84px repeat(var(--n,1),84px) minmax(140px,1.2fr);gap:10px;align-items:center;padding:4px 8px}\
+#lms-att .att-row{display:grid;grid-template-columns:minmax(150px,1.3fr) 84px repeat(var(--n,3),84px) minmax(140px,1.2fr);gap:10px;align-items:center;padding:4px 8px}\
 #lms-att .att-head{flex:none;background:#fff;border-bottom:1px solid #d5d9e0;color:#778597;font-size:.8rem;font-weight:700;min-height:40px}\
 #lms-att .att-head .c{text-align:center}\
 #lms-att .att-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}\
@@ -51,7 +54,7 @@
 #lms-att .att-body .att-row:hover{background:#f7f8fa}\
 #lms-att .att-name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\
 #lms-att .att-cls{color:#778597;font-size:.85rem;font-weight:700;text-decoration:none}#lms-att a.att-cls:hover{color:#16181D;text-decoration:underline}\
-#lms-att .att-date{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}\
+#lms-att .att-days{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}#lms-att .att-days b{font-size:.8rem;color:#778597;margin-right:2px}#lms-att .att-dy{height:40px;padding:0 12px;flex-direction:column;justify-content:center;gap:0;line-height:1.1}#lms-att .att-dy small{font-size:.68rem;font-weight:600;opacity:.7}#lms-att .att-dy.today{border-color:#16181D}\
 #lms-att .att-cell{display:flex;flex-direction:column;align-items:center;gap:2px}\
 #lms-att .att-c{width:44px;height:36px;border:1px solid #E4E6EA;border-radius:10px;background:#fff;color:#b8c0cc;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;transition:transform .12s ease,background-color .15s ease,border-color .15s ease}\
 #lms-att .att-c:active{transform:scale(.88)}\
@@ -82,14 +85,14 @@
     box.innerHTML = '<div class="att-card">\
 <div class="att-top"><h2>Điểm danh</h2>\
 <div class="att-bar">\
-<button type="button" class="att-btn ic" data-a="prev" aria-label="Ngày trước" title="Ngày trước"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>\
-<button type="button" class="att-btn att-wk" data-a="pick" id="att-wk" title="Chọn ngày"></button><input type="date" class="att-date" id="att-date" aria-label="Chọn ngày">\
-<button type="button" class="att-btn ic" data-a="next" aria-label="Ngày sau" title="Ngày sau"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>\
-<button type="button" class="att-btn" data-a="now" id="att-now">Hôm nay</button>\
+<button type="button" class="att-btn ic" data-a="prev" aria-label="Tuần trước" title="Tuần trước"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>\
+<div class="att-wk" id="att-wk"></div>\
+<button type="button" class="att-btn ic" data-a="next" aria-label="Tuần sau" title="Tuần sau"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>\
+<button type="button" class="att-btn" data-a="now" id="att-now">Tuần này</button>\
 <span class="sp"></span>\
 <select class="att-sel" id="att-class" aria-label="Lọc theo lớp"></select>\
-<button type="button" class="att-btn" data-a="all" id="att-all" title="Đánh dấu có mặt cho mọi ô trống">Có mặt tất cả</button>\
-</div></div>\
+</div>\
+<div class="att-days" id="att-days"></div></div>\
 <div class="att-wrap"><div class="att-table"><div class="att-row att-head" id="att-head"></div><div class="att-body" id="att-body"></div></div></div>\
 <div class="att-foot"><span class="sum" id="att-sum"></span><button type="button" class="att-close">Đóng</button></div></div>';
     document.body.appendChild(box);
@@ -98,15 +101,14 @@
       var a = e.target.closest('[data-a]');
       if (a) {
         var k = a.dataset.a;
-        if (k === 'prev') shift(-1); else if (k === 'next') shift(1); else if (k === 'now') { S.date = dayNow(); load(true); }
-        else if (k === 'pick') { var di = document.getElementById('att-date'); di.value = ymd(S.date); if (di.showPicker) di.showPicker(); else di.click(); } else if (k === 'all') markAll(a);
+        if (k === 'prev') { S.week--; load(true); } else if (k === 'next') { S.week++; load(true); } else if (k === 'now') { S.week = nowWeek(); load(true); }
+        else if (k === 'day') bulkDay(a);
         return;
       }
       var c = e.target.closest('.att-c'); if (c && !c.disabled) cycle(c);
     });
     box.addEventListener('change', function (e) {
       if (e.target.id === 'att-class') { S.cls = e.target.value; paint(true); }
-      else if (e.target.id === 'att-date' && e.target.value) { var p = e.target.value.split('-'); S.date = new Date(+p[0], +p[1] - 1, +p[2]); load(true); }
     });
     box.addEventListener('focusout', function (e) {
       var n = e.target.closest && e.target.closest('.att-note'); if (n) saveNote(n);
@@ -118,13 +120,12 @@
   function toast(m) { if (window.LMS && LMS.toast) LMS.toast(m); }
   function err(e) { toast(window.LMS && LMS.friendlyError ? LMS.friendlyError(e) : (e && e.message) || 'Có lỗi xảy ra.'); }
 
-  function shift(n) { var d = new Date(S.date); d.setDate(d.getDate() + n); S.date = d; load(true); }
   async function load(animate) {
-    var day = ymd(S.date), active = S.classes.filter(function (c) { return !c.is_archived && c.is_active; });
+    var wd = weekDates(S.week), active = S.classes.filter(function (c) { return !c.is_archived && c.is_active; });
     var ids = active.map(function (c) { return c.id; });
     S.loading = true; paint(false);
     var rs = await S.c.from('students').select('id,student_name,class_id,note').eq('is_active', true).in('class_id', ids);
-    var rt = await S.c.from('sessions').select('id,class_id,session_date,start_time,status').in('class_id', ids).eq('session_date', day).order('start_time');
+    var rt = await S.c.from('sessions').select('id,class_id,session_date,start_time,status').in('class_id', ids).gte('session_date', ymd(wd[0])).lte('session_date', ymd(wd[6])).order('session_date').order('start_time');
     if (rs.error || rt.error) { S.loading = false; return err(rs.error || rt.error); }
     var ses = (rt.data || []).filter(function (s) { return s.status !== 'cancel' && s.status !== 'holiday'; });
     var at = [];
@@ -149,17 +150,23 @@
   }
 
   function paint(animate) {
-    var d = S.date, isNow = ymd(d) === ymd(dayNow());
-    var wk = document.getElementById('att-wk'); wk.innerHTML = WD[d.getDay()] + ', ' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
-    document.getElementById('att-now').classList.toggle('on', isNow);
+    var d = weekDates(S.week), fmt = function (x) { return pad(x.getDate()) + '.' + pad(x.getMonth() + 1); };
+    document.getElementById('att-wk').innerHTML = 'Tuần ' + pad(S.week) + '<small>' + fmt(d[0]) + ' – ' + fmt(d[6]) + '</small>';
+    document.getElementById('att-now').classList.toggle('on', S.week === nowWeek());
     var sel = document.getElementById('att-class'), codes = S.classes.filter(function (c) { return S.byClass && S.byClass[c.id]; }).sort(function (a, b) { return natural(a.class_code, b.class_code); });
     if (S.cls !== 'all' && !codes.some(function (c) { return String(c.id) === S.cls; })) S.cls = 'all';
     sel.innerHTML = '<option value="all">Tất cả lớp</option>' + codes.map(function (c) { return '<option value="' + c.id + '"' + (String(c.id) === S.cls ? ' selected' : '') + '>' + esc(c.class_code) + '</option>'; }).join('');
 
-    var rows = visible(), n = 1;
+    var rows = visible(), n = 3;
     rows.forEach(function (s) { n = Math.max(n, (S.byClass[s.class_id] || []).length); });
+    var dh = '<b>Điểm danh theo ngày</b>', tk = ymd(dayNow());
+    d.forEach(function (x) {
+      var k = ymd(x), st = dayState(rows, k);
+      dh += '<button type="button" class="att-btn att-dy' + (st === 'all' ? ' on' : '') + (k === tk ? ' today' : '') + '" data-a="day" data-d="' + k + '"' + (st === 'none' || k > tk ? ' disabled' : '') + ' title="' + (st === 'all' ? 'Bỏ điểm danh cả ngày' : 'Có mặt cả ngày') + '">' + WD[x.getDay()] + '<small>' + fmt(x) + '</small></button>';
+    });
+    document.getElementById('att-days').innerHTML = dh;
     var head = document.getElementById('att-head'); head.style.setProperty('--n', n);
-    var h = '<span>Tên</span><span>Lớp</span>'; for (var i = 1; i <= n; i++) h += '<span class="c">Buổi ' + (n > 1 ? i : '') + '</span>'; h += '<span>Ghi chú</span>';
+    var h = '<span>Tên</span><span>Lớp</span>'; for (var i = 1; i <= n; i++) h += '<span class="c">Buổi ' + i + '</span>'; h += '<span>Ghi chú</span>';
     head.innerHTML = h;
 
     var body = document.getElementById('att-body'), keep = body.scrollTop, html = '';
@@ -169,12 +176,12 @@
       for (var j = 0; j < n; j++) {
         var x = ss[j];
         if (!x) { html += '<span class="att-none">–</span>'; continue; }
-        var v = S.att[x.id + ':' + s.id] || '', fut = x.session_date > ymd(dayNow());
-        html += '<span class="att-cell"><button type="button" class="att-c" data-s="' + x.id + '" data-u="' + s.id + '" data-st="' + v + '"' + (fut ? ' disabled' : '') + ' aria-label="' + esc(s.student_name) + (v ? ' · ' + LABEL[v] : '') + '">' + (v ? ICON[v] : '') + '</button><span class="att-d">' + t5(x.start_time) + '</span></span>';
+        var dt = new Date(x.session_date + 'T00:00:00'), v = S.att[x.id + ':' + s.id] || '', fut = x.session_date > ymd(dayNow());
+        html += '<span class="att-cell"><button type="button" class="att-c" data-s="' + x.id + '" data-u="' + s.id + '" data-st="' + v + '"' + (fut ? ' disabled' : '') + ' aria-label="' + esc(s.student_name) + (v ? ' · ' + LABEL[v] : '') + '">' + (v ? ICON[v] : '') + '</button><span class="att-d">' + WD[dt.getDay()] + ' ' + pad(dt.getDate()) + '/' + pad(dt.getMonth() + 1) + '</span></span>';
       }
       html += '<input class="att-note" type="text" value="' + esc(s.note || '') + '" data-u="' + s.id + '" placeholder="Ghi chú" aria-label="Ghi chú ' + esc(s.student_name) + '" autocomplete="off"></div>';
     });
-    body.innerHTML = html || '<div class="att-empty">' + (S.loading ? 'Đang tải…' : 'Không có buổi học nào trong ngày này.') + '</div>';
+    body.innerHTML = html || '<div class="att-empty">' + (S.loading ? 'Đang tải…' : 'Không có buổi học nào trong tuần này.') + '</div>';
     body.scrollTop = keep;
     sum(rows);
   }
@@ -209,17 +216,28 @@
     if (r.error) { if (prev) S.att[key] = prev; else delete S.att[key]; setCell(sid, uid, prev); sum(); err(r.error); return; }
     syncSession(sid);
   }
-  async function markAll(btn) {
-    var add = [];
-    visible().forEach(function (s) { (S.byClass[s.class_id] || []).forEach(function (x) { if (x.session_date <= ymd(dayNow()) && !S.att[x.id + ':' + s.id]) add.push({ session_id: x.id, student_id: s.id, status: 'present', updated_at: new Date().toISOString() }); }); });
-    if (!add.length) return toast('Không còn ô trống nào đã đến buổi.');
-    btn.disabled = true;
-    var r = await S.c.from('attendance').upsert(add);
-    btn.disabled = false;
-    if (r.error) return err(r.error);
-    add.forEach(function (a) { S.att[a.session_id + ':' + a.student_id] = 'present'; setCell(a.session_id, a.student_id, 'present'); });
-    sum();
-    var seen = {}; for (var i = 0; i < add.length; i++) if (!seen[add[i].session_id]) { seen[add[i].session_id] = 1; await syncSession(add[i].session_id); } toast('Đã đánh dấu có mặt ' + add.length + ' ô.');
+  function daySessions(rows, k) { var out = []; rows.forEach(function (u) { (S.byClass[u.class_id] || []).forEach(function (x) { if (x.session_date === k) out.push({ x: x, u: u }); }); }); return out; }
+  function dayState(rows, k) {
+    var l = daySessions(rows, k); if (!l.length) return 'none';
+    return l.every(function (o) { return S.att[o.x.id + ':' + o.u.id] === 'present'; }) ? 'all' : 'some';
+  }
+  async function bulkDay(btn) {
+    var k = btn.dataset.d, rows = visible(), l = daySessions(rows, k); if (!l.length) return;
+    var clear = dayState(rows, k) === 'all', sids = {}; btn.disabled = true;
+    if (clear) {
+      for (var i = 0; i < l.length; i++) {
+        var o = l[i], r = await S.c.from('attendance').delete().eq('session_id', o.x.id).eq('student_id', o.u.id);
+        if (r.error) { btn.disabled = false; return err(r.error); }
+        delete S.att[o.x.id + ':' + o.u.id]; setCell(o.x.id, o.u.id, ''); sids[o.x.id] = 1;
+      }
+    } else {
+      var add = l.filter(function (o) { return !S.att[o.x.id + ':' + o.u.id]; }).map(function (o) { return { session_id: o.x.id, student_id: o.u.id, status: 'present', updated_at: new Date().toISOString() }; });
+      var r2 = await S.c.from('attendance').upsert(add);
+      if (r2.error) { btn.disabled = false; return err(r2.error); }
+      add.forEach(function (a) { S.att[a.session_id + ':' + a.student_id] = 'present'; setCell(a.session_id, a.student_id, 'present'); sids[a.session_id] = 1; });
+    }
+    for (var id in sids) await syncSession(Number(id));
+    paint(false);
   }
   async function saveNote(inp) {
     var uid = Number(inp.dataset.u), s = S.stu.find(function (x) { return x.id === uid; }); if (!s) return;
@@ -232,7 +250,7 @@
   window.LMSAtt = {
     open: function (o) {
       if (!box) build();
-      S = { c: o.c, classes: o.classes || [], date: dayNow(), cls: 'all', byClass: {}, sess: {}, att: {}, stu: [], cmap: {}, loading: true };
+      S = { c: o.c, classes: o.classes || [], week: nowWeek(), cls: 'all', byClass: {}, sess: {}, att: {}, stu: [], cmap: {}, loading: true };
       box.classList.remove('out'); box.hidden = false; box.style.animation = 'none'; void box.offsetWidth; box.style.animation = '';
       paint(true);
       load(true);
