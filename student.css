@@ -1498,3 +1498,7 @@ html body.student-dashboard-view .asg-row .asg-bits>span{white-space:nowrap}
 html body.student-dashboard-view .asg-row .asg-lock-note{margin-top:2px;text-align:left}
 html body.student-dashboard-view .asg-row .asg-line .asg-slot{width:34px;height:34px}
 }
+
+/* Thanh tiến trình khi chuyển trang (giống các trang quản lý) */
+html.lms-leaving::before{content:"";position:fixed;left:0;top:0;height:3px;width:100%;background:#e5c16b;z-index:9999;transform-origin:left;animation:lms-go 1.2s cubic-bezier(.2,.7,.2,1) forwards;pointer-events:none}
+@keyframes lms-go{from{transform:scaleX(.05)}60%{transform:scaleX(.7)}to{transform:scaleX(.92)}}

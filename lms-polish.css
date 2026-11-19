@@ -1449,3 +1449,8 @@ body>#lms-nav{overflow-x:auto!important;overflow-y:hidden;justify-content:flex-s
 body>#lms-nav::-webkit-scrollbar{display:none}
 body>#lms-nav a{flex:0 0 auto!important;min-width:68px;padding-left:8px!important;padding-right:8px!important}
 }
+
+/* Thanh tiến trình mỏng khi chuyển trang, giống nhau ở mọi tab */
+html.lms-leaving::before{content:"";position:fixed;left:0;top:0;height:3px;width:100%;background:#e5c16b;z-index:9999;transform-origin:left;animation:lms-go 1.2s cubic-bezier(.2,.7,.2,1) forwards;pointer-events:none}
+@keyframes lms-go{from{transform:scaleX(.05)}60%{transform:scaleX(.7)}to{transform:scaleX(.92)}}
+@media(prefers-reduced-motion:reduce){html.lms-leaving::before{animation:none;transform:scaleX(.6)}}

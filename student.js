@@ -774,7 +774,7 @@
           else if (k === 'pick-open') { T.view = 'day'; T.slotOpen.add(b.dataset.key); T.sess.filter(x => x.session_date === T.date && hhmm(x.start_time) === b.dataset.key).forEach(x => T.open.add(x.id)); drawTeacher(); window.scrollTo(0, 0); }
           else if (k === 'roster') tRoster(Number(b.dataset.cid), Number(b.dataset.sid));
           else if (k === 'view') { T.view = b.dataset.view; if (T.view === 'submissions') { drawTeacher(); await loadSubs(); } drawTeacher(); window.scrollTo(0, 0); }
-          else if (k === 'go') { location.href = b.dataset.href; }
+          else if (k === 'go') { document.documentElement.classList.add('lms-leaving'); location.href = b.dataset.href; }
           else if (k === 'grade') { await tGrade(Number(b.dataset.aid), Number(b.dataset.stid)); }
           else if (k === 'sub-refresh') { await loadSubs(); drawTeacher(); LMS.toast('Đã tải lại bài nộp'); }
           else if (k === 'day') { const d = b.dataset.date; if (T.view !== 'rail') T.view = 'day'; if (mondayKey(dOf(d)) === T.monday) { T.date = d; history.replaceState(null, '', '#teacher/' + d); drawTeacher(); } else location.hash = '#teacher/' + d; }

@@ -258,6 +258,25 @@
     }
     var cur = nav.querySelector('[aria-current="page"]');
     if (cur) requestAnimationFrame(function () { nav.scrollLeft = cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2; });
+    /* Chuyển tab thống nhất: tải trước trang khi chạm, báo ngay là đang chuyển (mục sáng lên + thanh tiến trình) */
+    var warmed = {};
+    function warm(a) {
+      var u; try { u = new URL(a.href, location.href); } catch (e) { return; }
+      if (u.origin !== location.origin || u.pathname === location.pathname || warmed[u.pathname]) return;
+      warmed[u.pathname] = 1;
+      try { fetch(u.pathname, { credentials: 'same-origin' }).catch(function () {}); } catch (e) {}
+    }
+    nav.addEventListener('pointerdown', function (e) { var a = e.target.closest('a[href]'); if (a) warm(a); }, { passive: true });
+    nav.addEventListener('mouseover', function (e) { var a = e.target.closest('a[href]'); if (a && matchMedia('(hover:hover)').matches) warm(a); }, { passive: true });
+    nav.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href]'); if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button > 0) return;
+      var u; try { u = new URL(a.href, location.href); } catch (x) { return; }
+      if (u.origin !== location.origin || u.pathname === location.pathname) return; /* cùng trang (đổi hash): không hiện thanh */
+      nav.querySelectorAll('a[aria-current]').forEach(function (n) { n.removeAttribute('aria-current'); });
+      a.setAttribute('aria-current', 'page');
+      document.documentElement.classList.add('lms-leaving');
+    });
+    window.addEventListener('pageshow', function () { document.documentElement.classList.remove('lms-leaving'); });
     var logout = document.getElementById('btn-logout');
     if (!logout) {
       var tools = document.querySelector('header .page-header-actions, header .header-tools');
