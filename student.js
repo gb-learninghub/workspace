@@ -272,7 +272,7 @@
         } else {
           const ov = rows[0], sk = rows.slice(1);
           progBody = `<div class="prog-body two">${goalBox('Mục tiêu điểm', 'target', big(ov), 'Hiện tại / Mục tiêu', ov.pct, '', true)}
-            <div><div class="sk-title"><i data-lucide="bar-chart-3"></i>Điểm theo kỹ năng</div><div class="sk-grid">${sk.map((r, i) => `<div class="sk c${i % 4}"><div class="sl"><i data-lucide="${SK_ICON[r.kind] || 'book-open'}"></i><span class="skill-code">${SC.KIND_SHORT[r.kind] || esc(r.label)}</span></div>
+            <div><div class="sk-title"><i data-lucide="bar-chart-3"></i>Điểm theo kỹ năng</div><div class="sk-grid">${sk.map((r, i) => `<div class="sk c${i % 4}" data-sk="${r.kind}"><div class="sl"><i data-lucide="${SK_ICON[r.kind] || 'book-open'}"></i><span class="skill-code">${SC.KIND_SHORT[r.kind] || esc(r.label)}</span></div>
               <div class="sv">${F(r.kind, r.current)}</div>${r.target != null ? `<div class="st">Mục tiêu ${F(r.kind, r.target)}</div>` : ''}${r.pct != null ? `<div class="bar"><i style="width:${r.pct}%"></i></div>` : ''}</div>`).join('')}</div></div></div>`;
         }
       } else {
@@ -285,7 +285,7 @@
               return `<div class="sk c${i % 3}"><div class="sl"><i data-lucide="book-open"></i><span style="overflow-wrap:anywhere">${esc(g)}</span></div><div class="sv">${n} / ${a.length}</div><div class="bar"><i style="width:${Math.round(100 * n / a.length)}%"></i></div></div>`; }).join('')}</div></div></div>`;
         }
       }
-      const progHtml = `<section class="card g-prog" id="student-overview"><div class="prog-head"><h2><i data-lucide="bar-chart-3"></i>Tiến độ học tập</h2><span class="prog-pill">Chương trình: ${isAll ? `<select class="field" style="min-height:36px;width:auto;padding:0 10px;font-weight:700" aria-label="Chọn chương trình" onchange="window.__demoProg(this.value)">${Object.keys(PNAME).map(k => `<option value="${k}"${k === prog ? ' selected' : ''}>${PNAME[k]}</option>`).join('')}</select>` : `<b>${esc(PNAME[prog] || '')}</b>`}</span></div>${progBody}${(prog === 'ielts' || prog === 'toeic' || prog === 'ac12') ? '<div class="wk-scores" id="wk-scores" style="margin-top:14px"></div>' : ''}</section>`;
+      const progHtml = `<section class="card g-prog" id="student-overview"><div class="prog-head"><h2><i data-lucide="bar-chart-3"></i>Tiến độ học tập</h2><span class="prog-pill">Chương trình: ${isAll ? `<select class="field" style="min-height:36px;width:auto;padding:0 10px;font-weight:700" aria-label="Chọn chương trình" onchange="window.__demoProg(this.value)">${Object.keys(PNAME).map(k => `<option value="${k}"${k === prog ? ' selected' : ''}>${PNAME[k]}</option>`).join('')}</select>` : `<b>${esc(PNAME[prog] || '')}</b>`}</span></div>${progBody}</section>`;
 
       /* Lịch sử buổi học: thu gọn mặc định, buổi mới nhất trước, không có buổi tương lai */
       const historyRows = past.slice(0, S.historyLimit).map(s => { const st = STATUS[s.status] || STATUS.planned;
@@ -361,31 +361,37 @@
           const list = $('tuition-history-list'); if (list) list.innerHTML = tuitionHistoryContent();
         });
       }
-      /* Điểm theo tuần (bảng grades): điểm mới nhất của mỗi kỹ năng trong tuần đang chọn */
-      if (document.getElementById('wk-scores')) (async () => {
-        const box = document.getElementById('wk-scores'), P = n => String(n).padStart(2, '0');
+      /* Điểm theo tuần (bảng grades): ô kỹ năng hiện điểm mới nhất trong tuần đang chọn */
+      if (document.querySelector('.g-prog .sk[data-sk]')) (async () => {
+        const root = document.querySelector('.g-prog'), ttl = root.querySelector('.sk-title'), P = n => String(n).padStart(2, '0');
         const key = dt => dt.getFullYear() + '-' + P(dt.getMonth() + 1) + '-' + P(dt.getDate());
         const mon = dt => { const x = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
         const fromKey = k => { const [y, m, dd] = k.split('-').map(Number); return new Date(y, m - 1, dd); };
-        const cur = key(mon(new Date())), SKN = { listening: 'Listening', reading: 'Reading', writing: 'Writing', speaking: 'Speaking' };
+        const cur = key(mon(new Date()));
+        if (!ttl) return;
         if (!S.grades || S.gCode !== S.code) { try { const r = await S.c.rpc('student_grades', { p_student_code: S.code }); S.grades = r.error ? [] : (r.data || []); } catch (e) { S.grades = []; } S.gCode = S.code; S.gWeek = cur; }
-        const show = g => g.band != null ? 'Band ' + g.band : (g.score != null ? g.score + (g.total ? ' / ' + g.total : '') : '–');
+        const show = g => g.band != null ? String(g.band) : (g.score != null ? String(g.score) : '–');
+        const full = g => g.band != null ? 'Band ' + g.band : (g.score != null ? g.score + (g.total ? ' / ' + g.total : '') : '–');
         const draw = () => {
           const w = S.gWeek || cur, a = fromKey(w), b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6), fm = x => P(x.getDate()) + '/' + P(x.getMonth() + 1);
-          const inWk = S.grades.filter(g => g.week_start === w), latest = {};
-          inWk.forEach(g => { const k = g.skill || 'khac'; if (!latest[k] || g.graded_at > latest[k].graded_at) latest[k] = g; });
-          const items = Object.keys(latest).map(k => { const g = latest[k]; return `<button type="button" class="wk-score" data-gid="${g.id}"><span><small>${esc(SKN[k] || k)} · ${esc(g.name || '')}</small><b>${esc(show(g))}</b></span><i data-lucide="chevron-right"></i></button>`; }).join('');
-          box.innerHTML = `<div class="sk-title"><i data-lucide="calendar-days"></i>Điểm theo tuần</div><div class="wk-score-nav"><button type="button" class="icon-btn" data-wk="-1" aria-label="Tuần trước"><i data-lucide="chevron-left"></i></button><span class="wk-lab">${fm(a)} – ${fm(b)}</span><button type="button" class="icon-btn" data-wk="1" aria-label="Tuần sau"><i data-lucide="chevron-right"></i></button>${w !== cur ? '<button type="button" class="btn-soft" data-wk="0">Tuần hiện tại</button>' : ''}</div><div class="wk-score-list">${items || '<div class="text-sm text-slate-500">Tuần này chưa có điểm.</div>'}</div>`;
-          if (window.lucide) window.lucide.createIcons();
-          box.querySelectorAll('[data-wk]').forEach(el => el.onclick = () => { const n = Number(el.dataset.wk); if (n === 0) S.gWeek = cur; else { const x = fromKey(S.gWeek || cur); x.setDate(x.getDate() + 7 * n); S.gWeek = key(x); } draw(); });
-          box.querySelectorAll('[data-gid]').forEach(el => el.onclick = () => {
-            const g = S.grades.find(z => String(z.id) === el.dataset.gid); if (!g) return;
-            const cr = g.criteria ? [['tr', 'Task response'], ['cc', 'Coherence and cohesion'], ['lr', 'Lexical resource'], ['gra', 'Grammatical range and accuracy']].filter(([k]) => g.criteria[k] != null).map(([k, l]) => `<div class="gr-bd"><span>${l}</span><b>${g.criteria[k]}</b></div>`).join('') : '';
-            const bd = g.breakdown ? Object.keys(g.breakdown).map(k => `<div class="gr-bd"><span>${esc(k)}</span><b>${g.breakdown[k].ok} / ${g.breakdown[k].n}</b></div>`).join('') : '';
-            const html = `<div class="gr-bd"><span>Kết quả</span><b>${esc(show(g))}</b></div>${cr}${bd ? '<p class="gr-note" style="margin-top:10px">Theo dạng câu</p>' + bd : ''}${g.feedback ? '<p class="gr-note" style="margin-top:10px">Nhận xét</p><p>' + esc(g.feedback) + '</p>' : ''}${g.body ? '<p class="gr-note" style="margin-top:10px">Bài làm</p><p style="white-space:pre-wrap">' + esc(g.body) + '</p>' : ''}`;
-            window.__gbModal(g.name || 'Kết quả', html, 'clipboard-check');
+          ttl.innerHTML = `<i data-lucide="bar-chart-3"></i><span>Điểm theo kỹ năng</span><span class="wk-mini"><button type="button" data-wk="-1" aria-label="Tuần trước"><i data-lucide="chevron-left"></i></button><span class="wk-lab">${fm(a)} - ${fm(b)}</span><button type="button" data-wk="1" aria-label="Tuần sau"><i data-lucide="chevron-right"></i></button>${w !== cur ? '<button type="button" data-wk="0" aria-label="Về tuần hiện tại" title="Tuần hiện tại"><i data-lucide="rotate-ccw"></i></button>' : ''}</span>`;
+          root.querySelectorAll('.sk[data-sk]').forEach(tile => {
+            const k = tile.dataset.sk, gs = S.grades.filter(g => g.week_start === w && g.skill === k).sort((x, y) => (y.graded_at > x.graded_at ? 1 : -1)), g = gs[0], sv = tile.querySelector('.sv');
+            if (sv) sv.textContent = g ? show(g) : '–';
+            tile.querySelectorAll('.bar,.st').forEach(x => x.style.display = 'none');
+            tile.classList.toggle('sk-has', !!g); tile.dataset.gid = g ? g.id : '';
           });
+          if (window.lucide) window.lucide.createIcons();
         };
+        ttl.addEventListener('click', e => { const el = e.target.closest('[data-wk]'); if (!el) return; const n = Number(el.dataset.wk); if (n === 0) S.gWeek = cur; else { const x = fromKey(S.gWeek || cur); x.setDate(x.getDate() + 7 * n); S.gWeek = key(x); } draw(); });
+        root.addEventListener('click', e => {
+          const tile = e.target.closest('.sk[data-gid]'); if (!tile || !tile.dataset.gid) return;
+          const g = S.grades.find(z => String(z.id) === tile.dataset.gid); if (!g) return;
+          const cr = g.criteria ? [['tr', 'Task response'], ['cc', 'Coherence and cohesion'], ['lr', 'Lexical resource'], ['gra', 'Grammatical range and accuracy']].filter(([k]) => g.criteria[k] != null).map(([k, l]) => `<div class="gr-bd"><span>${l}</span><b>${g.criteria[k]}</b></div>`).join('') : '';
+          const bd = g.breakdown ? Object.keys(g.breakdown).map(k => `<div class="gr-bd"><span>${esc(k)}</span><b>${g.breakdown[k].ok} / ${g.breakdown[k].n}</b></div>`).join('') : '';
+          const html = `<div class="gr-bd"><span>Kết quả</span><b>${esc(full(g))}</b></div>${cr}${bd ? '<p class="gr-note" style="margin-top:10px">Theo dạng câu</p>' + bd : ''}${g.feedback ? '<p class="gr-note" style="margin-top:10px">Nhận xét</p><p>' + esc(g.feedback) + '</p>' : ''}${g.body ? '<p class="gr-note" style="margin-top:10px">Bài làm</p><p style="white-space:pre-wrap">' + esc(g.body) + '</p>' : ''}`;
+          window.__gbModal(g.name || 'Kết quả', html, 'clipboard-check');
+        });
         draw();
       })();
       (LMS.isTeacherNow ? LMS.isTeacherNow() : Promise.resolve(false)).then(ok => { const b = $('btn-class'); if (ok && S.data === d && d.student_id) document.querySelectorAll('.student-history-row[data-sid]').forEach(row => { const sid = row.dataset.sid, tags = row.querySelector('.hr-tags'); if (!sid || !tags || row.querySelector('.att-sel')) return; tags.querySelectorAll('.tag').forEach((tg, i) => { if (i > 0) tg.remove(); }); const sel = document.createElement('select'); sel.className = 'att-sel'; sel.setAttribute('aria-label', 'Điểm danh'); sel.innerHTML = '<option value="">Chưa điểm danh</option><option value="present">Có mặt</option><option value="late">Trễ</option><option value="absent">Vắng</option>'; sel.value = row.dataset.att || ''; sel.addEventListener('change', async () => { const v = sel.value; sel.disabled = true; const r = v ? await S.c.from('attendance').upsert({ session_id: Number(sid), student_id: d.student_id, status: v, updated_at: new Date().toISOString() }) : await S.c.from('attendance').delete().eq('session_id', Number(sid)).eq('student_id', d.student_id); sel.disabled = false; if (r.error) { sel.value = row.dataset.att || ''; sel.classList.add('att-err'); setTimeout(() => sel.classList.remove('att-err'), 1500); return; } row.dataset.att = v; const ss = (d.sessions || []).find(z => String(z.id) === sid); if (ss) ss.attendance = v || null; }); tags.appendChild(sel); }); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); $('btn-home').classList.remove('hidden'); $('btn-home').href = 'index.html#overview'; document.querySelectorAll('a.logo-home[data-student-home]').forEach(l => { l.href = 'index.html#overview'; l.removeAttribute('data-student-home'); l.setAttribute('aria-label', 'Về trang tổng quan'); }); } });

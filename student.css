@@ -1444,3 +1444,11 @@ body.student-dashboard-view .student-overview-view .student-materials{height:aut
 .wk-score small{display:block;color:#64748b;font-size:12px}
 .gr-bd{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0;font-size:13px}
 .gr-bd:last-child{border-bottom:0}
+
+/* Chuyển tuần ngay trên tiêu đề Điểm theo kỹ năng */
+.sk-title{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.sk-title .wk-mini{margin-left:auto;display:inline-flex;align-items:center;gap:2px;font-size:11px;font-weight:700;color:#475569;white-space:nowrap}
+.sk-title .wk-mini button{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:0;background:#f1f5f9;border-radius:999px;color:#475569;cursor:pointer;padding:0}
+.sk-title .wk-mini svg{width:13px;height:13px}
+.sk-title .wk-lab{padding:0 4px}
+.sk.sk-has{cursor:pointer}
