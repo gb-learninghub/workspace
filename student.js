@@ -519,13 +519,15 @@
     const BAND_L = [[39,9],[37,8.5],[35,8],[32,7.5],[30,7],[26,6.5],[23,6],[18,5.5],[16,5],[13,4.5],[10,4],[8,3.5],[6,3],[4,2.5]];
     const BAND_R = [[39,9],[37,8.5],[35,8],[33,7.5],[30,7],[27,6.5],[23,6],[19,5.5],[15,5],[13,4.5],[10,4],[8,3.5],[6,3],[4,2.5]];
     const toBand = (n, tb) => { for (const [m, b] of tb) if (n >= m) return b; return n >= 1 ? 2 : 0; };
+    /* Tổng điểm = lần nộp đầu tiên của từng part cộng lại */
+    const sumFirst = rows => { const m = new Map(); rows.filter(r => r.score != null).forEach(r => { const k = r.part == null ? 0 : r.part, o = m.get(k); if (!o || (r.attempt_no || 1) < (o.attempt_no || 1)) m.set(k, r); }); return m.size ? [...m.values()].reduce((t, r) => t + Number(r.score), 0) : null; };
     async function tGrade(aid, stid) {
       const xs = T.asg.find(x => x.assignment_id === aid), a = xs && xs.assignments, D = T.sub;
       const st = D.students.find(z => z.id === stid), cls = D.classes.find(c => c.id === st.class_id) || {}, code = cls.class_code || '';
       const nm = ((a.skill || '') + ' ' + (a.assignment_name || '')).toLowerCase();
       const prog = /^IE/i.test(code) ? 'ielts' : /^AC12/i.test(code) ? 'ac12' : /^TO/i.test(code) ? 'toeic' : 'gs';
       const skill = /writing/.test(nm) ? 'writing' : /listening/.test(nm) ? 'listening' : /reading/.test(nm) ? 'reading' : (a.skill || '');
-      const first = D.subs.filter(r => r.assignment_id === aid && r.student_id === stid && r.score != null).sort((p, q) => (p.attempt_no || 1) - (q.attempt_no || 1))[0];
+      const tot0 = sumFirst(D.subs.filter(r => r.assignment_id === aid && r.student_id === stid)), first = tot0 != null ? { score: tot0 } : null;
       const old = await S.c.from('grades').select('*').eq('student_id', stid).eq('assignment_id', aid).maybeSingle();
       const g = (old && old.data) || {}, cr = g.criteria || {};
       const inp = (id, label, val, extra) => `<label class="gr-f"><span>${label}</span><input id="${id}" type="number" inputmode="decimal" value="${val == null ? '' : val}" ${extra || ''}></label>`;
@@ -569,9 +571,9 @@
           const rows = roster.map(st => {
             const sb = D.subs.filter(r => r.assignment_id === aid && r.student_id === st.id), wr = D.writing.filter(r => r.assignment_id === aid && r.student_id === st.id);
             if (!sb.length && !wr.length) return { st, done: false };
-            const first = sb.filter(r => r.score != null).sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1))[0];
+            const tot = sumFirst(sb);
             const bands = wr.filter(r => r.band != null).map(r => Number(r.band));
-            return { st, done: true, late: sb.some(r => r.is_late) || wr.some(r => r.is_late), score: first ? Number(first.score) : null, band: bands.length ? bands.reduce((p, q) => p + q, 0) / bands.length : null, tries: sb.length ? Math.max(...sb.map(r => r.attempt_no || 1)) : 0 };
+            return { st, done: true, late: sb.some(r => r.is_late) || wr.some(r => r.is_late), score: tot, band: bands.length ? bands.reduce((p, q) => p + q, 0) / bands.length : null, tries: sb.length ? Math.max(...sb.map(r => r.attempt_no || 1)) : 0 };
           }).sort((p, q) => p.done - q.done);
           return { x, cls, rows };
         });
@@ -580,7 +582,7 @@
         const name = c => esc(c.class_name || c.class_code || ''), dues = [...new Set(groups.map(z => z.x.due_at || ''))];
         const sub = dues.length === 1 ? esc(fmtDue(dues[0])) : 'Hạn nộp khác nhau theo lớp';
         const flat = groups.flatMap(z => z.rows.map(r => ({ ...r, cls: z.cls, due: z.x.due_at }))).sort((p, q) => p.done - q.done);
-        const line = r => `<div class="t-sub-row"><span class="t-sr-name">${esc(r.st.student_name)}</span><span class="t-sr-cls">${name(r.cls)}${dues.length > 1 ? `<small>${esc(fmtDue(r.due))}</small>` : ''}</span><span class="t-sr-code">${esc(r.st.student_code || '')}</span><span class="t-sub-meta">${r.done ? `${r.score != null ? '<b>' + num(r.score) + '</b>' : ''}${r.band != null ? '<b>Band ' + num(r.band) + '</b>' : ''}${r.tries > 1 ? '<span class="tag bg-slate-100 text-slate-600">Lần ' + r.tries + '</span>' : ''}${r.late ? '<span class="tag bg-rose-50 text-rose-700">Trễ</span>' : ''}${r.score == null && r.band == null && !r.late ? '<span class="tag bg-emerald-50 text-emerald-700">Đã nộp</span>' : ''}<button type="button" class="t-ic" data-t="grade" data-aid="${aid}" data-stid="${r.st.id}" aria-label="Chấm điểm" title="Chấm điểm"><i data-lucide="pencil-line"></i></button>` : '<span class="tag bg-amber-50 text-amber-700">Chưa nộp</span>'}</span></div>`;
+        const line = r => { const res = [r.score != null ? '<b>' + num(r.score) + '</b>' : '', r.band != null ? '<b>B' + num(r.band) + '</b>' : ''].filter(Boolean).join(' · '), tr = r.done && r.tries > 1 ? '<span class="tag bg-slate-100 text-slate-600">Lần ' + r.tries + '</span>' : '', stt = !r.done ? '<span class="tag bg-amber-50 text-amber-700">Chưa nộp</span>' : r.late ? '<span class="tag bg-rose-50 text-rose-700">Trễ</span>' : '<span class="tag bg-emerald-50 text-emerald-700">Đã nộp</span>', bt = r.done ? `<button type="button" class="t-ic" data-t="grade" data-aid="${aid}" data-stid="${r.st.id}" aria-label="Chấm điểm" title="Chấm điểm"><i data-lucide="pencil-line"></i></button>` : ''; return `<div class="t-sub-row"><span class="t-sr-name">${esc(r.st.student_name)}</span><span class="t-sr-cls">${name(r.cls)}${dues.length > 1 ? `<small>${esc(fmtDue(r.due))}</small>` : ''}</span><span class="t-sr-code">${esc(r.st.student_code || '')}</span><span class="t-sub-meta"><i class="sl sl-res">${res}</i><i class="sl sl-try">${tr}</i><i class="sl sl-st">${stt}</i><i class="sl sl-bt">${bt}</i></span></div>`; };
         const list = flat.length ? '<div class="t-sub-row t-sub-cap"><span>Học viên</span><span>Lớp</span><span>MSHS</span><span class="t-sub-meta">Trạng thái</span></div>' + flat.map(line).join('') : '<div class="t-none">Lớp chưa có học viên.</div>';
         return `<section class="card t-sub" data-aid="${aid}"><div class="t-sub-head" aria-expanded="${T.subOpen.has(String(aid))}"><div class="t-cls"><b>${esc(g.a.assignment_name)}</b><span>${sub}</span></div><div class="t-sum"><span class="tag ${done.length === all.length && all.length ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${done.length}/${all.length} đã nộp</span>${late ? `<span class="tag bg-rose-50 text-rose-700">${late} nộp trễ</span>` : ''}${avg != null ? `<span class="tag bg-slate-100 text-slate-600">Điểm TB ${num(avg)}</span>` : ''}</div></div>
           <div class="t-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><div class="t-sub-body" ${T.subOpen.has(String(aid)) ? '' : 'hidden'}>${list}</div></section>`;

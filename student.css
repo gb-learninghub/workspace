@@ -1456,3 +1456,10 @@ body.student-dashboard-view .student-overview-view .student-materials{height:aut
 /* Bài học / Bài tập tuần này: khung cố định chiều cao, cuộn khi nội dung dài */
 html body.student-dashboard-view .student-overview-view .student-materials>.student-week-only{height:360px!important;max-height:360px!important;overflow:hidden!important;display:flex!important;flex-direction:column}
 html body.student-dashboard-view .student-overview-view .student-materials>.student-week-only .student-week-only-body{flex:1 1 auto;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain}
+
+/* Bài nộp: cột trạng thái chia ô cố định, thêm dữ liệu cũng không làm lệch hàng */
+body.student-dashboard-view .t-sub-row{grid-template-columns:minmax(0,1.2fr) minmax(0,.9fr) minmax(0,.9fr) 216px!important}
+.t-sub-row .t-sub-meta{display:grid!important;grid-template-columns:78px 46px 58px 28px;column-gap:4px;justify-self:end;align-items:center;justify-content:end}
+.t-sub-row .t-sub-meta .sl{display:flex;align-items:center;justify-content:center;font-style:normal;min-width:0;white-space:nowrap;overflow:hidden}
+.t-sub-row .t-sub-meta .sl-res{justify-content:flex-end;gap:4px}
+.t-sub-row.t-sub-cap .t-sub-meta{display:block!important;text-align:right}
