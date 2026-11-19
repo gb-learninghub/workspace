@@ -130,6 +130,7 @@
         document.addEventListener('click', e => {
           const st = e.target.closest('[data-stat]');
           if (st && S.statLists && S.statLists[st.dataset.stat]) { const [t, h] = S.statLists[st.dataset.stat]; window.__gbModal(t, h, 'list'); return; }
+          const gl = e.target.closest('[data-goal]'); if (gl && S.goalPop && S.goalPop[gl.dataset.goal]) { const [t, h] = S.goalPop[gl.dataset.goal]; window.__gbModal(t, h, 'target'); return; }
           const pv = e.target.closest('[data-prev]'); if (!pv) return;
           const a = (window.__gbAsg || {})[pv.dataset.prev]; if (!a) return;
           const due = a.due_at ? new Date(a.due_at) : null, multi = a.kind === 'homework' && a.parts_total > 1;
@@ -259,19 +260,23 @@
 
       /* Tiến độ học tập: Type 1 (điểm) cho IELTS / TOEIC / AC12, Type 2 (nội dung) cho Global Success / Giao tiếp */
       const SC = LMS.score, SK_ICON = { listening: 'headphones', reading: 'book-open', writing: 'pencil', speaking: 'mic' };
-      const goalBox = (label, icon, big, sub, pct, tail, outsideLabel = false) => {
+      const goalBox = (label, icon, big, sub, pct, tail, outsideLabel = false, gk = '') => {
+        const ga = gk ? ` data-goal="${gk}" role="button" tabindex="0" title="Xem mục tiêu cụ thể"` : '';
         const value = `<div class="gv"><b>${big}</b>${pct != null ? `<span class="pct">${pct}%</span>` : ''}</div><div class="gs">${sub}</div>${pct != null ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}${tail || ''}`;
-        return outsideLabel ? `<div class="goal-column"><div class="goal-column-title"><i data-lucide="${icon}"></i>${esc(label)}</div><div class="goal goal-value-only">${value}</div></div>` : `<div class="goal"><div class="gl"><i data-lucide="${icon}"></i>${esc(label)}</div>${value}</div>`;
+        return outsideLabel ? `<div class="goal-column"${ga}><div class="goal-column-title"><i data-lucide="${icon}"></i>${esc(label)}</div><div class="goal goal-value-only">${value}</div></div>` : `<div class="goal"${ga}><div class="gl"><i data-lucide="${icon}"></i>${esc(label)}</div>${value}</div>`;
       };
+      S.goalPop = {};
       let progBody = '';
       if (prog === 'ielts' || prog === 'toeic' || prog === 'ac12') {
         const rows = SC.targets(prog, d.targets, d.scores), F = (k, v) => SC.fmt(prog, k, v);
         const big = r => `${F(r.kind, r.current)} <em>/ ${F(r.kind, r.target)}</em>`;
+        const popRows = rr => rr.map(r => `<div class="gr-bd"><span>${esc(r.label)}</span><b>Đầu vào ${F(r.kind, r.baseline)} · Hiện tại ${F(r.kind, r.current)} · Mục tiêu ${F(r.kind, r.target)}${r.pct != null ? ' · ' + r.pct + '%' : ''}</b></div>`).join('');
+        S.goalPop.main = ['Mục tiêu điểm', popRows(rows) + '<p class="gr-note" style="margin-top:10px">Điểm đầu vào là điểm lúc bắt đầu học. Tiến độ tính từ điểm đầu vào đến mục tiêu.</p>'];
         if (prog === 'ac12') {
-          progBody = `<div class="goal-pair">${rows.map(r => goalBox('Mục tiêu ' + r.label, 'target', big(r), 'Số câu đúng: hiện tại / mục tiêu (' + (r.kind === 'thpt' ? 40 : 30) + ' câu)', r.pct)).join('')}</div>`;
+          progBody = `<div class="goal-pair">${rows.map(r => goalBox('Mục tiêu ' + r.label, 'target', big(r), 'Số câu đúng: hiện tại / mục tiêu (' + (r.kind === 'thpt' ? 40 : 30) + ' câu)', r.pct, '', false, 'main')).join('')}</div>`;
         } else {
           const ov = rows[0], sk = rows.slice(1);
-          progBody = `<div class="prog-body two">${goalBox('Mục tiêu điểm', 'target', big(ov), 'Hiện tại / Mục tiêu', ov.pct, '', true)}
+          progBody = `<div class="prog-body two">${goalBox('Mục tiêu điểm', 'target', big(ov), 'Hiện tại / Mục tiêu', ov.pct, '', true, 'main')}
             <div><div class="sk-title"><i data-lucide="bar-chart-3"></i>Điểm</div><div class="sk-grid">${sk.map((r, i) => `<div class="sk c${i % 4}" data-sk="${r.kind}"><div class="sl"><i data-lucide="${SK_ICON[r.kind] || 'book-open'}"></i><span class="skill-code">${SC.KIND_SHORT[r.kind] || esc(r.label)}</span></div>
               <div class="sv">${F(r.kind, r.current)}</div>${r.target != null ? `<div class="st">Mục tiêu ${F(r.kind, r.target)}</div>` : ''}${r.pct != null ? `<div class="bar"><i style="width:${r.pct}%"></i></div>` : ''}</div>`).join('')}</div></div></div>`;
         }
@@ -280,7 +285,8 @@
         if (!objs.length) progBody = '<div class="progress-empty"><i data-lucide="target"></i><span>Chưa có mục tiêu nội dung.</span></div>';
         else {
           const gm = {}, order = []; objs.forEach(o => { const g = o.group || 'Khác'; if (!gm[g]) { gm[g] = []; order.push(g); } gm[g].push(o); });
-          progBody = `<div class="prog-body two">${goalBox('Mục tiêu chương trình', 'target', `${cp.done} <em>/ ${cp.total} mục tiêu</em>`, 'Đã hoàn thành / Tổng số', cp.pct)}
+          S.goalPop.main = ['Mục tiêu chương trình', order.map(g => `<p class="gr-note" style="margin-top:10px">${esc(g)}</p>` + gm[g].map(o => `<div class="gr-bd"><span>${esc(o.title || '')}</span><b>${o.done ? 'Đã xong' : 'Chưa xong'}</b></div>`).join('')).join('')];
+          progBody = `<div class="prog-body two">${goalBox('Mục tiêu chương trình', 'target', `${cp.done} <em>/ ${cp.total} mục tiêu</em>`, 'Đã hoàn thành / Tổng số', cp.pct, '', false, 'main')}
             <div><div class="sk-title"><i data-lucide="bar-chart-3"></i>Tiến độ theo chủ điểm</div><div class="sk-grid">${order.map((g, i) => { const a = gm[g], n = a.filter(o => o.done).length;
               return `<div class="sk c${i % 3}"><div class="sl"><i data-lucide="book-open"></i><span style="overflow-wrap:anywhere">${esc(g)}</span></div><div class="sv">${n} / ${a.length}</div><div class="bar"><i style="width:${Math.round(100 * n / a.length)}%"></i></div></div>`; }).join('')}</div></div></div>`;
         }

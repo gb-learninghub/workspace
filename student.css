@@ -1471,3 +1471,7 @@ body.student-dashboard-view .t-sub-row{grid-template-columns:minmax(0,1.2fr) min
 .t-pill.on{background:#16181D;border-color:#16181D;color:#fff}
 .t-pill.m-only{display:none}
 @media(max-width:780px){.t-pill.m-only{display:inline-flex}}
+
+/* Thẻ mục tiêu bấm được để xem chi tiết */
+[data-goal]{cursor:pointer}
+[data-goal]:focus-visible{outline:2px solid #16181D;outline-offset:2px}

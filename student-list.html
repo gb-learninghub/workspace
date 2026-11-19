@@ -131,7 +131,7 @@
       <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-1"><i data-lucide="target" class="w-4 h-4"></i><span id="tg-title">Mục tiêu điểm</span></h3>
       <p class="text-xs text-slate-500 mb-4" id="tg-sub"></p>
       <div id="tg-rows" class="space-y-2"></div>
-      <p class="text-xs text-slate-500 mt-2">Baseline để trống thì lấy điểm đầu tiên. ĐGNL (30 câu) và TN THPT (40 câu) tính theo số câu đúng. Điểm hiện tại lấy từ bài practice gần nhất đã gắn kỹ năng khi giao bài. Điểm nhập tay (Writing, Speaking...) thêm ở dưới.</p>
+      <p class="text-xs text-slate-500 mt-2">Điểm đầu vào để trống thì lấy điểm đầu tiên. ĐGNL (30 câu) và TN THPT (40 câu) tính theo số câu đúng. Điểm hiện tại lấy từ bài practice gần nhất đã gắn kỹ năng khi giao bài. Điểm nhập tay (Writing, Speaking...) thêm ở dưới.</p>
       <h4 class="font-bold text-slate-800 text-xs mt-5 mb-2">Điểm nhập tay</h4>
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
         <select id="tg-mk" class="field w-full" aria-label="Kỹ năng"></select>
@@ -445,11 +445,25 @@
       const numOf = v => { v = String(v || '').trim().replace(',', '.'); if (v === '') return null; const n = Number(v); return isFinite(n) ? n : NaN; };
       const dmy = k => { const p = String(k).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
       function renderTargetRows() {
-        $('tg-rows').innerHTML = '<div class="grid grid-cols-3 gap-2 text-[11px] font-bold text-slate-400"><span></span><span>Baseline</span><span>Mục tiêu</span></div>' +
+        $('tg-rows').innerHTML = '<div class="grid grid-cols-3 gap-2 text-[11px] font-bold text-slate-400"><span></span><span>Điểm đầu vào</span><span>Mục tiêu</span></div>' +
           SCORE.KINDS[tg.program].map(k => { const t = tg.targets[k] || {};
             return `<div class="grid grid-cols-3 gap-2 items-center"><span class="text-sm font-semibold text-slate-800">${esc(SCORE.KIND_LABEL[k])}</span>
-              <input id="tg-b-${k}" type="text" inputmode="decimal" class="field w-full" value="${t.baseline != null ? t.baseline : ''}" aria-label="Baseline ${esc(SCORE.KIND_LABEL[k])}" autocomplete="off">
+              <input id="tg-b-${k}" type="text" inputmode="decimal" class="field w-full" value="${t.baseline != null ? t.baseline : ''}" aria-label="Điểm đầu vào ${esc(SCORE.KIND_LABEL[k])}" autocomplete="off">
               <input id="tg-t-${k}" type="text" inputmode="decimal" class="field w-full" value="${t.target != null ? t.target : ''}" aria-label="Mục tiêu ${esc(SCORE.KIND_LABEL[k])}" autocomplete="off"></div>`; }).join('');
+        const hint = { ielts: { t: '6.5' }, toeic: { t: '600' } }[tg.program];
+        if (hint) { const e = $('tg-t-' + (tg.program === 'ielts' ? 'overall' : 'overall')); if (e && tg.program === 'toeic' && !e.value) e.placeholder = 'Gợi ý ' + hint.t; }
+        if (tg.program === 'ielts') {
+          const skills = ['listening', 'reading', 'writing', 'speaking'], r05 = x => Math.round(x * 2) / 2;
+          const sync = col => {
+            const o = $('tg-' + col + '-overall'); if (!o) return;
+            const vs = skills.map(k => numOf($('tg-' + col + '-' + k).value));
+            const ok = vs.every(v => v != null && !Number.isNaN(v));
+            if (ok) { o.value = r05(vs.reduce((x, y) => x + y, 0) / 4).toFixed(1); o.readOnly = true; o.title = 'Tự tính từ 4 kỹ năng, làm tròn 0.5'; }
+            else { o.readOnly = false; o.title = ''; if (!o.dataset.keep) o.value = ''; }
+            o.placeholder = 'Tự tính';
+          };
+          ['b', 't'].forEach(col => { skills.forEach(k => $('tg-' + col + '-' + k).addEventListener('input', () => { $('tg-' + col + '-overall').dataset.keep = ''; sync(col); })); const o = $('tg-' + col + '-overall'); if (o && o.value) o.dataset.keep = '1'; sync(col); });
+        }
       }
       function renderManual() {
         $('tg-manual').innerHTML = tg.manual.length ? tg.manual.slice().reverse().map(m => `<div class="flex items-center justify-between gap-2 text-sm px-3 py-1 rounded-xl border border-slate-200"><span><strong>${esc(SCORE.KIND_LABEL[m.kind] || m.kind)}</strong> · ${dmy(m.week_start)} · ${esc(String(m.score))}</span>
