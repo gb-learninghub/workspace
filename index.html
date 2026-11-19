@@ -326,6 +326,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       <h2 id="ds-title">Buổi học</h2>
       <input type="hidden" id="ds-id"><input type="hidden" id="ds-class">
       <div class="text-sm text-slate-600" id="ds-info"></div>
+      <select id="ds-pick" class="field" hidden aria-label="Chọn lớp"></select>
       <label for="ds-date">Ngày</label>
       <input id="ds-date" type="date" class="field" required>
       <div class="text-xs text-slate-500" style="margin-top:10px">Giờ rảnh ngày này (bấm để điền giờ)</div>
@@ -678,7 +679,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       function getSv() { if (!st.sv) { let v = 'w'; try { v = localStorage.getItem('gb.sv') || 'w'; } catch (e) {} st.sv = ['w', 'c', 'd'].includes(v) ? v : 'w'; } return st.sv; }
       function classInfoHtml(c) {
         const s = classState(c), url = c.page_url || ('class.html?class=' + encodeURIComponent(c.class_code)), sub = c.class_name && c.class_name !== c.class_code ? c.class_name : '';
-        return `<div class="flex items-start justify-between gap-2"><div style="min-width:0"><div class="c-line"><a class="cls-link" href="${esc(url)}">${esc(c.class_code)}</a>${c.program ? `<span class="prog-chip">${esc(CLASS_PROGRAM[c.program] || c.program)}</span>` : '<span class="prog-chip none">Chưa gắn chương trình</span>'}</div>${sub ? `<div class="text-xs text-slate-500" style="overflow-wrap:anywhere">${esc(sub)}</div>` : ''}<div class="text-xs text-slate-500">${stuCell(c)}${s === 'inactive' ? '<div>Tạm ngưng</div>' : s === 'archived' ? '<div>Lưu trữ</div>' : ''}</div></div><button type="button" class="icon-btn" style="width:36px;height:36px;flex:none" data-edit-class="${c.id}" aria-label="Sửa lớp ${esc(c.class_code)}"><i data-lucide="settings" class="w-4 h-4"></i></button></div>`;
+        return `<div class="sv-info"><a class="cls-link" href="${esc(url)}">${esc(c.class_code)}</a>${sub ? `<div class="text-xs text-slate-500">${esc(sub)}</div>` : ''}<div class="text-xs text-slate-500">${stuCell(c)}${s === 'inactive' ? '<div>Tạm ngưng</div>' : s === 'archived' ? '<div>Lưu trữ</div>' : ''}</div></div>${c.program ? `<span class="prog-chip" data-pc="${c.id}">${esc(CLASS_PROGRAM[c.program] || c.program)}</span>` : '<span class="prog-chip none" data-pc="${c.id}">Chưa gắn</span>'}<button type="button" class="icon-btn sv-gear" data-edit-class="${c.id}" aria-label="Sửa lớp ${esc(c.class_code)}"><i data-lucide="settings" class="w-4 h-4"></i></button>`;
       }
       function drawSv(list, dates, keys, todayKey) {
         st.svArgs = [list, dates, keys, todayKey];
@@ -693,19 +694,19 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       function drawClassView(list, dates, keys, todayKey) {
         const rows = list.map(c => {
           const ss = st.sessions.filter(x => x.class_id === c.id).sort((a, b) => a.session_date.localeCompare(b.session_date) || String(a.start_time).localeCompare(String(b.start_time)));
-          return `<div class="sv-row${classState(c) !== 'active' ? ' dim' : ''}"><div class="sv-info">${classInfoHtml(c)}</div><div class="sv-pills">${ss.length ? ss.map(x => pillHtml(x, (WD[keys.indexOf(x.session_date)] || '') + ' ' + t5(x.start_time), pillTip(x))).join('') : '<span class="s-none">Tuần này chưa có buổi</span>'}</div></div>`;
+          return `<div class="sv-row${classState(c) !== 'active' ? ' dim' : ''}">${classInfoHtml(c)}<div class="sv-pills">${ss.length ? ss.map(x => pillHtml(x, (WD[keys.indexOf(x.session_date)] || '') + ' ' + t5(x.start_time), pillTip(x))).join('') : '<span class="s-none">Tuần này chưa có buổi</span>'}</div></div>`;
         }).join('') || '<div class="p-6 text-center text-slate-400 text-sm">Không có lớp phù hợp.</div>';
         const fb = keys.map((k, i) => {
           const f = freeTimes(k, i), b = parseRanges(st.blocked[i]);
           return `<div class="sv-fb-d${k === todayKey ? ' today' : ''}"><b>${WD[i]} <span>${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</span></b><div class="fb-l"><i class="fb free">Rảnh</i><span>${f.length ? f.map(x => `<em>${x}</em>`).join('') : '–'}</span></div><div class="fb-l" data-blocked="${i}" title="Sửa lịch bận"><i class="fb busy">Bận</i><span>${b.length ? b.map(r => `<em>${fmt(r.s)} - ${fmt(r.e)}</em>`).join('') : '–'}</span></div></div>`;
         }).join('');
-        $('sv-class').innerHTML = `<div class="sv-cls"><div class="sv-list">${rows}</div><aside class="sv-fb"><h3>Rảnh và bận trong tuần</h3>${fb}</aside></div>`;
+        $('sv-class').innerHTML = `<div class="sv-cls"><div class="sv-list"><div class="sv-head"><span>Lớp</span><span class="c">Chương trình</span><span></span><div class="sv-pills"><span>Buổi 1</span><span>Buổi 2</span><span>Buổi 3</span></div></div>${rows}</div><aside class="sv-fb"><h3>Rảnh và bận trong tuần</h3>${fb}</aside></div>`;
         icons();
       }
-      function drawDayView(list, dates, keys, todayKey) {
-        const i = st.selDay, k = keys[i], H = 40;
+      function drawDayView(list, dates, keys, todayKey, H0) {
+        const i = st.selDay, k = keys[i], H = H0 || 44;
         const inList = x => list.some(c => c.id === x.class_id);
-        const tabs = DAY.map((n, d) => { const cnt = st.sessions.filter(x => x.session_date === keys[d] && x.status !== 'cancel' && inList(x)).length; return `<button type="button" data-svday="${d}" aria-pressed="${d === i}" class="${keys[d] === todayKey ? 'today' : ''}"><b>${d === 6 ? 'CN' : 'T' + (d + 2)}</b><span>${pad(dates[d].getDate())}/${pad(dates[d].getMonth() + 1)}</span>${cnt ? `<em>${cnt}</em>` : ''}</button>`; }).join('');
+        const tabs = DAY.map((n, d) => { const cnt = st.sessions.filter(x => x.session_date === keys[d] && x.status !== 'cancel' && inList(x)).length; return `<button type="button" data-svday="${d}" aria-pressed="${d === i}" class="${keys[d] === todayKey ? 'today' : ''}"><b>${DAY[d]}</b><span>${pad(dates[d].getDate())}/${pad(dates[d].getMonth() + 1)}</span>${cnt ? `<em>${cnt}</em>` : ''}</button>`; }).join('');
         const items = st.sessions.filter(x => x.session_date === k && inList(x)).map(x => ({ x, s: toMin(x.start_time), e: toMin(x.end_time) })).filter(o => o.s != null && o.e != null && o.e > o.s).sort((p, q) => p.s - q.s || p.e - q.e);
         let a = 7 * 60, b = 22 * 60 + 30; items.forEach(o => { a = Math.min(a, o.s); b = Math.max(b, o.e); }); a = Math.floor(a / 60) * 60; b = Math.ceil(b / 60) * 60;
         const y = m => (m - a) / 60 * H;
@@ -714,21 +715,27 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         items.forEach(o => { o.n = Math.max(...o.cl.map(p => p.lane)) + 1; });
         let hours = '', lines = '';
         for (let m = a; m <= b; m += 60) { hours += `<span style="top:${y(m)}px">${pad(m / 60)}:00</span>`; lines += `<i style="top:${y(m)}px"></i>`; }
-        const band = (r, cls, txt) => `<div class="dv-band ${cls}" style="top:${y(r.s)}px;height:${Math.max(2, y(r.e) - y(r.s))}px"><span>${txt}</span></div>`;
+        const band = (r, cls, txt) => `<div class="dv-band ${cls}"${cls === 'busy' ? ` data-blocked="${i}" title="Sửa lịch bận"` : ''} style="top:${y(r.s)}px;height:${Math.max(2, y(r.e) - y(r.s))}px"><span>${txt}</span></div>`;
         const free = parseRanges(freeTimes(k, i).join('\n')), blk = parseRanges(st.blocked[i]);
-        const bands = free.map(r => band(r, 'free', 'Rảnh')).join('') + blk.map(r => band(r, 'busy', 'Bận')).join('');
+        const sh = st.dvShow || (st.dvShow = { free: false, busy: false });
+        const bands = (sh.free ? free.map(r => band(r, 'free', 'Rảnh')).join('') : '') + ((sh.busy || matchMedia('(max-width:640px)').matches) ? blk.map(r => band(r, 'busy', 'Bận')).join('') : '');
         const blocks = items.map(o => { const x = o.x, extra = [STATUS_TXT[x.status] || '', lessonOf(x) || '', x.note || ''].filter(Boolean).join(' · ');
-          return `<button type="button" class="chip dv-b ${modeCls(x)}${sessCls(x)} ${x.status}" data-sid="${x.id}" style="top:${y(o.s)}px;height:${y(o.e) - y(o.s) - 2}px;left:calc(${o.lane} * 100% / ${o.n});width:calc(100% / ${o.n} - 4px)"><span class="c-t">${modeIc(x)}${t5(x.start_time)} - ${t5(x.end_time)}</span><b>${esc(classLabel(x.class_id))}</b><small>${esc(extra)}</small></button>`; }).join('');
+          return `<button type="button" class="chip dv-b ${modeCls(x)}${sessCls(x)} ${x.status}" data-sid="${x.id}" title="${esc(classLabel(x.class_id) + ' · ' + extra)}" style="top:${y(o.s)}px;height:${y(o.e) - y(o.s)}px;left:calc(${o.lane} * 100% / ${o.n});width:calc(100% / ${o.n})"><span class="c-t">${modeIc(x)}${t5(x.start_time)} - ${t5(x.end_time)}</span><b style="color:${classClr(x.class_id)}">${esc(classLabel(x.class_id))}</b>${y(o.e) - y(o.s) >= 58 && extra ? `<small>${esc(extra)}</small>` : ''}</button>`; }).join('');
         let now = ''; if (k === todayKey) { const n = new Date(), m = n.getHours() * 60 + n.getMinutes(); if (m >= a && m <= b) now = `<div class="dv-now" style="top:${y(m)}px"><span>Bây giờ ${pad(n.getHours())}:${pad(n.getMinutes())}</span></div>`; }
-        $('sv-day').innerHTML = `<div class="dv-tabs">${tabs}</div><div class="dv-wrap"><div class="dv-head"><span>${DAY[i]}, ${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</span><span class="dv-leg"><i class="fb free">Rảnh</i><i class="fb busy">Bận</i></span></div><div class="dv"><div class="dv-hours" style="height:${y(b)}px">${hours}</div><div class="dv-body" style="height:${y(b)}px" data-day-date="${k}">${lines}${bands}${blocks}${now}</div></div>${items.length ? '' : '<p class="dv-empty">Ngày này chưa có buổi học.</p>'}</div>`;
+        $('sv-day').innerHTML = `<div class="dv-tabs">${tabs}</div><div class="dv-wrap"><div class="dv-head"><span></span><span class="dv-ttl">${DAY[i]}, ${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</span><span class="dv-leg"><button type="button" class="fb free" data-dvt="free" aria-pressed="${sh.free}">Rảnh</button><button type="button" class="fb busy" data-dvt="busy" aria-pressed="${sh.busy}">Bận</button></span></div><div class="dv-scroll"><div class="dv"><div class="dv-hours" style="height:${y(b)}px">${hours}</div><div class="dv-body" style="height:${y(b)}px" data-day-date="${k}" data-a="${a}" data-h="${H}">${lines}${bands}${blocks}${now}</div></div></div>${items.length ? '' : '<p class="dv-empty">Ngày này chưa có buổi học.</p>'}</div>`;
       }
+      const CLS_CLR = ['#1d4ed8', '#7e22ce', '#9f1239', '#92400e', '#15803d', '#0f766e', '#c2410c', '#be185d', '#0369a1', '#334155'];
+      function classClr(id) { const t = String(classLabel(id)); let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CLS_CLR[h % CLS_CLR.length]; }
       function svClick(e) {
         const sg = e.target.closest('[data-sv]'); if (sg && sg.closest('#sv-seg')) { st.sv = sg.dataset.sv; try { localStorage.setItem('gb.sv', st.sv); } catch (x) {} return render(); }
+        const vt = e.target.closest('[data-dvt]'); if (vt) { st.dvShow[vt.dataset.dvt] = !st.dvShow[vt.dataset.dvt]; return drawDayView(...st.svArgs); }
         const dt = e.target.closest('[data-svday]'); if (dt) { st.selDay = Number(dt.dataset.svday); return render(); }
+        const pc = e.target.closest('[data-pc]'); if (pc && matchMedia('(max-width:640px)').matches) return openClass(pc.dataset.pc);
         const ec = e.target.closest('[data-edit-class]'); if (ec) return openClass(ec.dataset.editClass);
         const rb = e.target.closest('[data-roster]'); if (rb) return openRoster(rb.dataset.roster);
         const ch = e.target.closest('[data-sid]'); if (ch) { const ss = st.sessions.find(x => x.id === Number(ch.dataset.sid)); if (ss && ss.session_date <= ymd(new Date())) return openQs(ch, ss); return openSession(ch.dataset.sid); }
         const bl = e.target.closest('[data-blocked]'); if (bl) return openBlocked(Number(bl.dataset.blocked));
+        const db = e.target.closest('.dv-body'); if (db && !e.target.closest('.dv-b')) { const r = db.getBoundingClientRect(); return openSessionAt(db.dataset.dayDate, Number(db.dataset.a) + (e.clientY - r.top) / Number(db.dataset.h) * 60 - 30); }
       }
 
       function render() {
@@ -758,7 +765,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           const s = classState(c), url = c.page_url || ('class.html?class=' + encodeURIComponent(c.class_code));
           const n = st.counts[c.id] || 0, sub = c.class_name && c.class_name !== c.class_code ? c.class_name : '';
           html += `<tr class="${s !== 'active' ? 'dim' : ''}"><td class="c-name"><div class="flex items-start justify-between gap-2"><div style="min-width:0">
-            <div class="c-line"><a class="cls-link" href="${esc(url)}">${esc(c.class_code)}</a>${c.program ? `<span class="prog-chip">${esc(CLASS_PROGRAM[c.program] || c.program)}</span>` : '<span class="prog-chip none">Chưa gắn chương trình</span>'}</div>
+            <div class="c-line"><a class="cls-link" href="${esc(url)}">${esc(c.class_code)}</a>${c.program ? `<span class="prog-chip" data-pc="${c.id}">${esc(CLASS_PROGRAM[c.program] || c.program)}</span>` : '<span class="prog-chip none">Chưa gắn chương trình</span>'}</div>
             ${sub ? `<div class="text-xs text-slate-500" style="overflow-wrap:anywhere">${esc(sub)}</div>` : ''}
             
             <div class="text-xs text-slate-500">${stuCell(c)}${s === 'inactive' ? '<div>Tạm ngưng</div>' : s === 'archived' ? '<div>Lưu trữ</div>' : ''}</div></div>
@@ -1579,7 +1586,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
       document.addEventListener('click', e => { if (!e.target.closest('#qs-menu') && !e.target.closest('[data-sid]')) closeQs(); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQs(); });
       function openSession(sid, classId, date) {
-        $('ds-err').textContent = ''; $('dlg-session').classList.remove('resched'); $('ds-resched').textContent = 'Đổi giờ';
+        $('ds-err').textContent = ''; $('dlg-session').classList.remove('resched'); $('ds-resched').textContent = 'Đổi giờ'; $('ds-pick').hidden = true; $('ds-info').hidden = false;
         if (sid) {
           const s = st.sessions.find(x => x.id === Number(sid)); if (!s) return;
           $('ds-id').value = s.id; $('ds-class').value = s.class_id; $('ds-date').value = s.session_date;
@@ -1697,6 +1704,13 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         closeDlgs(); await loadClasses(); await refresh('Đã xóa lớp.');
       }
 
+      function openSessionAt(date, min) {
+        const cl = visibleClasses().filter(c => classState(c) === 'active'); if (!cl.length) return;
+        openSession(null, cl[0].id, date);
+        const pk = $('ds-pick'); pk.innerHTML = cl.map(c => `<option value="${c.id}">${esc(c.class_code)}</option>`).join(''); pk.hidden = false; $('ds-info').hidden = true;
+        const m0 = Math.max(0, Math.min(23 * 60, Math.round(min / 30) * 30)), m1 = Math.min(24 * 60 - 1, m0 + 90);
+        $('ds-start').value = fmt(m0); $('ds-end').value = fmt(m1); $('ds-class').value = cl[0].id; showFree();
+      }
       function openBlocked(i) {
         $('db-err').textContent = ''; $('db-info').textContent = DAY[i] + ' hằng tuần. Giờ này được tính là bận khi tìm lịch rảnh.';
         $('db-text').value = parseRanges(st.blocked[i]).map(r => fmt(r.s) + ' - ' + fmt(r.e)).join('\n');
@@ -1746,6 +1760,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('day-next').addEventListener('click', () => { if (st.selDay < 6) { st.selDay += 1; render(); } else { st.week += 1; st.selDay = 0; refresh(); } });
         $('day-tabs').addEventListener('click', e => { const b = e.target.closest('[data-day]'); if (b) { st.selDay = Number(b.dataset.day); render(); } });
         $('grid-body').addEventListener('click', e => {
+          const pc = e.target.closest('[data-pc]'); if (pc && matchMedia('(max-width:640px)').matches) return openClass(pc.dataset.pc);
           const ec = e.target.closest('[data-edit-class]'); if (ec) return openClass(ec.dataset.editClass);
           const rb = e.target.closest('[data-roster]'); if (rb) return openRoster(rb.dataset.roster);
           const ch = e.target.closest('[data-sid]'); if (ch) { const ss = st.sessions.find(x => x.id === Number(ch.dataset.sid)); if (ss && ss.session_date <= ymd(new Date())) return openQs(ch, ss); return openSession(ch.dataset.sid); }
@@ -1755,6 +1770,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('dlg-session').querySelector('form').addEventListener('submit', saveSession);
         $('ds-del').addEventListener('click', () => deleteSession());
         $('ds-resched').addEventListener('click', () => { const d = $('dlg-session'), on = !d.classList.contains('resched'); d.classList.toggle('resched', on); $('ds-resched').textContent = on ? 'Đủ thông tin' : 'Đổi giờ'; $('ds-title').textContent = on ? 'Đổi giờ buổi học' : 'Sửa buổi học'; if (on) $('ds-start').focus(); });
+        $('ds-pick').addEventListener('change', () => { const id = $('ds-pick').value; $('ds-class').value = id; $('ds-mode').value = defMode(id); });
         $('sv-seg').addEventListener('click', svClick); $('sv-class').addEventListener('click', svClick); $('sv-day').addEventListener('click', svClick);
         setInterval(() => { if (st.sv === 'd' && !document.hidden && st.svArgs) drawDayView(...st.svArgs); }, 60000);
         $('ds-date').addEventListener('change', showFree);
@@ -1985,6 +2001,15 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         document.addEventListener('visibilitychange', () => { if (!document.hidden) swTick(); });
       }
 
+      (function () {
+        const mq = matchMedia('(max-width:640px)'), g = id => document.getElementById(id);
+        function pl() {
+          const seg = g('sv-seg'); if (!seg) return; let row = g('m-svrow');
+          if (mq.matches) { if (!row) { row = document.createElement('div'); row.id = 'm-svrow'; (g('m-weekbar') || document.body).insertAdjacentElement('afterend', row); } if (seg.parentNode !== row) row.appendChild(seg); }
+          else if (row && seg.parentNode === row) { const cp = g('btn-copy'); cp.parentNode.insertBefore(seg, cp); }
+        }
+        pl(); mq.addEventListener('change', pl);
+      })();
       async function boot() {
         icons(); bind();
         st.week = NOW_WEEK; st.selDay = (new Date().getDay() + 6) % 7;

@@ -1241,7 +1241,7 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 #grid td.c-name{border-right:1px solid #E4E6EA!important}
 @media(min-width:1024px){#grid{min-width:1180px!important}}
 /* Pill cùng một cỡ ở mọi chế độ */
-:is(#grid td.dcol,.sv) .chip.pl{box-sizing:border-box;display:inline-flex!important;flex-direction:row!important;align-items:center;justify-content:center;width:124px!important;max-width:100%;height:36px;min-height:36px!important;margin:0 auto 4px!important;padding:0 8px!important;border-radius:22px!important;font-size:.8125rem;font-weight:600;white-space:nowrap;line-height:1}
+:is(#grid td.dcol,.sv) .chip.pl{box-sizing:border-box;display:inline-flex!important;flex-direction:row!important;align-items:center;justify-content:center;width:116px!important;max-width:100%;height:32px;min-height:32px!important;margin:0 auto 4px!important;padding:0 6px!important;border-radius:20px!important;font-size:.75rem;font-weight:600;white-space:nowrap;line-height:1}
 #grid td.day.dcol{text-align:center}
 :is(#grid td.dcol,.sv) .chip.pl .c-t{display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
 .sv .chip{position:relative}
@@ -1253,15 +1253,18 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 .sv .chip small{color:inherit;opacity:.85}
 .fb{display:inline-block;padding:1px 8px;border-radius:999px;font-style:normal;font-size:.6875rem;font-weight:700}
 .fb.free{background:#dcfce7;color:#166534}
-.fb.busy{background:#eceef2;color:#596579}
+.fb.busy{background:#ede9fe;color:#5b21b6}
 /* Theo lớp */
-.sv-cls{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;margin-top:14px;align-items:start}
+.sv-cls{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px;margin-top:14px;align-items:start}
 .sv-list{border:1px solid #E4E6EA;border-radius:16px;background:#fff;overflow:hidden}
-.sv-row{display:grid;grid-template-columns:232px minmax(0,1fr);gap:12px;align-items:center;padding:10px 12px;border-bottom:1px solid #E4E6EA}
+.sv-row{display:grid;grid-template-columns:minmax(120px,190px) 60px 36px minmax(0,1fr);gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid #E4E6EA}
 .sv-row:last-child{border-bottom:0}
 .sv-row.dim{opacity:.6}
 .sv-info .cls-link,.sv-info .text-xs{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.sv-pills{display:flex;flex-wrap:wrap;gap:6px}
+.sv-pills{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;justify-items:center}
+.sv-pills .s-none{grid-column:1/-1;justify-self:start}
+.sv-row .prog-chip{justify-content:center;width:100%}
+.sv-gear{width:36px;height:36px;flex:none}
 .sv-pills .chip.pl{margin:0!important}
 .sv-fb{border:1px solid #E4E6EA;border-radius:16px;background:#fff;padding:12px 14px;position:sticky;top:8px}
 .sv-fb h3{font-size:.875rem;font-weight:700;margin-bottom:8px}
@@ -1283,8 +1286,8 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 .dv-tabs button[aria-pressed="true"]{background:#16181D;border-color:#16181D;color:#cbd0d8}
 .dv-tabs button[aria-pressed="true"] b{color:#fff}
 .dv-tabs button em{position:absolute;top:4px;right:6px;font-style:normal;font-size:.6875rem;font-weight:700;color:#8a93a3}
-.dv-wrap{margin-top:10px;border:1px solid #E4E6EA;border-radius:16px;background:#fff;padding:12px 14px 16px;max-height:calc(100dvh - 300px);overflow:auto}
-.dv-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:700;font-size:.9375rem}
+.dv-wrap{margin-top:10px;border:1px solid #E4E6EA;border-radius:16px;background:#fff;padding:10px 14px 12px}
+.dv-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-weight:700;font-size:.9375rem}
 .dv-leg{display:flex;gap:6px}
 .dv{display:grid;grid-template-columns:48px minmax(0,1fr);gap:8px}
 .dv-hours,.dv-body{position:relative}
@@ -1293,13 +1296,142 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 .dv-body>i{position:absolute;left:0;right:0;border-top:1px solid #EEF0F3}
 .dv-band{position:absolute;left:0;right:0;border-radius:8px}
 .dv-band.free{background:#f0fdf4}
-.dv-band.busy{background:repeating-linear-gradient(135deg,#f1f3f6,#f1f3f6 6px,#e9ecf0 6px,#e9ecf0 12px)}
-.dv-band span{position:absolute;right:8px;top:4px;font-size:.6875rem;font-weight:700;color:#8a93a3}
+.dv-band.busy{background:repeating-linear-gradient(135deg,#f3f0ff,#f3f0ff 6px,#ede9fe 6px,#ede9fe 12px)}
+.dv-band span{position:absolute;right:8px;top:4px;font-size:.6875rem;font-weight:700;color:#7c6bc4}
 .dv-band.free span{color:#4d9a67}
-.chip.dv-b{position:absolute!important;box-sizing:border-box;margin:0!important;padding:5px 10px!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start!important;text-align:left!important;overflow:hidden;border-radius:12px!important;font-size:.8125rem;line-height:1.25;min-height:0!important}
+.chip.dv-b{position:absolute!important;box-sizing:border-box;margin:0!important;padding:3px 10px!important;display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:0 8px;align-items:center!important;align-content:flex-start;justify-content:flex-start!important;text-align:left!important;overflow:hidden;border-radius:12px!important;font-size:.75rem;line-height:1.3;min-height:0!important}
+.chip.dv-b small{flex-basis:100%}
 .chip.dv-b b{font-weight:700}
 .chip.dv-b small{text-align:left!important;font-size:.75rem}
 .dv-now{position:absolute;left:0;right:0;border-top:2px solid #e11d48;z-index:3;pointer-events:none}
 .dv-now span{position:absolute;right:0;top:-10px;padding:0 6px;border-radius:999px;background:#e11d48;color:#fff;font-size:.6875rem;font-weight:700}
 .dv-empty{margin-top:10px;text-align:center;color:#8a93a3;font-size:.8125rem}
 @media(max-width:1023px){.sv-cls{grid-template-columns:1fr}.sv-fb{position:static}.sv-row{grid-template-columns:1fr}.sv-seg{width:100%}.sv-seg button{flex:1}}
+
+@media(max-width:1023px){.sv-row{grid-template-columns:minmax(0,1fr) 60px 36px}.sv-row .sv-pills{grid-column:1/-1}}
+
+/* Màu rảnh/bận: chỉ đổi màu chữ, không viền */
+.fb.free,.fb.busy{background:none;padding:0;border:0}
+.fb.free{color:#15803d}
+.fb.busy{color:#9f1239}
+.dv-band.busy{background:#fee2e2}
+.dv-band span{color:#9f1239}
+.dv-body>i{border-top-color:#f1f3f6}
+/* Khối buổi lấp kín khung giờ */
+.chip.dv-b{justify-content:center!important;align-content:center;padding:4px 12px!important;border-radius:10px!important;border:0!important;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.chip.dv-b .c-t{font-weight:700}
+/* Hàng Lịch rảnh/bận của tuần: pill nhỏ, căn giữa */
+#grid tr.special td.dcol{text-align:center;vertical-align:middle}
+#grid tr.special .free-line{display:table!important;width:auto!important;margin:3px auto!important;padding:2px 10px!important;border:0!important;border-radius:999px!important;font-size:.75rem;font-weight:600;white-space:nowrap}
+#grid tr.special.free .free-line{background:#f0fdf4!important;color:#15803d!important}
+#grid tr.special.busy .free-line{background:#fee2e2!important;color:#9f1239!important}
+/* Theo lớp: một khối, cuộn trong vùng dữ liệu */
+.sv-cls{height:calc(100dvh - 230px);min-height:360px}
+.sv-list{height:100%;overflow:auto;overscroll-behavior:contain}
+.sv-fb{max-height:100%;overflow:auto;position:static}
+.sv-head{position:sticky;top:0;z-index:2;display:grid;grid-template-columns:minmax(120px,190px) 60px 36px minmax(0,1fr);gap:10px;align-items:center;padding:10px 12px;background:#f7f8fa;border-bottom:1px solid #E4E6EA;font-size:.75rem;font-weight:700;color:#596579}
+.sv-head .c{text-align:center}
+.sv-head .sv-pills>span{text-align:center}
+@media(max-width:1023px){.sv-cls{height:auto}.sv-list{height:calc(100dvh - 260px)}.sv-fb{max-height:none}.sv-head{grid-template-columns:minmax(0,1fr) 60px 36px}.sv-head .sv-pills{display:none}}
+
+/* Nhãn rảnh/bận dạng pill, giờ tô màu chữ; góc vuông cho khối theo lớp và theo ngày */
+.fb.free,.fb.busy{padding:2px 10px;border-radius:999px;text-align:center}
+.fb.free{background:#f0fdf4;color:#15803d}
+.fb.busy{background:#fee2e2;color:#9f1239}
+.fb-l{display:grid;grid-template-columns:48px minmax(0,1fr);gap:8px;align-items:start}
+.fb-l .fb{width:48px;padding:2px 0}
+.fb-l span{padding-top:2px}
+.fb-l:has(.fb.free) em{color:#15803d;font-weight:600}
+.fb-l:has(.fb.busy) em{color:#9f1239;font-weight:600}
+.sv-seg,.sv-seg button,.sv-list,.sv-fb,.dv-tabs button,.dv-wrap,.dv-band,.chip.dv-b{border-radius:0!important}
+.dv-now span{border-radius:0}
+
+/* Tab ngày: pill nhỏ, căn giữa */
+.dv-tabs{justify-content:center;gap:8px;overflow-x:auto}
+.dv-tabs button{flex:0 0 auto;min-height:0;padding:6px 16px;flex-direction:row;gap:6px;border-radius:999px!important;font-size:.8125rem;white-space:nowrap}
+.dv-tabs button b{font-size:.8125rem}
+.dv-tabs button em{position:static;margin-left:2px;padding:0 6px;border-radius:999px;background:#eceef2;color:#596579;font-size:.6875rem}
+.dv-tabs button[aria-pressed="true"] em{background:#3a3d45;color:#fff}
+
+/* Nút chọn chế độ xem: pill */
+.sv-seg{border-radius:999px!important}
+.sv-seg button{border-radius:999px!important}
+
+/* Theo ngày: tiêu đề giữa, khung giờ cuộn trong ô, khối lấp kín không hở */
+.dv-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-bottom:14px}
+.dv-ttl{text-align:center}
+.dv-leg{justify-self:end}
+.dv-scroll{height:calc(100dvh - 340px);min-height:300px;overflow:auto;padding:12px 0;overscroll-behavior:contain}
+.chip.dv-b{justify-content:flex-start!important;text-align:left!important;padding-left:16px!important}
+
+/* Nhãn bận/rảnh trong dải căn trái; pill góc phải bật tắt dải */
+.dv-band span{right:auto;left:16px}
+.dv-band.free{background:#f0fdf4}
+.dv-band.free span{color:#15803d}
+button.fb{border:0;cursor:pointer;min-height:26px;padding:0 12px}
+button.fb.free[aria-pressed="true"]{background:#bbf7d0}
+button.fb.busy[aria-pressed="true"]{background:#fecaca}
+button.fb[aria-pressed="false"]{opacity:.7}
+
+/* Điện thoại: nút chọn chế độ xem nằm hàng riêng dưới thanh tuần */
+#m-svrow{display:none}
+html[data-lms-view="schedule"] #m-svrow{display:flex;justify-content:center;margin:2px 10px 8px}
+#m-svrow .sv-seg{width:auto}
+#m-svrow .sv-seg button{flex:0 0 auto}
+.dv-wrap{border:0!important;padding-left:0;padding-right:0}
+#m-svrow{order:3}
+
+/* Theo ngày: đường kẻ nhỏ giữa các buổi liền nhau */
+/* Điện thoại: chữ thẳng cột, icon sang phải */
+@media(max-width:640px){
+  .chip.dv-b{box-shadow:inset 0 1px 0 rgba(22,24,29,.18),inset 1px 0 0 rgba(22,24,29,.18)!important}
+  .chip.dv-b{flex-direction:column!important;flex-wrap:nowrap!important;align-items:flex-start!important;justify-content:center!important;gap:1px!important;padding:4px 36px 4px 14px!important}
+  .chip.dv-b .c-t{display:block}
+  .chip.dv-b .c-t .mi{position:absolute;right:12px;top:8px}
+  .chip.dv-b small{flex-basis:auto}
+}
+.sv-list,.sv-fb{border-radius:10px!important}
+@media(max-width:640px){.dv-head{display:none}.dv-wrap{padding-top:0}}
+@media(max-width:640px){.dv-tabs{display:none}.dv-wrap{margin-top:6px}}
+.dv-body{cursor:cell}
+#ds-pick[hidden]{display:none!important}
+
+/* Điện thoại, Theo tuần: tên lớp hiện đủ, thẻ chương trình xuống dòng dưới tên */
+@media(max-width:640px){
+  #grid th.c-name,#grid td.c-name{width:46%!important}
+  #grid td.c-name .c-line{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+  #grid td.c-name .cls-link{overflow:visible;text-overflow:clip;max-width:none}
+  #grid td.c-name .prog-chip{align-self:flex-start}
+}
+@media(max-width:640px){
+  #grid td.c-name [data-edit-class]{display:none!important}
+  #grid td.c-name .c-line{flex-direction:row;justify-content:space-between;align-items:center;gap:6px}
+  #grid td.c-name .prog-chip{align-self:center;flex:none}
+}
+@media(max-width:640px){
+  #grid td.c-name .prog-chip{width:58px;justify-content:center;cursor:pointer}
+  #grid td.c-name .prog-chip.none{width:auto}
+}
+@media(max-width:640px){
+  #grid td.c-name>.flex{display:block}
+  #grid td.c-name>.flex>div:first-child{width:100%}
+  #grid td.c-name .c-line{width:100%}
+}
+@media(max-width:640px){
+  .sv-head .c{white-space:nowrap}
+  .sv-head,.sv-row{grid-template-columns:minmax(0,1fr) 84px 36px!important}
+  .sv-row .prog-chip{width:60px;justify-self:center}
+}
+@media(max-width:640px){
+  .sv-info .text-xs{display:none}
+  .sv-gear{display:none!important}
+  .sv-head,.sv-row{grid-template-columns:minmax(0,1fr) 84px!important}
+  .sv-row .prog-chip{cursor:pointer}
+}
+/* Mobile, Theo lớp: danh sách và khung Rảnh/bận cuộn chung trong một vùng */
+@media(max-width:1023px){
+  .sv-cls{height:calc(100dvh - 330px)!important;min-height:300px;overflow:auto;display:block!important;overscroll-behavior:contain}
+  .sv-list{height:auto!important;overflow:visible!important}
+  .sv-fb{margin-top:12px;max-height:none!important;overflow:visible!important}
+}
+@media(max-width:640px){.sv-fb{display:none!important}}
