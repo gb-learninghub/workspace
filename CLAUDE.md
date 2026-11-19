@@ -33,4 +33,5 @@ Bảng chính: `grades`, `submissions`, `attendance`, `sessions`, `student_targe
 - Cuối mỗi việc, liệt kê file đã đổi và tăng `?v=` nào.
 - `student.css` (146KB) cần tách thành shell, teacher, student. Làm từng bước, commit sau mỗi bước.
 - Chỗ cần Bảo quyết: đường dẫn cũ trong `week_materials` (id 1, id 3) trỏ tên miền `github.io/workspace` và file không còn tồn tại.
+- Không bao giờ ghi khoá bí mật (service_role, token Telegram, mật khẩu, khoá API riêng) vào bất kỳ file nào trong repo. Repo này công khai. Chỉ khoá công khai (anon/publishable) của Supabase được nằm trong code. Nếu cần khoá bí mật, hỏi Bảo cách lưu ở phía Supabase, không dán vào file.
 - Thư mục `0. My Tutor` bên ngoài (PDF, mp3, tài liệu) không thuộc repo. Không thêm vào git.
