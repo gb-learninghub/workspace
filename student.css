@@ -1373,3 +1373,74 @@ body.student-dashboard-view .student-overview-highlight .g-info .stat{min-height
 body.student-dashboard-view .student-overview-highlight .g-info .stat svg{width:32px!important;height:32px!important}
 body.student-dashboard-view .student-overview-highlight .g-week-sched,body.student-dashboard-view .student-overview-highlight .g-tuition,body.student-dashboard-view .student-overview-highlight .g-prog{height:236px!important;min-height:236px!important;max-height:236px!important}
 }
+
+/* Đợt 1: dòng bài tập gọn, ô thống kê bấm được, pop-up danh sách */
+button.stat{font:inherit;text-align:left;cursor:pointer;width:100%;color:inherit;appearance:none;-webkit-appearance:none;min-height:44px}
+button.stat:active{transform:scale(.99)}
+button.stat:focus-visible{outline:2px solid #16181D;outline-offset:2px}
+.asg-row{padding:12px 0!important}
+.asg-top{display:flex;align-items:center;gap:10px;min-width:0}
+.asg-name{flex:1 1 auto;min-width:0;font-weight:700;color:#1B1D22;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asg-line{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px}
+.asg-bits{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;min-width:0;font-size:.8125rem;color:#596579}
+.asg-bits b{color:#1B1D22;font-weight:700}
+.asg-st{font-weight:700;color:#718096}.asg-st.on{color:#15803d}
+.asg-dot{width:3px;height:3px;border-radius:50%;background:#c3c9d2;flex:none}
+.asg-line .asg-act{display:flex;flex:none;gap:2px}
+.asg-line .asg-slot{width:38px;height:38px}
+.asg-lock{color:#9aa3b0;cursor:default}
+.asg-locked .asg-name{color:#7a8493}
+.asg-lock-note{margin-top:6px;font-size:.75rem;line-height:1.5;color:#718096;text-align:justify}
+.student-week-only .asg-lock-note{display:block}
+.student-week-only .asg-row{padding:10px 0!important}
+#gm-modal{position:fixed;inset:0;z-index:90;background:rgba(22,24,29,.5);display:flex;align-items:center;justify-content:center;padding:16px;animation:gmfade .16s ease-out}
+.gm-box{background:#fff;border:1px solid #E4E6EA;border-radius:18px;width:min(560px,100%);max-height:85dvh;display:flex;flex-direction:column;color:#1B1D22;animation:gmpop .18s ease-out}
+.gm-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px 12px;flex:none}
+.gm-title{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1rem;min-width:0;overflow-wrap:anywhere}
+.gm-title svg{width:18px;height:18px;flex:none}
+.gm-body{padding:0 20px 18px;overflow:auto;overscroll-behavior:contain}
+.gm-row{display:grid;grid-template-columns:7.5rem 5.5rem minmax(0,1fr);align-items:center;gap:8px 12px;padding:11px 0;border-bottom:1px solid #E4E6EA;font-size:.875rem}
+.gm-row:last-of-type{border-bottom:0}
+.gm-row .gm-d{font-weight:700}.gm-row .gm-t{color:#4a8fd1;font-weight:600;font-size:.8125rem}
+.gm-row .gm-x{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.gm-asg{grid-template-columns:minmax(0,1fr) auto}
+.gm-asg .gm-n{font-weight:700;overflow-wrap:anywhere}
+.gm-kv{display:grid;grid-template-columns:7rem minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid #E4E6EA;font-size:.875rem}
+.gm-kv span{color:#718096}.gm-kv b{font-weight:700;overflow-wrap:anywhere}
+.gm-empty,.gm-note{margin:6px 0;font-size:.875rem;color:#718096;line-height:1.6;text-align:justify}
+.gm-foot{display:flex;justify-content:flex-end;margin-top:14px}
+.gm-go{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:9999px;background:#16181D;color:#fff;font-weight:700;font-size:.875rem;text-decoration:none}
+@media(max-width:520px){.gm-row{grid-template-columns:minmax(0,1fr) auto}.gm-row .gm-t{grid-column:1;grid-row:2}.gm-row .gm-x{grid-column:2;grid-row:1/3}.gm-row.gm-asg{grid-template-columns:minmax(0,1fr) auto}}
+@keyframes gmfade{from{opacity:0}to{opacity:1}}@keyframes gmpop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+
+/* Văn bản dài canh đều 2 lề */
+.student-shell p,.student-shell .text-sm.text-slate-500,.student-shell .progress-empty span,.student-shell .asg-note,.student-shell .tuition-bar-cap,#res-modal [style*="pre-wrap"],.gm-box p{text-align:justify;text-justify:inter-word;hyphens:auto}
+
+/* Màn hình rộng: hàng giữa cao đúng bằng thẻ (236px), bỏ khoảng trắng thừa giữa hàng 2 và hàng 3 */
+@media(min-width:1280px){
+body.student-dashboard-view .student-overview-content{grid-template-rows:auto 236px auto!important;align-content:start!important}
+body.student-dashboard-view .student-overview-view .student-materials{height:auto!important}
+}
+
+/* Điểm danh sửa được (chỉ giáo viên) */
+.att-sel{font:inherit;font-size:12px;font-weight:600;padding:3px 8px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;color:#334155;min-height:28px}
+.att-sel.att-err{border-color:#e11d48;color:#e11d48}
+.att-sel:disabled{opacity:.5}
+
+/* Hộp chấm điểm và điểm theo tuần */
+.gr-body{display:grid;gap:12px}
+.gr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gr-f{display:grid;gap:4px;font-size:13px;font-weight:600;color:#334155}
+.gr-f input,.gr-f textarea{font:inherit;font-weight:500;padding:8px 10px;border:1px solid #cbd5e1;border-radius:10px;width:100%;background:#fff}
+.gr-f input:disabled{background:#f1f5f9;color:#94a3b8}
+.gr-note{font-size:12px;color:#64748b;margin:0}
+.gr-act{display:flex;justify-content:flex-end}
+@media(max-width:520px){.gr-grid{grid-template-columns:1fr}}
+.wk-score-nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.wk-score-nav .wk-lab{font-size:13px;font-weight:700;color:#334155;min-width:120px;text-align:center}
+.wk-score-list{display:grid;gap:8px}
+.wk-score{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;text-align:left;font:inherit;cursor:pointer}
+.wk-score b{font-size:16px;color:#0f172a}
+.wk-score small{display:block;color:#64748b;font-size:12px}
+.gr-bd{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0;font-size:13px}
+.gr-bd:last-child{border-bottom:0}

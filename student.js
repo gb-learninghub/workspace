@@ -77,12 +77,23 @@
       const sessUp = sess.filter(x => x.date <= selWkEnd), doneUp = sessUp.filter(x => x.status === 'done' || x.status === 'makeup').length, absentUp = sessUp.filter(x => x.attendance === 'absent').length;
       const owedUp = Math.max(0, sessUp.filter(x => x.status === 'cancel').length - sessUp.filter(x => x.status === 'makeup').length);
       const asgAll = (d.assignments || []).filter(a => (a.week_start ? mondayKey(dOf(a.week_start)) : mondayKey(now)) <= selWk), asgDone = asgAll.filter(a => a.attempts).length;
+      const gmRow = (s, tag) => `<div class="gm-row"><span class="gm-d">${fmtDay(s.date)}</span><span class="gm-t">${tmr(s)}</span><span class="gm-x">${tag}</span></div>`;
+      const gmEmpty = t => `<p class="gm-empty">${t}</p>`;
+      const doneList = sessUp.filter(x => x.status === 'done' || x.status === 'makeup').slice().reverse();
+      const monthList = sessUp.filter(x => x.status === 'done' && String(x.date).startsWith(selMonth)).slice().reverse();
+      const owedList = sessUp.filter(x => x.status === 'cancel').slice().reverse();
+      S.statLists = {
+        done: ['Buổi đã học', doneList.length ? doneList.map(x => gmRow(x, attTag(x))).join('') : gmEmpty('Chưa có buổi học nào.')],
+        absent: ['Buổi vắng', sessUp.filter(x => x.attendance === 'absent').length ? sessUp.filter(x => x.attendance === 'absent').slice().reverse().map(x => gmRow(x, attTag(x))).join('') : gmEmpty('Chưa vắng buổi nào.')],
+        month: [d.tuition_mode === 'session' ? 'Buổi tháng này' : 'Buổi nợ', d.tuition_mode === 'session' ? (monthList.length ? monthList.map(x => gmRow(x, attTag(x))).join('') : gmEmpty('Tháng này chưa có buổi hoàn thành.')) : (owedList.length ? owedList.map(x => gmRow(x, `<span class="tag ${(STATUS[x.status] || STATUS.planned)[1]}">${(STATUS[x.status] || STATUS.planned)[0]}</span>`)).join('') + `<p class="gm-note">Số buổi nợ = buổi hủy chưa được học bù (${owedUp} buổi).</p>` : gmEmpty('Không có buổi hủy nào.'))],
+        asg: ['Bài đã làm', asgAll.length ? asgAll.map(a => `<div class="gm-row gm-asg"><span class="gm-n">${esc(a.name)}</span><span class="gm-x"><span class="tag ${a.attempts ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${a.attempts ? 'Đã làm' : 'Chưa làm'}</span></span></div>`).join('') : gmEmpty('Chưa có bài nào được giao.')]
+      };
       const infoHtml = `<section class="card g-info"><h2><i data-lucide="bar-chart-3"></i>Thông tin học tập</h2>
         <div class="stat-grid">
-          <div class="stat s0"><i data-lucide="calendar-check"></i><div><b>${doneUp}</b><span>Buổi đã học</span></div></div>
-          <div class="stat s1"><i data-lucide="calendar-x"></i><div><b>${absentUp}</b><span>Buổi vắng</span></div></div>
-          ${d.tuition_mode === 'session' ? `<div class="stat s2"><i data-lucide="clock"></i><div><b>${sessUp.filter(x => x.status === 'done' && String(x.date).startsWith(selMonth)).length}</b><span>Buổi tháng này</span></div></div>` : `<div class="stat s2"><i data-lucide="clock"></i><div><b>${owedUp}</b><span>Buổi nợ</span></div></div>`}
-          <div class="stat s3"><i data-lucide="clipboard-list"></i><div><b>${asgDone}/${asgAll.length}</b><span>Bài đã làm</span></div></div>
+          <button type="button" class="stat s0" data-stat="done"><i data-lucide="calendar-check"></i><div><b>${doneUp}</b><span>Buổi đã học</span></div></button>
+          <button type="button" class="stat s1" data-stat="absent"><i data-lucide="calendar-x"></i><div><b>${absentUp}</b><span>Buổi vắng</span></div></button>
+          ${d.tuition_mode === 'session' ? `<button type="button" class="stat s2" data-stat="month"><i data-lucide="clock"></i><div><b>${sessUp.filter(x => x.status === 'done' && String(x.date).startsWith(selMonth)).length}</b><span>Buổi tháng này</span></div></button>` : `<button type="button" class="stat s2" data-stat="month"><i data-lucide="clock"></i><div><b>${owedUp}</b><span>Buổi nợ</span></div></button>`}
+          <button type="button" class="stat s3" data-stat="asg"><i data-lucide="clipboard-list"></i><div><b>${asgDone}/${asgAll.length}</b><span>Bài đã làm</span></div></button>
         </div></section>`;
 
       const [calYear, calMonth] = S.calendarMonth.split('-').map(Number), monthKey = S.calendarMonth;
@@ -106,6 +117,30 @@
 
       const asg = d.assignments || [];
       const resBtn = a => (a.kind === 'homework' && a.attempts) ? `<button type="button" class="icon-btn" data-res="${esc(a.code)}" aria-label="Kết quả" title="Kết quả"><i data-lucide="clipboard-check" class="w-4 h-4"></i></button>` : '';
+      if (!window.__gbModal) {
+        const close = () => { const m = document.getElementById('gm-modal'); if (m) m.remove(); };
+        window.__gbModal = (title, html, icon) => {
+          close();
+          const m = document.createElement('div'); m.id = 'gm-modal';
+          m.innerHTML = `<div class="gm-box" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="gm-head"><span class="gm-title"><i data-lucide="${icon || 'list'}"></i>${esc(title)}</span><button type="button" class="icon-btn" data-gm-close aria-label="Đóng"><i data-lucide="x" class="w-4 h-4"></i></button></div><div class="gm-body">${html}</div></div>`;
+          m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-gm-close]')) close(); });
+          document.body.appendChild(m); if (window.lucide) window.lucide.createIcons();
+        };
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+        document.addEventListener('click', e => {
+          const st = e.target.closest('[data-stat]');
+          if (st && S.statLists && S.statLists[st.dataset.stat]) { const [t, h] = S.statLists[st.dataset.stat]; window.__gbModal(t, h, 'list'); return; }
+          const pv = e.target.closest('[data-prev]'); if (!pv) return;
+          const a = (window.__gbAsg || {})[pv.dataset.prev]; if (!a) return;
+          const due = a.due_at ? new Date(a.due_at) : null, multi = a.kind === 'homework' && a.parts_total > 1;
+          const days = (a.session_dates || []).slice().sort().map(k => { const x = dOf(k); return (x.getDay() === 0 ? 'CN' : 'T' + (x.getDay() + 1)) + ' ' + pad(x.getDate()) + '/' + pad(x.getMonth() + 1); }).join(', ');
+          const line = (l, v) => v ? `<div class="gm-kv"><span>${l}</span><b>${v}</b></div>` : '';
+          const locked = a.kind === 'homework' && /writing/i.test((a.skill || '') + ' ' + (a.name || '')) && (a.lesson_done === false || (/[?&#]lockdemo\b/.test(location.href) && a.lesson_done == null));
+          const href = a.page_path ? LMS.withStudent(new URL(a.page_path, location.href).href, S.code) : `#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}`;
+          window.__gbModal(a.name, line('Loại', a.kind === 'lesson' ? 'Bài học' : 'Bài tập về nhà') + line('Kỹ năng', a.skill ? esc(a.skill) : '') + line('Nội dung', multi ? `${a.parts_total} phần` : (a.question_count ? `${a.question_count} câu` : '')) + line('Ngày học', esc(days)) + line('Hạn nộp', due ? esc(due.toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' })) : '') + line('Trạng thái', a.attempts ? (multi ? `Đã làm ${a.parts_done || 0}/${a.parts_total} phần` : `Đã làm ${a.attempts} lần`) : 'Chưa làm') + line('Điểm lần đầu', a.first_score != null ? `${a.first_score}/${a.first_total || a.question_count}` : '')
+            + (locked ? '<p class="gm-note">Bài này mở sau khi bạn hoàn thành bài học Writing của tuần.</p>' : `<div class="gm-foot"><a class="gm-go" href="${esc(href)}">${a.attempts ? 'Làm lại' : 'Bắt đầu làm'}</a></div>`), 'eye');
+        });
+      }
       if (!window.__resBind) {
         window.__resBind = 1;
         const gm = d2 => { const x = new Date(d2); return String(x.getDate()).padStart(2, '0') + '/' + String(x.getMonth() + 1).padStart(2, '0') + ' ' + String(x.getHours()).padStart(2, '0') + ':' + String(x.getMinutes()).padStart(2, '0'); };
@@ -147,22 +182,25 @@
           } catch (e) { showRes(head('Kết quả', 'Không tải được kết quả. Thử lại sau.')); }
         });
       }
+      const LOCKDEMO = /[?&#]lockdemo\b/.test(location.href);
+      const isLocked = a => a.kind === 'homework' && /writing/i.test((a.skill || '') + ' ' + (a.name || '')) && (a.lesson_done === false || (LOCKDEMO && a.lesson_done == null));
+      window.__gbAsg = window.__gbAsg || {};
       const asgRow = a => {
-        const due = a.due_at ? new Date(a.due_at) : null, late = due && due < now;
-        const cell = (l, v) => `<div class="asg-cell"><span>${l}</span><b${v === '' ? ' class="asg-empty"' : ''}>${v === '' ? '–' : v}</b></div>`;
+        window.__gbAsg[a.code] = a;
+        const due = a.due_at ? new Date(a.due_at) : null, late = due && due < now, locked = isLocked(a);
         const multi = a.kind === 'homework' && a.parts_total > 1, partsDone = a.parts_done || 0;
-        const done = multi ? `${partsDone}/${a.parts_total} phần` : (a.question_count ? `${a.question_count} câu` : '');
-        const cells = [
-          cell('Trạng thái', a.attempts ? `Đã làm ${a.attempts} lần` : 'Chưa làm'),
-          cell('Đã làm', done),
-          cell('Điểm', a.first_score != null ? `${a.first_score}/${a.first_total || a.question_count}` : ''),
-          cell('Hạn', due ? pad(due.getDate()) + '/' + pad(due.getMonth() + 1) + (late ? ' <i class="asg-late">quá hạn</i>' : '') : '')
-        ].join('');
-        const bandNote = multi ? `<div class="asg-note">${partsDone < a.parts_total ? 'Hoàn thành đủ các phần để quy đổi band' : 'Đã đủ phần để quy đổi band'}</div>` : '';
+        const state = a.attempts ? ((multi && partsDone < a.parts_total) ? 'Đang làm' : 'Đã làm') : 'Chưa làm';
+        const bits = [`<span class="asg-st${a.attempts ? ' on' : ''}">${state}</span>`];
+        if (multi) bits.push(`<span>${partsDone}/${a.parts_total} phần</span>`); else if (a.question_count) bits.push(`<span>${a.question_count} câu</span>`);
+        if (a.first_score != null) bits.push(`<span>Điểm <b>${a.first_score}/${a.first_total || a.question_count}</b></span>`);
+        if (due) bits.push(`<span>Hạn <b>${pad(due.getDate())}/${pad(due.getMonth() + 1)}</b>${late ? ' <i class="asg-late">quá hạn</i>' : ''}</span>`);
         const href = a.page_path ? LMS.withStudent(new URL(a.page_path, location.href).href, S.code) : `#${encodeURIComponent(S.code)}/${encodeURIComponent(a.code)}`;
-        const open = `<a class="icon-btn" href="${esc(href)}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>`;
-        return `<div class="row asg-row"><div class="asg-top"><div class="font-bold text-slate-800" style="overflow-wrap:anywhere;min-width:0">${esc(a.name)}</div>${dayTag(a.session_dates)}</div>
-          <div class="asg-meta">${cells}<div class="asg-act"><span class="asg-slot">${resBtn(a)}</span><span class="asg-slot">${open}</span></div></div>${bandNote}</div>`;
+        const open = locked
+          ? `<span class="icon-btn asg-lock" role="img" aria-label="Chưa mở" title="Hoàn thành bài học trước để mở"><i data-lucide="lock" class="w-4 h-4"></i></span>`
+          : `<a class="icon-btn" href="${esc(href)}" aria-label="${a.attempts ? 'Làm lại' : 'Làm bài'}" title="${a.attempts ? 'Làm lại' : 'Làm bài'}"><i data-lucide="external-link" class="w-4 h-4"></i></a>`;
+        const prev = `<button type="button" class="icon-btn" data-prev="${esc(a.code)}" aria-label="Xem nhanh" title="Xem nhanh"><i data-lucide="eye" class="w-4 h-4"></i></button>`;
+        return `<div class="row asg-row${locked ? ' asg-locked' : ''}"><div class="asg-top"><div class="asg-name">${esc(a.name)}</div>${dayTag(a.session_dates)}</div>
+          <div class="asg-line"><div class="asg-bits">${bits.join('<i class="asg-dot"></i>')}</div><div class="asg-act"><span class="asg-slot">${prev}</span><span class="asg-slot">${resBtn(a)}</span><span class="asg-slot">${open}</span></div></div>${locked ? '<div class="asg-lock-note">Hoàn thành bài học Writing của tuần này để mở bài tập.</div>' : ''}${multi && partsDone < a.parts_total ? '<div class="asg-lock-note">Làm đủ các phần để quy đổi band.</div>' : ''}</div>`;
       };
       const wkOf = a => a.week_start ? mondayKey(dOf(a.week_start)) : mondayKey(now);
       const materialMap = {};
@@ -247,11 +285,11 @@
               return `<div class="sk c${i % 3}"><div class="sl"><i data-lucide="book-open"></i><span style="overflow-wrap:anywhere">${esc(g)}</span></div><div class="sv">${n} / ${a.length}</div><div class="bar"><i style="width:${Math.round(100 * n / a.length)}%"></i></div></div>`; }).join('')}</div></div></div>`;
         }
       }
-      const progHtml = `<section class="card g-prog" id="student-overview"><div class="prog-head"><h2><i data-lucide="bar-chart-3"></i>Tiến độ học tập</h2><span class="prog-pill">Chương trình: ${isAll ? `<select class="field" style="min-height:36px;width:auto;padding:0 10px;font-weight:700" aria-label="Chọn chương trình" onchange="window.__demoProg(this.value)">${Object.keys(PNAME).map(k => `<option value="${k}"${k === prog ? ' selected' : ''}>${PNAME[k]}</option>`).join('')}</select>` : `<b>${esc(PNAME[prog] || '')}</b>`}</span></div>${progBody}</section>`;
+      const progHtml = `<section class="card g-prog" id="student-overview"><div class="prog-head"><h2><i data-lucide="bar-chart-3"></i>Tiến độ học tập</h2><span class="prog-pill">Chương trình: ${isAll ? `<select class="field" style="min-height:36px;width:auto;padding:0 10px;font-weight:700" aria-label="Chọn chương trình" onchange="window.__demoProg(this.value)">${Object.keys(PNAME).map(k => `<option value="${k}"${k === prog ? ' selected' : ''}>${PNAME[k]}</option>`).join('')}</select>` : `<b>${esc(PNAME[prog] || '')}</b>`}</span></div>${progBody}${(prog === 'ielts' || prog === 'toeic' || prog === 'ac12') ? '<div class="wk-scores" id="wk-scores" style="margin-top:14px"></div>' : ''}</section>`;
 
       /* Lịch sử buổi học: thu gọn mặc định, buổi mới nhất trước, không có buổi tương lai */
       const historyRows = past.slice(0, S.historyLimit).map(s => { const st = STATUS[s.status] || STATUS.planned;
-        return `<div class="hrow student-history-row">${dayCols(s.date)}<span class="text-xs font-semibold text-sky-700">${tmr(s)}</span><span class="hr-tags"><span class="tag ${st[1]}">${st[0]}</span>${attTag(s)}</span></div>`; }).join('');
+        return `<div class="hrow student-history-row" data-sid="${s.id || ''}" data-att="${s.attendance || ''}">${dayCols(s.date)}<span class="text-xs font-semibold text-sky-700">${tmr(s)}</span><span class="hr-tags"><span class="tag ${st[1]}">${st[0]}</span>${attTag(s)}</span></div>`; }).join('');
       const histHtml = `<section class="card g-hist" id="student-history"><h2><i data-lucide="history"></i>Lịch sử buổi học</h2><div class="att-strip"><div><b>${done.length}</b><span>Đã học</span></div><div><b class="pos">${attP}</b><span>Có mặt</span></div><div><b class="${attA ? 'neg' : ''}">${attA}</b><span>Vắng</span></div><div><b>${attRate !== null ? attRate + '%' : '–'}</b><span>Chuyên cần</span></div></div><div class="student-history-list">${historyRows || '<div class="text-sm text-slate-500">Chưa có buổi học nào.</div>'}</div>${past.length > S.historyLimit ? `<div class="student-history-more"><button type="button" data-history-more>Xem thêm ${Math.min(10, past.length - S.historyLimit)} buổi</button></div>` : ''}</section>`;
 
       const tuitionHtml = `<section class="card g-tuition" id="student-tuition" data-m="${selMonth}"><div class="tuition-head"><h2 class="font-bold flex items-center gap-2"><i data-lucide="wallet"></i>Học phí tháng ${selMonth.slice(5, 7)}/${selMonth.slice(0, 4)}</h2><span id="tuition-tag"></span></div><div class="text-sm text-slate-500 mt-2" id="tuition-status-text">Đang tải tình trạng…</div></section>`;
@@ -323,7 +361,34 @@
           const list = $('tuition-history-list'); if (list) list.innerHTML = tuitionHistoryContent();
         });
       }
-      (LMS.isTeacherNow ? LMS.isTeacherNow() : Promise.resolve(false)).then(ok => { const b = $('btn-class'); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); $('btn-home').classList.remove('hidden'); $('btn-home').href = 'index.html#overview'; document.querySelectorAll('a.logo-home[data-student-home]').forEach(l => { l.href = 'index.html#overview'; l.removeAttribute('data-student-home'); l.setAttribute('aria-label', 'Về trang tổng quan'); }); } });
+      /* Điểm theo tuần (bảng grades): điểm mới nhất của mỗi kỹ năng trong tuần đang chọn */
+      if (document.getElementById('wk-scores')) (async () => {
+        const box = document.getElementById('wk-scores'), P = n => String(n).padStart(2, '0');
+        const key = dt => dt.getFullYear() + '-' + P(dt.getMonth() + 1) + '-' + P(dt.getDate());
+        const mon = dt => { const x = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
+        const fromKey = k => { const [y, m, dd] = k.split('-').map(Number); return new Date(y, m - 1, dd); };
+        const cur = key(mon(new Date())), SKN = { listening: 'Listening', reading: 'Reading', writing: 'Writing', speaking: 'Speaking' };
+        if (!S.grades || S.gCode !== S.code) { try { const r = await S.c.rpc('student_grades', { p_student_code: S.code }); S.grades = r.error ? [] : (r.data || []); } catch (e) { S.grades = []; } S.gCode = S.code; S.gWeek = cur; }
+        const show = g => g.band != null ? 'Band ' + g.band : (g.score != null ? g.score + (g.total ? ' / ' + g.total : '') : '–');
+        const draw = () => {
+          const w = S.gWeek || cur, a = fromKey(w), b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6), fm = x => P(x.getDate()) + '/' + P(x.getMonth() + 1);
+          const inWk = S.grades.filter(g => g.week_start === w), latest = {};
+          inWk.forEach(g => { const k = g.skill || 'khac'; if (!latest[k] || g.graded_at > latest[k].graded_at) latest[k] = g; });
+          const items = Object.keys(latest).map(k => { const g = latest[k]; return `<button type="button" class="wk-score" data-gid="${g.id}"><span><small>${esc(SKN[k] || k)} · ${esc(g.name || '')}</small><b>${esc(show(g))}</b></span><i data-lucide="chevron-right"></i></button>`; }).join('');
+          box.innerHTML = `<div class="sk-title"><i data-lucide="calendar-days"></i>Điểm theo tuần</div><div class="wk-score-nav"><button type="button" class="icon-btn" data-wk="-1" aria-label="Tuần trước"><i data-lucide="chevron-left"></i></button><span class="wk-lab">${fm(a)} – ${fm(b)}</span><button type="button" class="icon-btn" data-wk="1" aria-label="Tuần sau"><i data-lucide="chevron-right"></i></button>${w !== cur ? '<button type="button" class="btn-soft" data-wk="0">Tuần hiện tại</button>' : ''}</div><div class="wk-score-list">${items || '<div class="text-sm text-slate-500">Tuần này chưa có điểm.</div>'}</div>`;
+          if (window.lucide) window.lucide.createIcons();
+          box.querySelectorAll('[data-wk]').forEach(el => el.onclick = () => { const n = Number(el.dataset.wk); if (n === 0) S.gWeek = cur; else { const x = fromKey(S.gWeek || cur); x.setDate(x.getDate() + 7 * n); S.gWeek = key(x); } draw(); });
+          box.querySelectorAll('[data-gid]').forEach(el => el.onclick = () => {
+            const g = S.grades.find(z => String(z.id) === el.dataset.gid); if (!g) return;
+            const cr = g.criteria ? [['tr', 'Task response'], ['cc', 'Coherence and cohesion'], ['lr', 'Lexical resource'], ['gra', 'Grammatical range and accuracy']].filter(([k]) => g.criteria[k] != null).map(([k, l]) => `<div class="gr-bd"><span>${l}</span><b>${g.criteria[k]}</b></div>`).join('') : '';
+            const bd = g.breakdown ? Object.keys(g.breakdown).map(k => `<div class="gr-bd"><span>${esc(k)}</span><b>${g.breakdown[k].ok} / ${g.breakdown[k].n}</b></div>`).join('') : '';
+            const html = `<div class="gr-bd"><span>Kết quả</span><b>${esc(show(g))}</b></div>${cr}${bd ? '<p class="gr-note" style="margin-top:10px">Theo dạng câu</p>' + bd : ''}${g.feedback ? '<p class="gr-note" style="margin-top:10px">Nhận xét</p><p>' + esc(g.feedback) + '</p>' : ''}${g.body ? '<p class="gr-note" style="margin-top:10px">Bài làm</p><p style="white-space:pre-wrap">' + esc(g.body) + '</p>' : ''}`;
+            window.__gbModal(g.name || 'Kết quả', html, 'clipboard-check');
+          });
+        };
+        draw();
+      })();
+      (LMS.isTeacherNow ? LMS.isTeacherNow() : Promise.resolve(false)).then(ok => { const b = $('btn-class'); if (ok && S.data === d && d.student_id) document.querySelectorAll('.student-history-row[data-sid]').forEach(row => { const sid = row.dataset.sid, tags = row.querySelector('.hr-tags'); if (!sid || !tags || row.querySelector('.att-sel')) return; tags.querySelectorAll('.tag').forEach((tg, i) => { if (i > 0) tg.remove(); }); const sel = document.createElement('select'); sel.className = 'att-sel'; sel.setAttribute('aria-label', 'Điểm danh'); sel.innerHTML = '<option value="">Chưa điểm danh</option><option value="present">Có mặt</option><option value="late">Trễ</option><option value="absent">Vắng</option>'; sel.value = row.dataset.att || ''; sel.addEventListener('change', async () => { const v = sel.value; sel.disabled = true; const r = v ? await S.c.from('attendance').upsert({ session_id: Number(sid), student_id: d.student_id, status: v, updated_at: new Date().toISOString() }) : await S.c.from('attendance').delete().eq('session_id', Number(sid)).eq('student_id', d.student_id); sel.disabled = false; if (r.error) { sel.value = row.dataset.att || ''; sel.classList.add('att-err'); setTimeout(() => sel.classList.remove('att-err'), 1500); return; } row.dataset.att = v; const ss = (d.sessions || []).find(z => String(z.id) === sid); if (ss) ss.attendance = v || null; }); tags.appendChild(sel); }); if (ok && b && S.data === d) { b.href = 'class.html?class=' + encodeURIComponent(cls.code); b.classList.remove('hidden'); $('btn-home').classList.remove('hidden'); $('btn-home').href = 'index.html#overview'; document.querySelectorAll('a.logo-home[data-student-home]').forEach(l => { l.href = 'index.html#overview'; l.removeAttribute('data-student-home'); l.setAttribute('aria-label', 'Về trang tổng quan'); }); } });
     }
 
     /* ---------- Làm bài ---------- */
@@ -389,7 +454,7 @@
       const [a0, b, c] = await Promise.all([
         qs(cols),
         S.c.from('week_materials').select('id,kind,skill,title,url,class_ids,sort_order,session_dates').eq('week_start', monday).order('sort_order').order('id'),
-        S.c.from('assignment_classes').select('assignment_id,class_id,due_at,assignments(assignment_name,assignment_code,kind,page_path)').eq('week_start', monday).eq('is_active', true)
+        S.c.from('assignment_classes').select('assignment_id,class_id,due_at,assignments(assignment_name,assignment_code,kind,page_path,skill)').eq('week_start', monday).eq('is_active', true)
       ]);
       let a = a0;
       if (a.error && /homework/i.test(a.error.message || '')) a = await qs(cols.replace('homework,', ''));
@@ -444,6 +509,48 @@
       for (const r of [st, sb, wr, cl]) if (r.error) throw r.error;
       T.sub = { students: st.data || [], subs: sb.data || [], writing: wr.data || [], classes: cl.data || [] };
     }
+    /* Chấm điểm: lưu vào bảng grades (mỗi học viên một dòng cho mỗi bài) */
+    const BAND_L = [[39,9],[37,8.5],[35,8],[32,7.5],[30,7],[26,6.5],[23,6],[18,5.5],[16,5],[13,4.5],[10,4],[8,3.5],[6,3],[4,2.5]];
+    const BAND_R = [[39,9],[37,8.5],[35,8],[33,7.5],[30,7],[27,6.5],[23,6],[19,5.5],[15,5],[13,4.5],[10,4],[8,3.5],[6,3],[4,2.5]];
+    const toBand = (n, tb) => { for (const [m, b] of tb) if (n >= m) return b; return n >= 1 ? 2 : 0; };
+    async function tGrade(aid, stid) {
+      const xs = T.asg.find(x => x.assignment_id === aid), a = xs && xs.assignments, D = T.sub;
+      const st = D.students.find(z => z.id === stid), cls = D.classes.find(c => c.id === st.class_id) || {}, code = cls.class_code || '';
+      const nm = ((a.skill || '') + ' ' + (a.assignment_name || '')).toLowerCase();
+      const prog = /^IE/i.test(code) ? 'ielts' : /^AC12/i.test(code) ? 'ac12' : /^TO/i.test(code) ? 'toeic' : 'gs';
+      const skill = /writing/.test(nm) ? 'writing' : /listening/.test(nm) ? 'listening' : /reading/.test(nm) ? 'reading' : (a.skill || '');
+      const first = D.subs.filter(r => r.assignment_id === aid && r.student_id === stid && r.score != null).sort((p, q) => (p.attempt_no || 1) - (q.attempt_no || 1))[0];
+      const old = await S.c.from('grades').select('*').eq('student_id', stid).eq('assignment_id', aid).maybeSingle();
+      const g = (old && old.data) || {}, cr = g.criteria || {};
+      const inp = (id, label, val, extra) => `<label class="gr-f"><span>${label}</span><input id="${id}" type="number" inputmode="decimal" value="${val == null ? '' : val}" ${extra || ''}></label>`;
+      let body = '';
+      if (prog === 'ielts' && skill === 'writing') {
+        body = `<div class="gr-grid">${inp('gr-tr', 'Task response', cr.tr, 'step="0.5" min="0" max="9"')}${inp('gr-cc', 'Coherence and cohesion', cr.cc, 'step="0.5" min="0" max="9"')}${inp('gr-lr', 'Lexical resource', cr.lr, 'step="0.5" min="0" max="9"')}${inp('gr-gra', 'Grammatical range and accuracy', cr.gra, 'step="0.5" min="0" max="9"')}</div>${inp('gr-band', 'Overall band', g.band, 'step="0.5" min="0" max="9"')}`;
+      } else if (prog === 'ielts') {
+        body = `<div class="gr-grid">${inp('gr-score', 'Số câu đúng (/40)', g.score != null ? g.score : (first ? first.score : ''), 'step="1" min="0" max="40"')}${inp('gr-band', 'Band', g.band, 'step="0.5" min="0" max="9"')}</div><button type="button" class="btn-soft" id="gr-conv">Quy đổi sang band${skill === 'reading' ? ' (Academic)' : ''}</button>`;
+      } else if (prog === 'gs') {
+        body = `<div class="gr-grid">${inp('gr-score', 'Điểm (thang 10)', g.score, 'disabled')}</div><p class="gr-note">Thang điểm Global Success chưa chốt nên ô này đang khóa.</p>`;
+      } else {
+        body = `<div class="gr-grid">${inp('gr-score', 'Số câu đúng', g.score != null ? g.score : (first ? first.score : ''), 'step="1" min="0"')}${inp('gr-total', 'Tổng số câu', g.total, 'step="1" min="0"')}</div>`;
+      }
+      body += `<label class="gr-f"><span>Nhận xét</span><textarea id="gr-fb" rows="4">${esc(g.feedback || '')}</textarea></label><div class="gr-act"><button type="button" class="btn-soft" id="gr-save">Lưu điểm</button></div>`;
+      const old2 = document.getElementById('gm-modal'); if (old2) old2.remove();
+      const m = document.createElement('div'); m.id = 'gm-modal';
+      m.innerHTML = `<div class="gm-box" role="dialog" aria-modal="true"><div class="gm-head"><span class="gm-title"><i data-lucide="pencil-line"></i>${esc(st.student_name)} · ${esc(a.assignment_name)}</span><button type="button" class="icon-btn" data-gm-close aria-label="Đóng"><i data-lucide="x" class="w-4 h-4"></i></button></div><div class="gm-body gr-body">${body}</div></div>`;
+      m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-gm-close]')) m.remove(); });
+      document.body.appendChild(m); if (window.lucide) window.lucide.createIcons();
+      const $g = id => m.querySelector('#' + id), val = id => { const el = $g(id); return el && el.value !== '' ? Number(el.value) : null; };
+      if ($g('gr-conv')) $g('gr-conv').onclick = () => { const n = val('gr-score'); if (n == null) return; $g('gr-band').value = toBand(n, skill === 'reading' ? BAND_R : BAND_L); };
+      ['gr-tr', 'gr-cc', 'gr-lr', 'gr-gra'].forEach(id => { if ($g(id)) $g(id).oninput = () => { const v = ['gr-tr', 'gr-cc', 'gr-lr', 'gr-gra'].map(val); if (v.every(x => x != null)) $g('gr-band').value = Math.round(v.reduce((p, q) => p + q, 0) / 4 * 2) / 2; }; });
+      $g('gr-save').onclick = async () => {
+        const row = { student_id: stid, assignment_id: aid, week_start: (T.monday || null), skill: skill || null, source: 'manual', feedback: ($g('gr-fb').value || '').trim() || null, graded_at: new Date().toISOString() };
+        if ($g('gr-score')) row.score = val('gr-score'); if ($g('gr-total')) row.total = val('gr-total'); if ($g('gr-band')) row.band = val('gr-band');
+        if ($g('gr-tr')) row.criteria = { tr: val('gr-tr'), cc: val('gr-cc'), lr: val('gr-lr'), gra: val('gr-gra') };
+        const r = await S.c.from('grades').upsert(row, { onConflict: 'student_id,assignment_id' });
+        if (r.error) { LMS.toast('Không lưu được: ' + r.error.message); return; }
+        LMS.toast('Đã lưu điểm'); m.remove();
+      };
+    }
     const num = v => Number.isInteger(v) ? String(v) : v.toFixed(1);
     function tSubView() {
       const D = T.sub || { students: [], subs: [], writing: [], classes: [] };
@@ -467,7 +574,7 @@
         const name = c => esc(c.class_name || c.class_code || ''), dues = [...new Set(groups.map(z => z.x.due_at || ''))];
         const sub = dues.length === 1 ? esc(fmtDue(dues[0])) : 'Hạn nộp khác nhau theo lớp';
         const flat = groups.flatMap(z => z.rows.map(r => ({ ...r, cls: z.cls, due: z.x.due_at }))).sort((p, q) => p.done - q.done);
-        const line = r => `<div class="t-sub-row"><span class="t-sr-name">${esc(r.st.student_name)}</span><span class="t-sr-cls">${name(r.cls)}${dues.length > 1 ? `<small>${esc(fmtDue(r.due))}</small>` : ''}</span><span class="t-sr-code">${esc(r.st.student_code || '')}</span><span class="t-sub-meta">${r.done ? `${r.score != null ? '<b>' + num(r.score) + '</b>' : ''}${r.band != null ? '<b>Band ' + num(r.band) + '</b>' : ''}${r.tries > 1 ? '<span class="tag bg-slate-100 text-slate-600">Lần ' + r.tries + '</span>' : ''}${r.late ? '<span class="tag bg-rose-50 text-rose-700">Trễ</span>' : ''}${r.score == null && r.band == null && !r.late ? '<span class="tag bg-emerald-50 text-emerald-700">Đã nộp</span>' : ''}` : '<span class="tag bg-amber-50 text-amber-700">Chưa nộp</span>'}</span></div>`;
+        const line = r => `<div class="t-sub-row"><span class="t-sr-name">${esc(r.st.student_name)}</span><span class="t-sr-cls">${name(r.cls)}${dues.length > 1 ? `<small>${esc(fmtDue(r.due))}</small>` : ''}</span><span class="t-sr-code">${esc(r.st.student_code || '')}</span><span class="t-sub-meta">${r.done ? `${r.score != null ? '<b>' + num(r.score) + '</b>' : ''}${r.band != null ? '<b>Band ' + num(r.band) + '</b>' : ''}${r.tries > 1 ? '<span class="tag bg-slate-100 text-slate-600">Lần ' + r.tries + '</span>' : ''}${r.late ? '<span class="tag bg-rose-50 text-rose-700">Trễ</span>' : ''}${r.score == null && r.band == null && !r.late ? '<span class="tag bg-emerald-50 text-emerald-700">Đã nộp</span>' : ''}<button type="button" class="t-ic" data-t="grade" data-aid="${aid}" data-stid="${r.st.id}" aria-label="Chấm điểm" title="Chấm điểm"><i data-lucide="pencil-line"></i></button>` : '<span class="tag bg-amber-50 text-amber-700">Chưa nộp</span>'}</span></div>`;
         const list = flat.length ? '<div class="t-sub-row t-sub-cap"><span>Học viên</span><span>Lớp</span><span>MSHS</span><span class="t-sub-meta">Trạng thái</span></div>' + flat.map(line).join('') : '<div class="t-none">Lớp chưa có học viên.</div>';
         return `<section class="card t-sub" data-aid="${aid}"><div class="t-sub-head" aria-expanded="${T.subOpen.has(String(aid))}"><div class="t-cls"><b>${esc(g.a.assignment_name)}</b><span>${sub}</span></div><div class="t-sum"><span class="tag ${done.length === all.length && all.length ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${done.length}/${all.length} đã nộp</span>${late ? `<span class="tag bg-rose-50 text-rose-700">${late} nộp trễ</span>` : ''}${avg != null ? `<span class="tag bg-slate-100 text-slate-600">Điểm TB ${num(avg)}</span>` : ''}</div></div>
           <div class="t-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><div class="t-sub-body" ${T.subOpen.has(String(aid)) ? '' : 'hidden'}>${list}</div></section>`;
@@ -649,6 +756,7 @@
           else if (k === 'pick-open') { T.view = 'day'; T.slotOpen.add(b.dataset.key); T.sess.filter(x => x.session_date === T.date && hhmm(x.start_time) === b.dataset.key).forEach(x => T.open.add(x.id)); drawTeacher(); window.scrollTo(0, 0); }
           else if (k === 'roster') tRoster(Number(b.dataset.cid), Number(b.dataset.sid));
           else if (k === 'view') { T.view = b.dataset.view; if (T.view === 'submissions') { drawTeacher(); await loadSubs(); } drawTeacher(); window.scrollTo(0, 0); }
+          else if (k === 'grade') { await tGrade(Number(b.dataset.aid), Number(b.dataset.stid)); }
           else if (k === 'sub-refresh') { await loadSubs(); drawTeacher(); LMS.toast('Đã tải lại bài nộp'); }
           else if (k === 'day') { const d = b.dataset.date; if (T.view !== 'rail') T.view = 'day'; if (mondayKey(dOf(d)) === T.monday) { T.date = d; history.replaceState(null, '', '#teacher/' + d); drawTeacher(); } else location.hash = '#teacher/' + d; }
           else if (k === 'wk') { location.hash = '#teacher/' + addDays(T.date, Number(b.dataset.step)); }
