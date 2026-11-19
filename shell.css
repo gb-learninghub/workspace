@@ -402,7 +402,7 @@ body.student-dashboard-view .student-welcome-tools .icon-btn,body.student-dashbo
 .gm-body{padding:0 20px 18px;overflow:auto;overscroll-behavior:contain}
 @keyframes gmfade{from{opacity:0}to{opacity:1}}
 @keyframes gmpop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
-.student-shell p,.student-shell .text-sm.text-slate-500,.student-shell .progress-empty span,.student-shell .asg-note,.student-shell .tuition-bar-cap,#res-modal [style*="pre-wrap"],.gm-box p{text-align:justify;text-justify:inter-word;hyphens:auto}
+.student-shell p,.student-shell .text-sm.text-slate-500,.student-shell .progress-empty span,.student-shell .tuition-bar-cap,#res-modal [style*="pre-wrap"],.gm-box p{text-align:justify;text-justify:inter-word;hyphens:auto}
 .gr-note{font-size:12px;color:#64748b;margin:0}
 [data-goal]{cursor:pointer}
 [data-goal]:focus-visible{outline:2px solid #16181D;outline-offset:2px}
