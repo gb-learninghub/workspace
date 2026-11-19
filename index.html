@@ -665,9 +665,9 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         return out.sort((a, b) => a.localeCompare(b, 'vi'));
       }
       function stuCell(c) {
-        const names = shortNames(st.roster[c.id] || []), more = names.length > 4 ? names.length - 4 : 0;
-        const txt = names.length ? esc(names.slice(0, 4).join(', ')) + (more ? ` <em>+${more}</em>` : '') : '–';
-        return `<td class="scol stu">${names.length ? `<button type="button" class="stu-btn" data-roster="${c.id}" aria-label="Xem danh sách học viên lớp ${esc(c.class_code)}">${txt}</button>` : '<span class="s-none">–</span>'}</td>`;
+        const names = shortNames(st.roster[c.id] || []), more = names.length > 3 ? names.length - 3 : 0;
+        const txt = names.length ? esc(names.slice(0, 3).join(', ')) + (more ? ` <em>+${more}</em>` : '') : '–';
+        return names.length ? `<button type="button" class="stu-btn" data-roster="${c.id}" aria-label="Xem danh sách học viên lớp ${esc(c.class_code)}">${txt}</button>` : '<span class="s-none">Chưa có học viên</span>';
       }
       function sessCells(c, maxS, keys) {
         const ss = st.sessions.filter(x => x.class_id === c.id).slice().sort((a, b) => a.session_date.localeCompare(b.session_date) || String(a.start_time).localeCompare(String(b.start_time)));
@@ -689,19 +689,19 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         { const d = dates[st.selDay]; $('day-nav-dow').textContent = st.selDay === 6 ? 'Chủ nhật' : 'Thứ ' + ['Hai', 'Ba', 'Tư', 'Năm', 'Sáu', 'Bảy'][st.selDay]; const away = st.week !== NOW_WEEK || st.selDay !== (new Date().getDay() + 6) % 7; $('day-nav-date').textContent = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); $('day-today').classList.toggle('is-away', away); }
         $('day-tabs').innerHTML = DAY.map((n, i) => `<button type="button" data-day="${i}" aria-pressed="${i === st.selDay}">${i === 6 ? 'CN' : 'T' + (i + 2)} ${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</button>`).join('');
         const _list = visibleClasses(), maxS = Math.max(3, ..._list.map(c => st.sessions.filter(x => x.class_id === c.id).length));
-        $('grid-head').innerHTML = '<th class="c-name">Lớp</th><th class="scol stu">Học viên</th>' + Array.from({ length: maxS }, (_, i) => `<th class="scol sn">Buổi ${i + 1}</th>`).join('') + DAY.map((n, i) =>
+        $('grid-head').innerHTML = '<th class="c-name">Lớp</th>' + Array.from({ length: maxS }, (_, i) => `<th class="scol sn">Buổi ${i + 1}</th>`).join('') + DAY.map((n, i) =>
           `<th class="dcol d${i}${keys[i] === todayKey ? ' today' : ''}">${n}<div style="font-weight:500;opacity:.8">${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</div></th>`).join('');
 
         let html = '';
-        html += '<tr class="special free"><td class="c-name">Lịch rảnh</td><td class="scol" colspan="' + (1 + maxS) + '"></td>' + keys.map((k, i) => {
+        html += '<tr class="special free"><td class="c-name">Lịch rảnh</td><td class="scol" colspan="' + maxS + '"></td>' + keys.map((k, i) => {
           const f = freeTimes(k, i);
           return `<td class="dcol d${i}${k === todayKey ? ' today' : ''}" style="padding:8px 6px">${f.length ? f.map(x => `<span class="free-line">${x}</span>`).join('') : '–'}</td>`;
         }).join('') + '</tr>';
-        html += '<tr class="special busy"><td class="c-name">Lịch bận</td><td class="scol" colspan="' + (1 + maxS) + '"></td>' + keys.map((k, i) =>
+        html += '<tr class="special busy"><td class="c-name">Lịch bận</td><td class="scol" colspan="' + maxS + '"></td>' + keys.map((k, i) =>
           `<td class="dcol d${i}${k === todayKey ? ' today' : ''}" data-blocked="${i}" style="padding:6px;cursor:pointer">${parseRanges(st.blocked[i]).map(r => `<span class="free-line">${fmt(r.s)} - ${fmt(r.e)}</span>`).join('') || '–'}</td>`).join('') + '</tr>';
 
         const list = _list;
-        if (!list.length) html += '<tr><td colspan="' + (8 + maxS) + '" class="p-6 text-center text-slate-400 text-sm">Không có lớp phù hợp.</td></tr>';
+        if (!list.length) html += '<tr><td colspan="' + (7 + maxS) + '" class="p-6 text-center text-slate-400 text-sm">Không có lớp phù hợp.</td></tr>';
         list.forEach(c => {
           const s = classState(c), url = c.page_url || ('class.html?class=' + encodeURIComponent(c.class_code));
           const n = st.counts[c.id] || 0, sub = c.class_name && c.class_name !== c.class_code ? c.class_name : '';
@@ -709,8 +709,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
             <a class="cls-link" href="${esc(url)}">${esc(c.class_code)}</a>
             ${sub ? `<div class="text-xs text-slate-500" style="overflow-wrap:anywhere">${esc(sub)}</div>` : ''}
             <div class="text-xs text-slate-500 m-hide">${c.program ? 'Chương trình: ' + esc(CLASS_PROGRAM[c.program] || c.program) : 'Chưa gắn chương trình'}</div>
-            <div class="text-xs text-slate-500"><button type="button" class="roster-btn" data-roster="${c.id}" aria-label="Xem danh sách học viên lớp ${esc(c.class_code)}">${n} học viên</button>${s === 'inactive' ? ' · Tạm ngưng' : s === 'archived' ? ' · Lưu trữ' : ''}</div></div>
-            <button type="button" class="icon-btn" style="width:36px;height:36px;flex:none" data-edit-class="${c.id}" aria-label="Sửa lớp ${esc(c.class_code)}"><i data-lucide="settings" class="w-4 h-4"></i></button></div></td>` + stuCell(c) + sessCells(c, maxS, keys) + keys.map((k, i) => {
+            <div class="text-xs text-slate-500">${stuCell(c)}${s === 'inactive' ? '<div>Tạm ngưng</div>' : s === 'archived' ? '<div>Lưu trữ</div>' : ''}</div></div>
+            <button type="button" class="icon-btn" style="width:36px;height:36px;flex:none" data-edit-class="${c.id}" aria-label="Sửa lớp ${esc(c.class_code)}"><i data-lucide="settings" class="w-4 h-4"></i></button></div></td>` + sessCells(c, maxS, keys) + keys.map((k, i) => {
               const ss = sessionsOf(c.id, k);
               return `<td class="day dcol d${i}${k === todayKey ? ' today' : ''}" data-class="${c.id}" data-date="${k}">` + ss.map(x =>
                 `<button type="button" class="chip ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${[x.status === 'cancel' ? 'Hủy' : '', x.status === 'done' ? 'Hoàn thành' : x.status === 'makeup' ? 'Bù' : x.status === 'holiday' ? 'Nghỉ lễ' : '', lessonOf(x) ? esc(lessonOf(x)) : '', x.note ? esc(x.note) : ''].filter(Boolean).join(' · ')}</small></button>`).join('') + '</td>';

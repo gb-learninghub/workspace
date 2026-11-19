@@ -1049,3 +1049,24 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 /* Văn bản dài canh đều 2 lề trên mọi trang */
 p:not([class*="text-center"]):not(.m-none),.dlg p,.card p,.text-sm.text-slate-500:not([class*="text-center"]),.text-sm.text-slate-600,.text-xs.text-slate-500:not(.m-hide){text-align:justify;text-justify:inter-word;hyphens:auto;overflow-wrap:break-word}
 textarea.field{text-align:justify}
+
+/* Danh sách buổi học trong tuần: dùng cả trên máy tính */
+@media(min-width:721px){
+.wk-tab{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:45;width:28px;height:64px;align-items:center;justify-content:center;background:#16181D;color:#e5c16b;border:0;border-radius:0 12px 12px 0;cursor:pointer;transition:left .22s ease}
+.wk-tab svg{transition:transform .22s ease}
+body.wk-open .wk-tab{left:min(86vw,360px)}
+body.wk-open .wk-tab svg{transform:rotate(180deg)}
+.wk-drawer{display:block;position:fixed;top:0;bottom:0;left:0;width:min(86vw,360px);z-index:44;background:#fff;border-right:1px solid #E4E6EA;padding:64px 14px 96px;overflow:auto;overscroll-behavior:contain;transform:translateX(-100%);visibility:hidden;transition:transform .22s ease,visibility 0s .22s}
+body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .22s ease}
+.wk-head{font-weight:800;font-size:.9375rem;color:#1B1D22;padding:0 4px 10px}
+.wk-day h3{margin:12px 4px 4px;font-size:.8125rem;font-weight:800;color:#1B1D22}
+.wk-day h3 span{font-weight:500;color:#718096;margin-left:4px}
+.wk-day.today h3{color:#8a6a12}
+.wk-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;width:100%;min-height:52px;padding:9px 12px;margin-bottom:6px;border-radius:12px;border:1px solid #bae6fd;background:#e0f2fe;color:#1B1D22;text-align:left;font:inherit;cursor:pointer}
+.wk-row.online{background:#ffedd5;border-color:#fed7aa}
+.wk-row.cancel,.wk-row.holiday{background:#fff;border-color:#E4E6EA;color:#718096}
+.wk-row b{font-size:.9375rem}.wk-row span{font-size:.8125rem;font-weight:600;text-align:right}
+.wk-row em{grid-column:1/-1;font-style:normal;font-size:.75rem;color:#596579}
+.wk-empty{margin:16px 4px;color:#718096;font-size:.875rem}
+}
+.stu-btn{display:block!important;white-space:nowrap;text-overflow:ellipsis;-webkit-line-clamp:unset!important}
