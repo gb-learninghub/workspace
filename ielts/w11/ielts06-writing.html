@@ -99,6 +99,8 @@ body.np-open #main{margin-right:360px}
 #tn .ni i{font-style:normal;flex:none;border-radius:10px;padding:1px 8px;font-size:13px;font-weight:700}
 #tn .ni q{quotes:none;color:var(--mut)}
 .t-Grammar{background:#fbd5d5}.t-Word{background:#ffe0a8}.t-Spelling{background:#e3d4ff}.t-Unclear{background:#cfe3ff}.t-Good{background:#cdeccf}
+.vmb{flex:none;width:40px;height:40px;border:1.5px solid var(--line);border-radius:20px;background:#fff;color:inherit;display:grid;place-items:center;padding:0}.vmb.on{background:#111;color:#fff;border-color:#111}
+#npmf{flex:none;display:grid;gap:6px;margin:0 0 8px}#npmf input,#npmf select{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;min-width:0;background:#fff;width:100%;height:44px}#npmf .r2{display:grid;grid-template-columns:1fr 1fr;gap:6px}#npmf .r3{display:flex;gap:6px;justify-content:flex-end}#npmf .pill{height:40px;padding:0 18px}.npe{color:#b42b2b;font-size:14px}.npe:empty{display:none}
 </style><style id="fitfix">
 html,body{max-width:100%;overflow-x:hidden}
 img,svg,video,canvas{max-width:100%}
@@ -513,11 +515,42 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     inp.addEventListener("blur", function () { setTimeout(hide, 250); });
   }
   /* look-up bar on top, notes below */
+
+  /* manual word entry: a + button beside Look up opens a small form; the word goes into My words and the notebook */
+  var PLUSSVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
+  function manualUI(lk, w, resetNb) {
+    var form = null;
+    var btn = h("button", { cls: "vmb", title: "Add a word yourself", "aria-label": "Add a word yourself", html: PLUSSVG, onclick: function () { if (form) close(); else open(); } });
+    lk.appendChild(btn);
+    function close() { if (form) { form.remove(); form = null; } btn.classList.remove("on"); }
+    function open() {
+      var wi = h("input", { type: "text", placeholder: "Word or phrase", autocomplete: "off", autocapitalize: "off", spellcheck: "false", maxlength: "80", "aria-label": "Word or phrase" });
+      var ps = h("select", { "aria-label": "Word class" }); ps.appendChild(h("option", { value: "", text: "Word class" }));
+      POS.forEach(function (o) { ps.appendChild(h("option", { value: o, text: o })); });
+      var ip = h("input", { type: "text", placeholder: "IPA (optional)", autocomplete: "off", spellcheck: "false", maxlength: "80", "aria-label": "IPA" });
+      var me = h("input", { type: "text", placeholder: "Meaning", autocomplete: "off", spellcheck: "false", maxlength: "300", "aria-label": "Meaning" });
+      var er = h("div", { cls: "npe" });
+      function save() {
+        var word = wi.value.replace(/\s+/g, " ").trim(); if (!word) { er.textContent = "Type the word first."; wi.focus(); return; }
+        var L = wlist(), x = null;
+        L.forEach(function (y) { if (y.word.toLowerCase() === word.toLowerCase() && (y.pos || "") === ps.value) x = y; });
+        if (x) { if (me.value.trim()) x.meaning = me.value.trim(); if (ip.value.trim()) x.ipa = ip.value.trim(); }
+        else { x = { word: word, pos: ps.value, ipa: ip.value.trim(), meaning: me.value.trim() }; L.push(x); }
+        x.added = false; scheduleSave(); drawWords(); close();
+        var bx = document.getElementById("npw"); if (bx) bx.scrollTop = bx.scrollHeight;
+        rpc("student_vocab_add", { p_student_code: state.code, p_word: x.word, p_pos: x.pos || "", p_ipa: x.ipa || null, p_meaning: x.meaning || null, p_file_key: FILEKEY })
+          .then(function () { x.added = true; resetNb(); scheduleSave(); drawWords(); }).catch(function () { });
+      }
+      [wi, ip, me].forEach(function (i) { i.addEventListener("keydown", function (e) { if (e.key === "Enter") save(); }); });
+      form = h("div", { id: "npmf" }, wi, h("div", { cls: "r2" }, ps, ip), me, er, h("div", { cls: "r3" }, h("button", { cls: "pill ghost", text: "Cancel", onclick: close }), h("button", { cls: "pill", text: "Add word", onclick: save })));
+      w.parentNode.insertBefore(form, w); btn.classList.add("on"); setTimeout(function () { wi.focus(); }, 30);
+    }
+  }
   var renderNotes0 = renderNotes;
   renderNotes = function () {
     renderNotes0(); var b = state.npEl && state.npEl.querySelector(".npb.nn"); if (!b) return;
     var lk = b.querySelector(".lk"); if (lk) b.insertBefore(lk, b.firstChild);
-    var w = h("div", { id: "npw", cls: "wl" }); if (lk) { lk.after(w); attachSuggest(lk, function () { return state.goLookup; }); var sp = stripEl(stepCards(T().id)); w.after(sp); } drawWords();
+    var w = h("div", { id: "npw", cls: "wl" }); if (lk) { lk.after(w); attachSuggest(lk, function () { return state.goLookup; }); var sp = stripEl(stepCards(T().id)); w.after(sp); } drawWords(); if (lk) manualUI(lk, w, function () { state.nb = null; });
   };
 
 
