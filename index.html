@@ -1637,7 +1637,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const state = $('dc-state').value;
         const program = $('dc-program').value || (/^00\./.test(code) ? 'all' : LMS.score.programOf(code));
         const base = { class_code: code, class_name: name, group_code: $('dc-group').value.trim() || null, is_active: state === 'active' };
-        const settings = { page_url: $('dc-url').value.trim() || null, is_archived: state === 'archived', program: program };
+        const settings = { page_url: $('dc-url').value.trim() || null, is_archived: state === 'archived' };
         st.busy = true; let cid = id ? Number(id) : null, res;
         if (cid) res = await st.c.from('classes').update(base).eq('id', cid);
         else { res = await st.c.from('classes').insert(base).select('id').single(); if (!res.error) cid = res.data.id; }
