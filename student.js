@@ -272,7 +272,7 @@
         } else {
           const ov = rows[0], sk = rows.slice(1);
           progBody = `<div class="prog-body two">${goalBox('Mục tiêu điểm', 'target', big(ov), 'Hiện tại / Mục tiêu', ov.pct, '', true)}
-            <div><div class="sk-title"><i data-lucide="bar-chart-3"></i>Điểm theo kỹ năng</div><div class="sk-grid">${sk.map((r, i) => `<div class="sk c${i % 4}" data-sk="${r.kind}"><div class="sl"><i data-lucide="${SK_ICON[r.kind] || 'book-open'}"></i><span class="skill-code">${SC.KIND_SHORT[r.kind] || esc(r.label)}</span></div>
+            <div><div class="sk-title"><i data-lucide="bar-chart-3"></i>Điểm</div><div class="sk-grid">${sk.map((r, i) => `<div class="sk c${i % 4}" data-sk="${r.kind}"><div class="sl"><i data-lucide="${SK_ICON[r.kind] || 'book-open'}"></i><span class="skill-code">${SC.KIND_SHORT[r.kind] || esc(r.label)}</span></div>
               <div class="sv">${F(r.kind, r.current)}</div>${r.target != null ? `<div class="st">Mục tiêu ${F(r.kind, r.target)}</div>` : ''}${r.pct != null ? `<div class="bar"><i style="width:${r.pct}%"></i></div>` : ''}</div>`).join('')}</div></div></div>`;
         }
       } else {
@@ -374,7 +374,7 @@
         const full = g => g.band != null ? 'Band ' + g.band : (g.score != null ? g.score + (g.total ? ' / ' + g.total : '') : '–');
         const draw = () => {
           const w = S.gWeek || cur, a = fromKey(w), b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6), fm = x => P(x.getDate()) + '/' + P(x.getMonth() + 1);
-          ttl.innerHTML = `<i data-lucide="bar-chart-3"></i><span>Điểm theo kỹ năng</span><span class="wk-mini"><button type="button" data-wk="-1" aria-label="Tuần trước"><i data-lucide="chevron-left"></i></button><span class="wk-lab">${fm(a)} - ${fm(b)}</span><button type="button" data-wk="1" aria-label="Tuần sau"><i data-lucide="chevron-right"></i></button>${w !== cur ? '<button type="button" data-wk="0" aria-label="Về tuần hiện tại" title="Tuần hiện tại"><i data-lucide="rotate-ccw"></i></button>' : ''}</span>`;
+          ttl.innerHTML = `<i data-lucide="bar-chart-3"></i><span>Điểm</span><span class="wk-mini"><button type="button" data-wk="-1" aria-label="Tuần trước"><i data-lucide="chevron-left"></i></button><span class="wk-lab">${fm(a)} - ${fm(b)}</span><button type="button" data-wk="1" aria-label="Tuần sau"><i data-lucide="chevron-right"></i></button>${w !== cur ? '<button type="button" data-wk="0" aria-label="Về tuần hiện tại" title="Tuần hiện tại"><i data-lucide="rotate-ccw"></i></button>' : ''}</span>`;
           root.querySelectorAll('.sk[data-sk]').forEach(tile => {
             const k = tile.dataset.sk, gs = S.grades.filter(g => g.week_start === w && g.skill === k).sort((x, y) => (y.graded_at > x.graded_at ? 1 : -1)), g = gs[0], sv = tile.querySelector('.sv');
             if (sv) sv.textContent = g ? show(g) : '–';

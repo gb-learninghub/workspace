@@ -1452,3 +1452,7 @@ body.student-dashboard-view .student-overview-view .student-materials{height:aut
 .sk-title .wk-mini svg{width:13px;height:13px}
 .sk-title .wk-lab{padding:0 4px}
 .sk.sk-has{cursor:pointer}
+
+/* Bài học / Bài tập tuần này: khung cố định chiều cao, cuộn khi nội dung dài */
+html body.student-dashboard-view .student-overview-view .student-materials>.student-week-only{height:360px!important;max-height:360px!important;overflow:hidden!important;display:flex!important;flex-direction:column}
+html body.student-dashboard-view .student-overview-view .student-materials>.student-week-only .student-week-only-body{flex:1 1 auto;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain}
