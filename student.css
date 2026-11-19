@@ -1480,7 +1480,9 @@ body.student-dashboard-view .t-sub-row{grid-template-columns:minmax(0,1.2fr) min
 @media(max-width:780px){
 body.student-dashboard-view .student-nav.t-gnav{display:flex!important;grid-template-columns:none!important;overflow-x:auto!important;overflow-y:hidden;flex-wrap:nowrap;gap:4px;scroll-snap-type:x proximity;scrollbar-width:none}
 body.student-dashboard-view .student-nav.t-gnav::-webkit-scrollbar{display:none}
-body.student-dashboard-view .student-nav.t-gnav button{flex:0 0 auto;min-width:84px;padding:6px 14px!important;font-size:.75rem!important;scroll-snap-align:center}
+body.student-dashboard-view .student-nav.t-gnav button{flex:0 0 auto;min-width:68px;min-height:46px!important;padding:0 8px!important;gap:2px!important;font-size:.625rem!important;font-weight:700;letter-spacing:0;border-radius:12px!important;background:transparent!important;color:#aeb9cc!important;scroll-snap-align:center}
+body.student-dashboard-view .student-nav.t-gnav button.active{background:rgba(255,255,255,.14)!important;color:#e5c16b!important}
+body.student-dashboard-view .student-shell>.student-sidebar[aria-label="Điều hướng giáo viên"]{padding:6px 10px 8px!important}
 }
 
 /* Tiến độ học tập (mobile): nút chuyển tuần không bị phình theo min-size 44px, không đè lên ô điểm */
