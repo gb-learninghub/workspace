@@ -1487,3 +1487,12 @@ body.student-dashboard-view .student-nav.t-gnav button{flex:0 0 auto;min-width:8
 @media(max-width:780px){
 html body .student-overview-highlight .g-prog .sk-title,html body .student-overview-highlight .g-prog .goal-column-title{min-height:32px!important;margin-bottom:8px!important;align-items:center}
 }
+
+/* Bài học / Bài tập tuần này (mobile): mỗi mục 2 dòng (tên + ngày / trạng thái + nút), ghi chú khóa xuống dòng riêng */
+@media(max-width:780px){
+html body.student-dashboard-view .student-shell .row.asg-row{display:block!important;padding:10px 0!important}
+html body.student-dashboard-view .asg-row .asg-line{margin-top:4px}
+html body.student-dashboard-view .asg-row .asg-bits>span{white-space:nowrap}
+html body.student-dashboard-view .asg-row .asg-lock-note{margin-top:2px;text-align:left}
+html body.student-dashboard-view .asg-row .asg-line .asg-slot{width:34px;height:34px}
+}
