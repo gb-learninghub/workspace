@@ -1435,3 +1435,10 @@ html[data-lms-view="schedule"] #m-svrow{display:flex;justify-content:center;marg
   .sv-fb{margin-top:12px;max-height:none!important;overflow:visible!important}
 }
 @media(max-width:640px){.sv-fb{display:none!important}}
+
+/* Thanh điều hướng dưới (máy tính bảng và điện thoại): cuộn ngang khi có nhiều mục, giống trang giáo viên */
+@media(max-width:1023px){
+#lms-nav{overflow-x:auto!important;overflow-y:hidden;justify-content:flex-start!important;flex-wrap:nowrap!important;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+#lms-nav::-webkit-scrollbar{display:none}
+#lms-nav>a{flex:0 0 auto!important;min-width:56px;padding:0 14px!important}
+}

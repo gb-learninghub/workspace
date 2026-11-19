@@ -256,6 +256,8 @@
       var full = brand.querySelector('img');
       if (full) full.classList.add('nav-brand-full');
     }
+    var cur = nav.querySelector('[aria-current="page"]');
+    if (cur) requestAnimationFrame(function () { nav.scrollLeft = cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2; });
     var logout = document.getElementById('btn-logout');
     if (!logout) {
       var tools = document.querySelector('header .page-header-actions, header .header-tools');
