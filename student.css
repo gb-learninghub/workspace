@@ -1475,3 +1475,15 @@ body.student-dashboard-view .t-sub-row{grid-template-columns:minmax(0,1.2fr) min
 /* Thẻ mục tiêu bấm được để xem chi tiết */
 [data-goal]{cursor:pointer}
 [data-goal]:focus-visible{outline:2px solid #16181D;outline-offset:2px}
+
+/* Giáo viên (mobile): thanh tab trên cùng cuộn ngang, ô giãn rộng hơn */
+@media(max-width:780px){
+body.student-dashboard-view .student-nav.t-gnav{display:flex!important;grid-template-columns:none!important;overflow-x:auto!important;overflow-y:hidden;flex-wrap:nowrap;gap:4px;scroll-snap-type:x proximity;scrollbar-width:none}
+body.student-dashboard-view .student-nav.t-gnav::-webkit-scrollbar{display:none}
+body.student-dashboard-view .student-nav.t-gnav button{flex:0 0 auto;min-width:84px;padding:6px 14px!important;font-size:.75rem!important;scroll-snap-align:center}
+}
+
+/* Tiến độ học tập (mobile): nút chuyển tuần không bị phình theo min-size 44px, không đè lên ô điểm */
+@media(max-width:780px){
+html body .student-overview-highlight .g-prog .sk-title,html body .student-overview-highlight .g-prog .goal-column-title{min-height:32px!important;margin-bottom:8px!important;align-items:center}
+}
