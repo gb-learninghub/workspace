@@ -306,11 +306,17 @@
       ['btn-class', 'btn-back'].forEach(id => $(id).classList.add('hidden')); $('btn-home').classList.remove('hidden');
       if (!$('app').querySelector('.t-content')) $('app').innerHTML = '<div class="card text-center text-sm text-slate-500">Đang tải...</div>';
       try {
-        if (!T.authed) { await LMS.requireTeacher(); T.authed = true; }
         T.date = /^\d{4}-\d{2}-\d{2}$/.test(dateArg || '') ? dateArg : ymd(new Date());
-        await Promise.all([loadTeacherWeek(mondayKey(dOf(T.date))), Date.now() - T.nextAt < 60000 ? null : loadNext()]);
+        const wk = mondayKey(dOf(T.date));
+        /* Tải lịch tuần song song với kiểm tra quyền, không chờ nhau */
+        let pre = null;
+        if (!T.authed) { pre = loadTeacherWeek(wk).catch(() => {}); await LMS.requireTeacher(); T.authed = true; }
+        await (pre || loadTeacherWeek(wk));
+        if (T.monday !== wk) await loadTeacherWeek(wk);
         if (T.view === 'submissions') await loadSubs();
         bindTeacher(); drawTeacher(); prefetchWeeks(T.monday);
+        /* Thẻ "lớp sắp tới" tải sau, xong thì vẽ lại, không giữ chậm cả trang */
+        if (Date.now() - T.nextAt >= 60000) loadNext().then(() => { if (T.on && $('app').querySelector('.t-content')) drawTeacher(); });
       } catch (e) { showError(errText(e)); }
     }
     async function tRefresh() { await Promise.all([loadTeacherWeek(T.monday, true), loadNext()]); if (T.view === 'submissions') await loadSubs(); drawTeacher(); }

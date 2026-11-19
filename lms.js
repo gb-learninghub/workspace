@@ -224,8 +224,11 @@
     return c.auth.getSession().then(function (r) {
       var session = r.data && r.data.session;
       if (!session) return showLogin(c);
+      /* Nhớ kết quả kiểm tra quyền 30 phút trong tab này để khỏi gọi mạng mỗi lần mở trang (quyền thật vẫn do database kiểm tra) */
+      var ck = 'lms_teacher_ok', uid = session.user && session.user.id;
+      try { var m = JSON.parse(sessionStorage.getItem(ck) || 'null'); if (m && uid && m.u === uid && Date.now() - m.t < 30 * 60000) return { client: c, session: session }; } catch (e) {}
       return isTeacher(c).then(function (ok) {
-        if (ok) return { client: c, session: session };
+        if (ok) { try { sessionStorage.setItem(ck, JSON.stringify({ u: uid, t: Date.now() })); } catch (e) {} return { client: c, session: session }; }
         return showLogin(c, 'Phiên đăng nhập đã hết hạn hoặc tài khoản chưa có quyền giáo viên. Đăng nhập lại.');
       });
     });
@@ -241,6 +244,7 @@
   }
 
   function signOut() {
+    try { sessionStorage.removeItem('lms_teacher_ok'); } catch (e) {}
     var c = client();
     var done = function () { location.reload(); };
     if (!c) return done();
