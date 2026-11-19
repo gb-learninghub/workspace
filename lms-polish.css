@@ -1079,17 +1079,112 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 #grid.sn-off .sn{display:none!important}
 @media(max-width:720px){#grid .sg{display:none!important}}
 
-/* Danh sách buổi trong tuần: nút ở thanh tuần, ngăn kéo phủ lên thanh bên từ mục Tổng quan xuống */
-
+/* Buổi học xếp ngang ngay cạnh cột Lớp, thu gọn được (máy tính); ngăn kéo chỉ dùng trên màn hình nhỏ */
 @media(min-width:1024px){
-
-#wk-tab{display:none!important}
-.wk-drawer{display:block;position:fixed;top:88px;bottom:0;left:0;width:var(--nav-w,260px);z-index:45;background:#fff;border-right:1px solid #E4E6EA;padding:12px 12px 24px;overflow:auto;overscroll-behavior:contain;transform:translateX(-100%);visibility:hidden;transition:transform .22s ease,visibility 0s .22s}
-body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .22s ease}
-.wk-head{font-size:.875rem}
+#wk-tab,.wk-drawer{display:none!important}
 }
-#grid th.sg{vertical-align:middle}
-#grid .sg-list{height:32px}
-.wk-seg{display:flex;gap:4px;margin-top:8px;padding:3px;background:#f1f3f5;border-radius:999px}
-.wk-seg button{flex:1;border:0;background:none;border-radius:999px;padding:6px 8px;font:inherit;font-size:.8125rem;font-weight:700;color:#596579;cursor:pointer}
-.wk-seg button[aria-pressed="true"]{background:#16181D;color:#fff}
+.c-head{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
+.sess-toggle{display:inline-flex;align-items:center;gap:4px;padding:4px 8px 4px 10px;border:1px solid #dfe3e8;border-radius:999px;background:#fff;color:#334155;font:inherit;font-size:.75rem;font-weight:700;cursor:pointer;transition:background .15s}
+.sess-toggle:hover{background:#f3f5f7}
+.sess-toggle svg{transition:transform .2s}
+#grid.sess-off .sess-toggle svg{transform:rotate(180deg)}
+#grid.sess-off .sess-toggle{background:#16181D;border-color:#16181D;color:#fff}
+#grid.sess-off .sess{display:none!important}
+#grid th.sess-h{text-align:left;white-space:nowrap}
+#grid td.sess{padding:8px 10px;vertical-align:middle}
+.sess-wrap{display:inline-flex;align-items:center;gap:6px;padding:6px;background:#f4f5f7;border-radius:14px;white-space:nowrap}
+.sess-wrap .chip.s-chip{margin:0;flex:none}
+
+/* Lịch tuần tách thành hai khối bo góc: Lớp + Buổi học | Thứ 2 đến CN */
+#grid th.gp,#grid td.gp{width:16px;min-width:16px;max-width:16px;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+#grid thead th.gp{position:static}
+#grid td.sess{width:230px}
+#grid td.c-name,#grid td.sess,#grid td.dcol{background-clip:padding-box}
+#grid td.sess{background:#fff}
+#grid thead th.c-name,#grid thead th.sess-h,#grid thead th.dcol{border-top:1px solid #E4E6EA}
+#grid thead th.c-name,#grid td.c-name{border-left:1px solid #E4E6EA}
+#grid thead th.d6,#grid td.d6{border-right:1px solid #E4E6EA!important}
+#grid thead th.sess-h,#grid td.sess{border-right:1px solid #E4E6EA}
+#grid.sess-off thead th.c-name,#grid.sess-off td.c-name{border-right:1px solid #E4E6EA}
+#grid thead th.c-name{border-top-left-radius:16px}
+#grid thead th.sess-h{border-top-right-radius:16px}
+#grid.sess-off thead th.c-name{border-top-right-radius:16px}
+#grid thead th.d0{border-top-left-radius:16px;border-left:1px solid #E4E6EA}
+#grid thead th.d6{border-top-right-radius:16px}
+#grid tbody tr:last-child td.c-name{border-bottom-left-radius:16px}
+#grid tbody tr:last-child td.sess{border-bottom-right-radius:16px}
+#grid.sess-off tbody tr:last-child td.c-name{border-bottom-right-radius:16px}
+#grid tbody tr:last-child td.d0{border-bottom-left-radius:16px;border-left:1px solid #E4E6EA}
+#grid tbody tr:last-child td.d6{border-bottom-right-radius:16px}
+#grid tbody td.d0{border-left:1px solid #E4E6EA}
+#grid tbody tr:not(.special) td.dcol:not(.today){background:#fff}
+
+/* Cột Lớp rộng hơn, mỗi dữ liệu một hàng; cột Buổi học đủ chỗ cho chip */
+@media(min-width:1024px){
+#grid{min-width:1360px!important}
+#grid th.c-name,#grid td.c-name{width:232px!important}
+#grid th.sess-h{width:312px!important}
+#grid td.sess{width:312px!important}
+}
+#grid td.c-name .text-xs,#grid td.c-name .cls-link{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#grid td.c-name *{text-align:left!important;text-align-last:left!important;word-spacing:normal!important;hyphens:none!important}
+#grid td.c-name .s-none{display:block;white-space:nowrap}
+.sess-wrap{max-width:100%;overflow:hidden}
+.sess-wrap .chip.s-chip{padding-left:10px;padding-right:10px}
+.sess-wrap{display:flex!important;width:max-content!important;max-width:none!important;overflow:visible!important;margin:0 auto}
+.sess-wrap .chip.s-chip{width:auto!important;min-width:0!important;flex:0 0 auto!important}
+
+/* Ba buổi chuẩn, cột thẳng hàng; buổi thứ 4 trở đi kéo qua bằng nút mũi tên */
+#grid th.sess-h{width:312px!important;padding:10px!important}
+#grid td.sess{padding:8px 10px!important}
+.sess-hd{display:grid;grid-template-columns:repeat(3,78px);gap:6px;padding-left:6px}
+.sess-hd span{text-align:center;font-weight:700}
+.sess-box{display:flex;align-items:center;gap:6px;width:292px;padding:6px;background:#f4f5f7;border-radius:14px;box-sizing:border-box}
+.sess-track{display:flex;gap:6px;width:252px;overflow:hidden;scroll-behavior:smooth;flex:none}
+.sess-slot{flex:0 0 78px;width:78px;display:flex;align-items:center;justify-content:center}
+.sess-slot .chip.s-chip{width:100%!important;margin:0!important;padding:6px 2px;font-size:.75rem;white-space:nowrap;background:#fff}
+.sess-more,.sess-more-ph{flex:0 0 22px;width:22px;height:22px}
+.sess-more{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:#16181D;color:#fff;cursor:pointer;padding:0}
+.sess-more.back svg{transform:rotate(180deg)}
+
+/* Bỏ khung xám của khối buổi học; mọi chip trong lịch dạng pill */
+.sess-box{background:transparent!important;padding:0!important;width:286px}
+.sess-track{width:246px}
+#grid .chip{border-radius:999px!important}
+#grid td.dcol .chip{border-radius:22px!important;padding:7px 12px}
+.sess-slot .chip.s-chip{padding:7px 4px;background:var(--t-tint,#f4f5f7)}
+.sess-slot .chip.s-chip.online{background:#ffedd5}
+.sess-more{background:#fff!important;color:#334155!important;border:1px solid #dfe3e8!important}
+
+/* Chiều cao pill chuẩn 36px, chữ canh giữa, không sát lề */
+#grid .chip,#grid .sess-slot .chip.s-chip{box-sizing:border-box;min-height:36px;display:flex!important;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4px 14px!important;line-height:1.25}
+#grid td.dcol .chip small{display:block;margin-top:1px;text-align:center}
+.sess-slot{flex:0 0 84px;width:84px}
+.sess-hd{grid-template-columns:repeat(3,84px)}
+.sess-track{width:264px}
+.sess-box{width:304px}
+#grid th.sess-h,#grid td.sess{width:330px!important}
+
+/* Tách hai khối khỏi các đường kẻ phía trên để viền không dính nhau */
+.sched-main{margin-top:14px!important;border:0!important;box-shadow:none!important;background:transparent!important}
+.sched-main>div{padding-bottom:6px}
+#grid thead th.c-name,#grid thead th.sess-h,#grid thead th.dcol{border-bottom:1px solid #E4E6EA}
+#grid thead th.sess-h,#grid td.sess{border-right:1px solid #E4E6EA}
+#grid thead th.scol.gp,#grid tbody td.scol.gp,#grid tbody tr.special td.scol.gp{background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important}
+#grid{background:transparent!important}
+#grid tbody tr:hover td.scol.gp,#grid tbody tr td.scol.gp:hover,#grid td.scol.gp{background:transparent!important;pointer-events:none}
+.sched-main,.sched-main>div,#grid thead,#grid thead tr{background:#fff!important}
+#grid thead th.scol.gp,#grid tbody td.scol.gp,#grid tbody tr:hover td.scol.gp,#grid tbody tr.special td.scol.gp{background:#fff!important}
+
+/* Đợt chỉnh: đáy mềm, hàng gọn, bỏ đường kẻ đôi, canh nhãn buổi */
+.sched-main>div::after{content:"";display:block;position:sticky;bottom:0;height:28px;margin-top:-28px;background:linear-gradient(rgba(255,255,255,0),#fff);pointer-events:none;z-index:6}
+#grid tr.special td.scol.sess{background:#fff!important;border-bottom-color:#E4E6EA!important}
+#grid td.c-name{padding:8px 12px!important}
+#grid tbody tr:not(.special) td{height:68px}
+.c-line{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;min-width:0}
+.prog-chip{display:inline-flex;align-items:center;padding:1px 8px;border:1px solid #dfe3e8;border-radius:999px;background:#fff;color:#596579;font-size:.6875rem;font-weight:700;white-space:nowrap}
+.prog-chip.none{color:#94a3b8;font-weight:600}
+#view-schedule .schedule-toolbar{border-bottom:0!important;box-shadow:none!important}
+#view-schedule .schedule-toolbar+*{border-top:0!important}
+.sess-hd{padding-left:0!important}
+.sess-slot .s-none{font-size:1.125rem;color:#94a3b8;line-height:1}

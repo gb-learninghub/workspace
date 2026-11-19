@@ -221,7 +221,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
 
     <div id="day-tabs" class="day-tabs" role="group" aria-label="Chọn ngày"></div>
 
-    <section class="bg-white rounded-2xl border border-slate-200 overflow-hidden" aria-label="Lịch tuần">
+    <div class="sched-split">
+    <section class="sched-main" aria-label="Lịch tuần">
       <div class="overflow-auto" style="max-height:calc(100dvh - 210px)">
         <table id="grid" data-day="0">
           <thead><tr id="grid-head"></tr></thead>
@@ -229,8 +230,10 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         </table>
       </div>
     </section>
-    <button type="button" id="wk-tab" class="wk-tab" aria-label="Danh sách buổi học trong tuần" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
     <aside id="wk-drawer" class="wk-drawer" aria-label="Buổi học trong tuần" aria-hidden="true"><div class="wk-head" id="wk-title"></div><div id="wk-list"></div></aside>
+    </div>
+    <button type="button" id="wk-tab" class="wk-tab" aria-label="Danh sách buổi học trong tuần" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+    
     </div>
 
     <section id="view-mat" hidden class="space-y-4" aria-label="Bài học theo tuần">
@@ -669,16 +672,12 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const txt = names.length ? esc(names.slice(0, 3).join(', ')) + (more ? ` <em>+${more}</em>` : '') : '–';
         return names.length ? `<button type="button" class="stu-btn" data-roster="${c.id}" aria-label="Xem danh sách học viên lớp ${esc(c.class_code)}">${txt}</button>` : '<span class="s-none">Chưa có học viên</span>';
       }
-      function sessCells(c, maxS, keys) {
+      function sessCells(c, keys) {
         const ss = st.sessions.filter(x => x.class_id === c.id).slice().sort((a, b) => a.session_date.localeCompare(b.session_date) || String(a.start_time).localeCompare(String(b.start_time)));
-        let h = '';
-        for (let i = 0; i < maxS; i++) {
-          const x = ss[i];
-          h += `<td class="scol sn">${x ? `<button type="button" class="chip s-chip ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}" title="${esc(STATUS_TXT[x.status] || '')}">${WD[keys.indexOf(x.session_date)] || ''} ${t5(x.start_time)}</button>` : '<span class="s-none">–</span>'}</td>`;
-        }
-        return h + '<td class="scol sg"></td>';
+        const n = Math.max(3, ss.length), slot = i => { const x = ss[i]; return `<div class="sess-slot">${x ? `<button type="button" class="chip s-chip ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}" title="${esc(STATUS_TXT[x.status] || '')}">${WD[keys.indexOf(x.session_date)] || ''} ${t5(x.start_time)}</button>` : '<span class="s-none">–</span>'}</div>`; };
+        const more = ss.length > 3 ? `<button type="button" class="sess-more" data-sess-more aria-label="Xem thêm buổi học" title="Còn ${ss.length - 3} buổi nữa"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>` : '<span class="sess-more-ph"></span>';
+        return '<td class="scol sess"><div class="sess-box"><div class="sess-track">' + Array.from({ length: n }, (_, i) => slot(i)).join('') + '</div>' + more + '</div></td><td class="scol gp"></td>';
       }
-
       function drawWk() {
         let m = 'day'; try { m = localStorage.getItem('gb.wk.mode') === 'class' ? 'class' : 'day'; } catch (e) {}
         if (!st.wk) return;
@@ -691,33 +690,33 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('week-label').textContent = 'Tuần ' + pad(st.week);
         $('current-week-number').textContent = pad(st.week);
         $('week-range').textContent = `${pad(dates[0].getDate())}.${pad(dates[0].getMonth() + 1)}.${dates[0].getFullYear()} – ${pad(dates[6].getDate())}.${pad(dates[6].getMonth() + 1)}.${dates[6].getFullYear()}`;
-        headState(); $('grid').dataset.day = String(st.selDay); $('grid').classList.remove('sn-off');
+        headState(); $('grid').dataset.day = String(st.selDay); { let off = false; try { off = localStorage.getItem('gb.sess.off') === '1'; } catch (e) {} $('grid').classList.toggle('sess-off', off); }
 
         { const d = dates[st.selDay]; $('day-nav-dow').textContent = st.selDay === 6 ? 'Chủ nhật' : 'Thứ ' + ['Hai', 'Ba', 'Tư', 'Năm', 'Sáu', 'Bảy'][st.selDay]; const away = st.week !== NOW_WEEK || st.selDay !== (new Date().getDay() + 6) % 7; $('day-nav-date').textContent = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); $('day-today').classList.toggle('is-away', away); }
         $('day-tabs').innerHTML = DAY.map((n, i) => `<button type="button" data-day="${i}" aria-pressed="${i === st.selDay}">${i === 6 ? 'CN' : 'T' + (i + 2)} ${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</button>`).join('');
         const _list = visibleClasses(), maxS = Math.max(3, ..._list.map(c => st.sessions.filter(x => x.class_id === c.id).length));
-        $('grid-head').innerHTML = '<th class="c-name">Lớp</th>' + Array.from({ length: maxS }, (_, i) => `<th class="scol sn">Buổi ${i + 1}</th>`).join('') + '<th class="scol sg"><button type="button" class="sg-btn sg-list" data-wk-open aria-label="Danh sách buổi học trong tuần" title="Danh sách buổi học trong tuần"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg></button></th>' + DAY.map((n, i) =>
+        $('grid-head').innerHTML = '<th class="c-name"><span class="c-head"><span>Lớp</span><button type="button" class="sess-toggle" data-sess-toggle aria-label="Thu gọn hoặc mở các buổi học" title="Thu gọn / mở các buổi học"><span>Buổi</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button></span></th><th class="scol sess sess-h"><div class="sess-hd"><span>Buổi 1</span><span>Buổi 2</span><span>Buổi 3</span></div></th><th class="scol gp"></th>' + DAY.map((n, i) =>
           `<th class="dcol d${i}${keys[i] === todayKey ? ' today' : ''}">${n}<div style="font-weight:500;opacity:.8">${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</div></th>`).join('');
 
         let html = '';
-        html += '<tr class="special free"><td class="c-name">Lịch rảnh</td><td class="scol" colspan="' + (maxS + 1) + '"></td>' + keys.map((k, i) => {
+        html += '<tr class="special free"><td class="c-name">Lịch rảnh</td><td class="scol sess"></td><td class="scol gp"></td>' + keys.map((k, i) => {
           const f = freeTimes(k, i);
           return `<td class="dcol d${i}${k === todayKey ? ' today' : ''}" style="padding:8px 6px">${f.length ? f.map(x => `<span class="free-line">${x}</span>`).join('') : '–'}</td>`;
         }).join('') + '</tr>';
-        html += '<tr class="special busy"><td class="c-name">Lịch bận</td><td class="scol" colspan="' + (maxS + 1) + '"></td>' + keys.map((k, i) =>
+        html += '<tr class="special busy"><td class="c-name">Lịch bận</td><td class="scol sess"></td><td class="scol gp"></td>' + keys.map((k, i) =>
           `<td class="dcol d${i}${k === todayKey ? ' today' : ''}" data-blocked="${i}" style="padding:6px;cursor:pointer">${parseRanges(st.blocked[i]).map(r => `<span class="free-line">${fmt(r.s)} - ${fmt(r.e)}</span>`).join('') || '–'}</td>`).join('') + '</tr>';
 
         const list = _list;
-        if (!list.length) html += '<tr><td colspan="' + (8 + maxS) + '" class="p-6 text-center text-slate-400 text-sm">Không có lớp phù hợp.</td></tr>';
+        if (!list.length) html += '<tr><td colspan="10" class="p-6 text-center text-slate-400 text-sm">Không có lớp phù hợp.</td></tr>';
         list.forEach(c => {
           const s = classState(c), url = c.page_url || ('class.html?class=' + encodeURIComponent(c.class_code));
           const n = st.counts[c.id] || 0, sub = c.class_name && c.class_name !== c.class_code ? c.class_name : '';
           html += `<tr class="${s !== 'active' ? 'dim' : ''}"><td class="c-name"><div class="flex items-start justify-between gap-2"><div style="min-width:0">
-            <a class="cls-link" href="${esc(url)}">${esc(c.class_code)}</a>
+            <div class="c-line"><a class="cls-link" href="${esc(url)}">${esc(c.class_code)}</a>${c.program ? `<span class="prog-chip">${esc(CLASS_PROGRAM[c.program] || c.program)}</span>` : '<span class="prog-chip none">Chưa gắn chương trình</span>'}</div>
             ${sub ? `<div class="text-xs text-slate-500" style="overflow-wrap:anywhere">${esc(sub)}</div>` : ''}
-            <div class="text-xs text-slate-500 m-hide">${c.program ? 'Chương trình: ' + esc(CLASS_PROGRAM[c.program] || c.program) : 'Chưa gắn chương trình'}</div>
+            
             <div class="text-xs text-slate-500">${stuCell(c)}${s === 'inactive' ? '<div>Tạm ngưng</div>' : s === 'archived' ? '<div>Lưu trữ</div>' : ''}</div></div>
-            <button type="button" class="icon-btn" style="width:36px;height:36px;flex:none" data-edit-class="${c.id}" aria-label="Sửa lớp ${esc(c.class_code)}"><i data-lucide="settings" class="w-4 h-4"></i></button></div></td>` + sessCells(c, maxS, keys) + keys.map((k, i) => {
+            <button type="button" class="icon-btn" style="width:36px;height:36px;flex:none" data-edit-class="${c.id}" aria-label="Sửa lớp ${esc(c.class_code)}"><i data-lucide="settings" class="w-4 h-4"></i></button></div></td>` + sessCells(c, keys) + keys.map((k, i) => {
               const ss = sessionsOf(c.id, k);
               return `<td class="day dcol d${i}${k === todayKey ? ' today' : ''}" data-class="${c.id}" data-date="${k}">` + ss.map(x =>
                 `<button type="button" class="chip ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${[x.status === 'cancel' ? 'Hủy' : '', x.status === 'done' ? 'Hoàn thành' : x.status === 'makeup' ? 'Bù' : x.status === 'holiday' ? 'Nghỉ lễ' : '', lessonOf(x) ? esc(lessonOf(x)) : '', x.note ? esc(x.note) : ''].filter(Boolean).join(' · ')}</small></button>`).join('') + '</td>';
@@ -1717,8 +1716,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('ds-resched').addEventListener('click', () => { const d = $('dlg-session'), on = !d.classList.contains('resched'); d.classList.toggle('resched', on); $('ds-resched').textContent = on ? 'Đủ thông tin' : 'Đổi giờ'; $('ds-title').textContent = on ? 'Đổi giờ buổi học' : 'Sửa buổi học'; if (on) $('ds-start').focus(); });
         const wkToggle = () => { const on = !document.body.classList.contains('wk-open'); document.body.classList.toggle('wk-open', on); $('wk-tab').setAttribute('aria-expanded', String(on)); $('wk-drawer').setAttribute('aria-hidden', String(!on)); };
         $('wk-title').addEventListener('click', e => { const b = e.target.closest('[data-wkm]'); if (!b) return; try { localStorage.setItem('gb.wk.mode', b.dataset.wkm); } catch (x) {} drawWk(); });
-        $('wk-tab').addEventListener('click', wkToggle); $('grid').addEventListener('click', e => { if (e.target.closest('[data-wk-open]')) wkToggle(); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('wk-open')) wkToggle(); });
+        $('wk-tab').addEventListener('click', wkToggle); $('grid').addEventListener('click', e => { const mb = e.target.closest('[data-sess-more]'); if (mb) { const tr = mb.parentElement.querySelector('.sess-track'), end = tr.scrollLeft + tr.clientWidth >= tr.scrollWidth - 2; tr.scrollTo({ left: end ? 0 : tr.scrollLeft + 84, behavior: 'smooth' }); mb.classList.toggle('back', end ? false : tr.scrollLeft + 84 + tr.clientWidth >= tr.scrollWidth - 2); return; } if (!e.target.closest('[data-sess-toggle]')) return; const g = $('grid'), off = !g.classList.contains('sess-off'); g.classList.toggle('sess-off', off); try { localStorage.setItem('gb.sess.off', off ? '1' : '0'); } catch (x) {} });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && window.innerWidth < 1024 && document.body.classList.contains('wk-open')) wkToggle(); });
         $('wk-list').addEventListener('click', e => { const ch = e.target.closest('[data-sid]'); if (!ch) return; const ss = st.sessions.find(x => x.id === Number(ch.dataset.sid)); if (ss && ss.session_date <= ymd(new Date())) return openQs(ch, ss); openSession(ch.dataset.sid); });
         $('ds-date').addEventListener('change', showFree);
         $('ds-free').addEventListener('click', e => {
