@@ -1317,7 +1317,7 @@ body.np-open #tiles .tg{padding:3px 2px}
       if (ELOC[n]) ex.appendChild(h("button", { cls: "ib bare ice" + (IC.ev[key] ? " on" : ""), title: IC.ev[key] ? "Hide evidence" : "Show evidence", "aria-label": "Evidence", html: ICON.evid + "<span>Evidence</span>",
         onclick: function () { IC.ev[key] = !IC.ev[key]; icRefresh(false); if (IC.ev[key]) { var f = document.querySelector("#passage mark.evd"); if (f) f.scrollIntoView({ block: "center", behavior: "smooth" }); } } }));
       ex.appendChild(h("button", { cls: "ib bare ice icu", title: "Uncheck", "aria-label": "Uncheck", html: ICON.reset + "<span>Uncheck</span>",
-        onclick: function () { delete IC.chk[key]; delete IC.ev[key]; IC.pop = null; icRefresh(true); } }));
+        onclick: function () { delete IC.chk[key]; delete IC.ev[key]; delete icRel[n]; IC.pop = null; icRefresh(true); } }));
       { if (IC.pop === n) { ex.classList.add("icpop"); ex.insertBefore(h("b", { cls: "icn", text: "Q" + n }), ex.firstChild); document.body.appendChild(ex); icPlace(ex, host.querySelector(".icc") || host); } }
     });
     applyQHl(); icVerdicts();
