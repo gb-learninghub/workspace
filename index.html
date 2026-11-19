@@ -215,6 +215,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         <button id="day-today" type="button" class="icon-btn" aria-label="Về hôm nay" title="Về hôm nay"><i data-lucide="calendar-check" class="w-5 h-5"></i><span>Về hôm nay</span></button>
       </div>
       <div class="flex flex-wrap gap-2">
+        <div id="sv-seg" class="sv-seg" role="group" aria-label="Kiểu xem lịch"><button type="button" data-sv="w">Theo tuần</button><button type="button" data-sv="c">Theo lớp</button><button type="button" data-sv="d">Theo ngày</button></div>
         <button id="btn-copy" type="button" class="btn-soft m-ico" aria-label="Chép sang tuần sau" title="Chép sang tuần sau"><i data-lucide="copy" class="w-4 h-4"></i><span>Chép sang tuần sau</span></button>
       </div>
     </section>
@@ -230,9 +231,9 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         </table>
       </div>
     </section>
-    <aside id="wk-drawer" class="wk-drawer" aria-label="Buổi học trong tuần" aria-hidden="true"><div class="wk-head" id="wk-title"></div><div id="wk-list"></div></aside>
+    <section id="sv-class" class="sv" hidden aria-label="Lịch theo lớp"></section>
+    <section id="sv-day" class="sv" hidden aria-label="Lịch theo ngày"></section>
     </div>
-    <button type="button" id="wk-tab" class="wk-tab" aria-label="Danh sách buổi học trong tuần" aria-expanded="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
     
     </div>
 
@@ -672,17 +673,62 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const txt = names.length ? esc(names.slice(0, 3).join(', ')) + (more ? ` <em>+${more}</em>` : '') : '–';
         return names.length ? `<button type="button" class="stu-btn" data-roster="${c.id}" aria-label="Xem danh sách học viên lớp ${esc(c.class_code)}">${txt}</button>` : '<span class="s-none">Chưa có học viên</span>';
       }
-      function sessCells(c, keys) {
-        const ss = st.sessions.filter(x => x.class_id === c.id).slice().sort((a, b) => a.session_date.localeCompare(b.session_date) || String(a.start_time).localeCompare(String(b.start_time)));
-        const n = Math.max(3, ss.length), slot = i => { const x = ss[i]; return `<div class="sess-slot">${x ? `<button type="button" class="chip s-chip ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}" title="${esc(STATUS_TXT[x.status] || '')}">${WD[keys.indexOf(x.session_date)] || ''} ${t5(x.start_time)}</button>` : '<span class="s-none">–</span>'}</div>`; };
-        const more = ss.length > 3 ? `<button type="button" class="sess-more" data-sess-more aria-label="Xem thêm buổi học" title="Còn ${ss.length - 3} buổi nữa"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>` : '<span class="sess-more-ph"></span>';
-        return '<td class="scol sess"><div class="sess-box"><div class="sess-track">' + Array.from({ length: n }, (_, i) => slot(i)).join('') + '</div>' + more + '</div></td><td class="scol gp"></td>';
+      function pillHtml(x, label, tip) { return `<button type="button" class="chip pl ${modeCls(x)}${sessCls(x)} ${x.status}" data-sid="${x.id}" title="${esc(tip || '')}"><span class="c-t">${modeIc(x)}${label}</span></button>`; }
+      function pillTip(x, withClass) { return [withClass ? classLabel(x.class_id) : '', STATUS_TXT[x.status] || '', lessonOf(x) || '', x.note || ''].filter(Boolean).join(' · '); }
+      function getSv() { if (!st.sv) { let v = 'w'; try { v = localStorage.getItem('gb.sv') || 'w'; } catch (e) {} st.sv = ['w', 'c', 'd'].includes(v) ? v : 'w'; } return st.sv; }
+      function classInfoHtml(c) {
+        const s = classState(c), url = c.page_url || ('class.html?class=' + encodeURIComponent(c.class_code)), sub = c.class_name && c.class_name !== c.class_code ? c.class_name : '';
+        return `<div class="flex items-start justify-between gap-2"><div style="min-width:0"><div class="c-line"><a class="cls-link" href="${esc(url)}">${esc(c.class_code)}</a>${c.program ? `<span class="prog-chip">${esc(CLASS_PROGRAM[c.program] || c.program)}</span>` : '<span class="prog-chip none">Chưa gắn chương trình</span>'}</div>${sub ? `<div class="text-xs text-slate-500" style="overflow-wrap:anywhere">${esc(sub)}</div>` : ''}<div class="text-xs text-slate-500">${stuCell(c)}${s === 'inactive' ? '<div>Tạm ngưng</div>' : s === 'archived' ? '<div>Lưu trữ</div>' : ''}</div></div><button type="button" class="icon-btn" style="width:36px;height:36px;flex:none" data-edit-class="${c.id}" aria-label="Sửa lớp ${esc(c.class_code)}"><i data-lucide="settings" class="w-4 h-4"></i></button></div>`;
       }
-      function drawWk() {
-        let m = 'day'; try { m = localStorage.getItem('gb.wk.mode') === 'class' ? 'class' : 'day'; } catch (e) {}
-        if (!st.wk) return;
-        $('wk-title').innerHTML = '<div>' + st.wk.title + '</div><div class="wk-seg" role="group" aria-label="Kiểu xem"><button type="button" data-wkm="day" aria-pressed="' + (m === 'day') + '">Theo ngày</button><button type="button" data-wkm="class" aria-pressed="' + (m === 'class') + '">Theo lớp</button></div>';
-        $('wk-list').innerHTML = m === 'class' ? st.wk.cls : st.wk.day;
+      function drawSv(list, dates, keys, todayKey) {
+        st.svArgs = [list, dates, keys, todayKey];
+        const v = getSv();
+        document.querySelector('.sched-main').style.display = v === 'w' ? '' : 'none';
+        $('sv-class').style.display = v === 'c' ? '' : 'none'; $('sv-class').hidden = v !== 'c';
+        $('sv-day').style.display = v === 'd' ? '' : 'none'; $('sv-day').hidden = v !== 'd';
+        document.querySelectorAll('#sv-seg [data-sv]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sv === v)));
+        document.body.dataset.sv = v;
+        if (v === 'c') drawClassView(list, dates, keys, todayKey); else if (v === 'd') drawDayView(list, dates, keys, todayKey);
+      }
+      function drawClassView(list, dates, keys, todayKey) {
+        const rows = list.map(c => {
+          const ss = st.sessions.filter(x => x.class_id === c.id).sort((a, b) => a.session_date.localeCompare(b.session_date) || String(a.start_time).localeCompare(String(b.start_time)));
+          return `<div class="sv-row${classState(c) !== 'active' ? ' dim' : ''}"><div class="sv-info">${classInfoHtml(c)}</div><div class="sv-pills">${ss.length ? ss.map(x => pillHtml(x, (WD[keys.indexOf(x.session_date)] || '') + ' ' + t5(x.start_time), pillTip(x))).join('') : '<span class="s-none">Tuần này chưa có buổi</span>'}</div></div>`;
+        }).join('') || '<div class="p-6 text-center text-slate-400 text-sm">Không có lớp phù hợp.</div>';
+        const fb = keys.map((k, i) => {
+          const f = freeTimes(k, i), b = parseRanges(st.blocked[i]);
+          return `<div class="sv-fb-d${k === todayKey ? ' today' : ''}"><b>${WD[i]} <span>${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</span></b><div class="fb-l"><i class="fb free">Rảnh</i><span>${f.length ? f.map(x => `<em>${x}</em>`).join('') : '–'}</span></div><div class="fb-l" data-blocked="${i}" title="Sửa lịch bận"><i class="fb busy">Bận</i><span>${b.length ? b.map(r => `<em>${fmt(r.s)} - ${fmt(r.e)}</em>`).join('') : '–'}</span></div></div>`;
+        }).join('');
+        $('sv-class').innerHTML = `<div class="sv-cls"><div class="sv-list">${rows}</div><aside class="sv-fb"><h3>Rảnh và bận trong tuần</h3>${fb}</aside></div>`;
+        icons();
+      }
+      function drawDayView(list, dates, keys, todayKey) {
+        const i = st.selDay, k = keys[i], H = 40;
+        const inList = x => list.some(c => c.id === x.class_id);
+        const tabs = DAY.map((n, d) => { const cnt = st.sessions.filter(x => x.session_date === keys[d] && x.status !== 'cancel' && inList(x)).length; return `<button type="button" data-svday="${d}" aria-pressed="${d === i}" class="${keys[d] === todayKey ? 'today' : ''}"><b>${d === 6 ? 'CN' : 'T' + (d + 2)}</b><span>${pad(dates[d].getDate())}/${pad(dates[d].getMonth() + 1)}</span>${cnt ? `<em>${cnt}</em>` : ''}</button>`; }).join('');
+        const items = st.sessions.filter(x => x.session_date === k && inList(x)).map(x => ({ x, s: toMin(x.start_time), e: toMin(x.end_time) })).filter(o => o.s != null && o.e != null && o.e > o.s).sort((p, q) => p.s - q.s || p.e - q.e);
+        let a = 7 * 60, b = 22 * 60 + 30; items.forEach(o => { a = Math.min(a, o.s); b = Math.max(b, o.e); }); a = Math.floor(a / 60) * 60; b = Math.ceil(b / 60) * 60;
+        const y = m => (m - a) / 60 * H;
+        let cur = [], end = -1;
+        items.forEach(o => { if (o.s >= end) { cur = []; end = -1; } cur.push(o); end = Math.max(end, o.e); const used = cur.filter(p => p !== o && p.e > o.s).map(p => p.lane); let l = 0; while (used.includes(l)) l++; o.lane = l; o.cl = cur; });
+        items.forEach(o => { o.n = Math.max(...o.cl.map(p => p.lane)) + 1; });
+        let hours = '', lines = '';
+        for (let m = a; m <= b; m += 60) { hours += `<span style="top:${y(m)}px">${pad(m / 60)}:00</span>`; lines += `<i style="top:${y(m)}px"></i>`; }
+        const band = (r, cls, txt) => `<div class="dv-band ${cls}" style="top:${y(r.s)}px;height:${Math.max(2, y(r.e) - y(r.s))}px"><span>${txt}</span></div>`;
+        const free = parseRanges(freeTimes(k, i).join('\n')), blk = parseRanges(st.blocked[i]);
+        const bands = free.map(r => band(r, 'free', 'Rảnh')).join('') + blk.map(r => band(r, 'busy', 'Bận')).join('');
+        const blocks = items.map(o => { const x = o.x, extra = [STATUS_TXT[x.status] || '', lessonOf(x) || '', x.note || ''].filter(Boolean).join(' · ');
+          return `<button type="button" class="chip dv-b ${modeCls(x)}${sessCls(x)} ${x.status}" data-sid="${x.id}" style="top:${y(o.s)}px;height:${y(o.e) - y(o.s) - 2}px;left:calc(${o.lane} * 100% / ${o.n});width:calc(100% / ${o.n} - 4px)"><span class="c-t">${modeIc(x)}${t5(x.start_time)} - ${t5(x.end_time)}</span><b>${esc(classLabel(x.class_id))}</b><small>${esc(extra)}</small></button>`; }).join('');
+        let now = ''; if (k === todayKey) { const n = new Date(), m = n.getHours() * 60 + n.getMinutes(); if (m >= a && m <= b) now = `<div class="dv-now" style="top:${y(m)}px"><span>Bây giờ ${pad(n.getHours())}:${pad(n.getMinutes())}</span></div>`; }
+        $('sv-day').innerHTML = `<div class="dv-tabs">${tabs}</div><div class="dv-wrap"><div class="dv-head"><span>${DAY[i]}, ${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</span><span class="dv-leg"><i class="fb free">Rảnh</i><i class="fb busy">Bận</i></span></div><div class="dv"><div class="dv-hours" style="height:${y(b)}px">${hours}</div><div class="dv-body" style="height:${y(b)}px" data-day-date="${k}">${lines}${bands}${blocks}${now}</div></div>${items.length ? '' : '<p class="dv-empty">Ngày này chưa có buổi học.</p>'}</div>`;
+      }
+      function svClick(e) {
+        const sg = e.target.closest('[data-sv]'); if (sg && sg.closest('#sv-seg')) { st.sv = sg.dataset.sv; try { localStorage.setItem('gb.sv', st.sv); } catch (x) {} return render(); }
+        const dt = e.target.closest('[data-svday]'); if (dt) { st.selDay = Number(dt.dataset.svday); return render(); }
+        const ec = e.target.closest('[data-edit-class]'); if (ec) return openClass(ec.dataset.editClass);
+        const rb = e.target.closest('[data-roster]'); if (rb) return openRoster(rb.dataset.roster);
+        const ch = e.target.closest('[data-sid]'); if (ch) { const ss = st.sessions.find(x => x.id === Number(ch.dataset.sid)); if (ss && ss.session_date <= ymd(new Date())) return openQs(ch, ss); return openSession(ch.dataset.sid); }
+        const bl = e.target.closest('[data-blocked]'); if (bl) return openBlocked(Number(bl.dataset.blocked));
       }
 
       function render() {
@@ -690,24 +736,24 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('week-label').textContent = 'Tuần ' + pad(st.week);
         $('current-week-number').textContent = pad(st.week);
         $('week-range').textContent = `${pad(dates[0].getDate())}.${pad(dates[0].getMonth() + 1)}.${dates[0].getFullYear()} – ${pad(dates[6].getDate())}.${pad(dates[6].getMonth() + 1)}.${dates[6].getFullYear()}`;
-        headState(); $('grid').dataset.day = String(st.selDay); { let off = false; try { off = localStorage.getItem('gb.sess.off') === '1'; } catch (e) {} $('grid').classList.toggle('sess-off', off); }
+        headState(); $('grid').dataset.day = String(st.selDay); 
 
         { const d = dates[st.selDay]; $('day-nav-dow').textContent = st.selDay === 6 ? 'Chủ nhật' : 'Thứ ' + ['Hai', 'Ba', 'Tư', 'Năm', 'Sáu', 'Bảy'][st.selDay]; const away = st.week !== NOW_WEEK || st.selDay !== (new Date().getDay() + 6) % 7; $('day-nav-date').textContent = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); $('day-today').classList.toggle('is-away', away); }
         $('day-tabs').innerHTML = DAY.map((n, i) => `<button type="button" data-day="${i}" aria-pressed="${i === st.selDay}">${i === 6 ? 'CN' : 'T' + (i + 2)} ${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</button>`).join('');
         const _list = visibleClasses(), maxS = Math.max(3, ..._list.map(c => st.sessions.filter(x => x.class_id === c.id).length));
-        $('grid-head').innerHTML = '<th class="c-name"><span class="c-head"><span>Lớp</span><button type="button" class="sess-toggle" data-sess-toggle aria-label="Thu gọn hoặc mở các buổi học" title="Thu gọn / mở các buổi học"><span>Buổi</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button></span></th><th class="scol sess sess-h"><div class="sess-hd"><span>Buổi 1</span><span>Buổi 2</span><span>Buổi 3</span></div></th><th class="scol gp"></th>' + DAY.map((n, i) =>
+        $('grid-head').innerHTML = '<th class="c-name">Lớp</th>' + DAY.map((n, i) =>
           `<th class="dcol d${i}${keys[i] === todayKey ? ' today' : ''}">${n}<div style="font-weight:500;opacity:.8">${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</div></th>`).join('');
 
         let html = '';
-        html += '<tr class="special free"><td class="c-name">Lịch rảnh</td><td class="scol sess"></td><td class="scol gp"></td>' + keys.map((k, i) => {
+        html += '<tr class="special free"><td class="c-name">Lịch rảnh</td>' + keys.map((k, i) => {
           const f = freeTimes(k, i);
           return `<td class="dcol d${i}${k === todayKey ? ' today' : ''}" style="padding:8px 6px">${f.length ? f.map(x => `<span class="free-line">${x}</span>`).join('') : '–'}</td>`;
         }).join('') + '</tr>';
-        html += '<tr class="special busy"><td class="c-name">Lịch bận</td><td class="scol sess"></td><td class="scol gp"></td>' + keys.map((k, i) =>
+        html += '<tr class="special busy"><td class="c-name">Lịch bận</td>' + keys.map((k, i) =>
           `<td class="dcol d${i}${k === todayKey ? ' today' : ''}" data-blocked="${i}" style="padding:6px;cursor:pointer">${parseRanges(st.blocked[i]).map(r => `<span class="free-line">${fmt(r.s)} - ${fmt(r.e)}</span>`).join('') || '–'}</td>`).join('') + '</tr>';
 
         const list = _list;
-        if (!list.length) html += '<tr><td colspan="10" class="p-6 text-center text-slate-400 text-sm">Không có lớp phù hợp.</td></tr>';
+        if (!list.length) html += '<tr><td colspan="8" class="p-6 text-center text-slate-400 text-sm">Không có lớp phù hợp.</td></tr>';
         list.forEach(c => {
           const s = classState(c), url = c.page_url || ('class.html?class=' + encodeURIComponent(c.class_code));
           const n = st.counts[c.id] || 0, sub = c.class_name && c.class_name !== c.class_code ? c.class_name : '';
@@ -716,19 +762,14 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
             ${sub ? `<div class="text-xs text-slate-500" style="overflow-wrap:anywhere">${esc(sub)}</div>` : ''}
             
             <div class="text-xs text-slate-500">${stuCell(c)}${s === 'inactive' ? '<div>Tạm ngưng</div>' : s === 'archived' ? '<div>Lưu trữ</div>' : ''}</div></div>
-            <button type="button" class="icon-btn" style="width:36px;height:36px;flex:none" data-edit-class="${c.id}" aria-label="Sửa lớp ${esc(c.class_code)}"><i data-lucide="settings" class="w-4 h-4"></i></button></div></td>` + sessCells(c, keys) + keys.map((k, i) => {
+            <button type="button" class="icon-btn" style="width:36px;height:36px;flex:none" data-edit-class="${c.id}" aria-label="Sửa lớp ${esc(c.class_code)}"><i data-lucide="settings" class="w-4 h-4"></i></button></div></td>` + keys.map((k, i) => {
               const ss = sessionsOf(c.id, k);
               return `<td class="day dcol d${i}${k === todayKey ? ' today' : ''}" data-class="${c.id}" data-date="${k}">` + ss.map(x =>
-                `<button type="button" class="chip ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}">${t5(x.start_time)} - ${t5(x.end_time)}<small>${[x.status === 'cancel' ? 'Hủy' : '', x.status === 'done' ? 'Hoàn thành' : x.status === 'makeup' ? 'Bù' : x.status === 'holiday' ? 'Nghỉ lễ' : '', lessonOf(x) ? esc(lessonOf(x)) : '', x.note ? esc(x.note) : ''].filter(Boolean).join(' · ')}</small></button>`).join('') + '</td>';
+                pillHtml(x, t5(x.start_time) + ' - ' + t5(x.end_time), pillTip(x))).join('') + '</td>';
             }).join('') + '</tr>';
         });
         $('grid-body').innerHTML = html;
-        { const rows = keys.map((k, i) => { const items = st.sessions.filter(x => x.session_date === k && _list.some(c => c.id === x.class_id)).sort((a, b) => String(a.start_time).localeCompare(String(b.start_time)));
-            return items.length ? `<div class="wk-day${k === todayKey ? ' today' : ''}"><h3>${DAY[i]} <span>${pad(dates[i].getDate())}/${pad(dates[i].getMonth() + 1)}</span></h3>` + items.map(x => `<button type="button" class="wk-row ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}"><b>${esc(classLabel(x.class_id))}</b><span>${t5(x.start_time)} - ${t5(x.end_time)}</span><em>${esc(STATUS_TXT[x.status] || '')}</em></button>`).join('') + '</div>' : ''; }).filter(Boolean);
-          const clsRows = _list.map(c => { const items = st.sessions.filter(x => x.class_id === c.id).sort((p, q) => p.session_date.localeCompare(q.session_date) || String(p.start_time).localeCompare(String(q.start_time)));
-            return items.length ? `<div class="wk-day"><h3>${esc(c.class_code)}</h3>` + items.map(x => { const di = keys.indexOf(x.session_date); return `<button type="button" class="wk-row ${x.mode === 'online' ? 'online' : 'offline'} ${x.status}" data-sid="${x.id}"><b>${WD[di] || ''} ${pad(dates[di].getDate())}/${pad(dates[di].getMonth() + 1)}</b><span>${t5(x.start_time)} - ${t5(x.end_time)}</span><em>${esc(STATUS_TXT[x.status] || '')}</em></button>`; }).join('') + '</div>' : ''; }).filter(Boolean);
-          st.wk = { title: 'Tuần ' + pad(st.week) + ' · ' + pad(dates[0].getDate()) + '.' + pad(dates[0].getMonth() + 1) + ' – ' + pad(dates[6].getDate()) + '.' + pad(dates[6].getMonth() + 1), day: rows.join('') || '<p class="wk-empty">Tuần này chưa có buổi học.</p>', cls: clsRows.join('') || '<p class="wk-empty">Tuần này chưa có buổi học.</p>' };
-          drawWk(); }
+        drawSv(_list, dates, keys, todayKey);
         const g = $('grid'), fr = g.querySelector('tr.free');
         g.style.setProperty('--h1', g.tHead.offsetHeight + 'px');
         if (fr) g.style.setProperty('--h2', fr.offsetHeight + 'px');
@@ -1549,7 +1590,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         } else {
           $('ds-id').value = ''; $('ds-class').value = classId; $('ds-date').value = date;
           $('ds-start').value = ''; $('ds-end').value = ''; $('ds-status').value = 'planned';
-          $('ds-lesson').value = ''; $('ds-lesson').placeholder = 'Tự lấy từ Học liệu nếu đã giao'; $('ds-note').value = ''; $('ds-mode').value = 'offline';
+          $('ds-lesson').value = ''; $('ds-lesson').placeholder = 'Tự lấy từ Học liệu nếu đã giao'; $('ds-note').value = ''; $('ds-mode').value = defMode(classId);
           $('ds-title').textContent = 'Thêm buổi học'; $('ds-del').hidden = true; $('ds-resched').hidden = true;
           $('ds-info').textContent = classLabel(classId);
         }
@@ -1684,7 +1725,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         mine.forEach(s => {
           const di = dates.map(ymd).indexOf(s.session_date), d2 = nd[di], key = s.class_id + '|' + d2;
           if (di < 0 || have.has(key) || s.status === 'cancel') return;
-          rows.push({ class_id: s.class_id, session_date: d2, start_time: s.start_time, end_time: s.end_time, status: 'planned', mode: s.mode || 'offline' });
+          rows.push({ class_id: s.class_id, session_date: d2, start_time: s.start_time, end_time: s.end_time, status: 'planned', mode: s.mode || defMode(s.class_id) });
         });
         if (!rows.length) { LMS.toast('Tuần sau đã có đủ lịch.'); return; }
         const res = await st.c.from('sessions').insert(rows);
@@ -1714,11 +1755,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('dlg-session').querySelector('form').addEventListener('submit', saveSession);
         $('ds-del').addEventListener('click', () => deleteSession());
         $('ds-resched').addEventListener('click', () => { const d = $('dlg-session'), on = !d.classList.contains('resched'); d.classList.toggle('resched', on); $('ds-resched').textContent = on ? 'Đủ thông tin' : 'Đổi giờ'; $('ds-title').textContent = on ? 'Đổi giờ buổi học' : 'Sửa buổi học'; if (on) $('ds-start').focus(); });
-        const wkToggle = () => { const on = !document.body.classList.contains('wk-open'); document.body.classList.toggle('wk-open', on); $('wk-tab').setAttribute('aria-expanded', String(on)); $('wk-drawer').setAttribute('aria-hidden', String(!on)); };
-        $('wk-title').addEventListener('click', e => { const b = e.target.closest('[data-wkm]'); if (!b) return; try { localStorage.setItem('gb.wk.mode', b.dataset.wkm); } catch (x) {} drawWk(); });
-        $('wk-tab').addEventListener('click', wkToggle); $('grid').addEventListener('click', e => { const mb = e.target.closest('[data-sess-more]'); if (mb) { const tr = mb.parentElement.querySelector('.sess-track'), end = tr.scrollLeft + tr.clientWidth >= tr.scrollWidth - 2; tr.scrollTo({ left: end ? 0 : tr.scrollLeft + 84, behavior: 'smooth' }); mb.classList.toggle('back', end ? false : tr.scrollLeft + 84 + tr.clientWidth >= tr.scrollWidth - 2); return; } if (!e.target.closest('[data-sess-toggle]')) return; const g = $('grid'), off = !g.classList.contains('sess-off'); g.classList.toggle('sess-off', off); try { localStorage.setItem('gb.sess.off', off ? '1' : '0'); } catch (x) {} });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape' && window.innerWidth < 1024 && document.body.classList.contains('wk-open')) wkToggle(); });
-        $('wk-list').addEventListener('click', e => { const ch = e.target.closest('[data-sid]'); if (!ch) return; const ss = st.sessions.find(x => x.id === Number(ch.dataset.sid)); if (ss && ss.session_date <= ymd(new Date())) return openQs(ch, ss); openSession(ch.dataset.sid); });
+        $('sv-seg').addEventListener('click', svClick); $('sv-class').addEventListener('click', svClick); $('sv-day').addEventListener('click', svClick);
+        setInterval(() => { if (st.sv === 'd' && !document.hidden && st.svArgs) drawDayView(...st.svArgs); }, 60000);
         $('ds-date').addEventListener('change', showFree);
         $('ds-free').addEventListener('click', e => {
           const b = e.target.closest('[data-free]'); if (!b) return;
@@ -1809,6 +1847,144 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDlgs(); });
       }
 
+      /* ---------- Màu theo thời gian và popup xác nhận buổi học ---------- */
+      /* Hình thức mặc định theo chương trình: IELTS, TOEIC, Giao tiếp học online; Global Success học trực tiếp */
+      const defMode = cid => { const c = st.classes.find(x => x.id === Number(cid)); return c && ['ielts', 'toeic', 'comm'].includes(c.program) ? 'online' : 'offline'; };
+      const modeIc = x => `<i class="mi ${x.mode === 'online' ? 'mi-on' : 'mi-off'}" aria-hidden="true"></i>`;
+      const modeCls = x => 'offline' + (x.mode === 'online' ? ' is-on' : '');
+      const sessStart = s => new Date(s.session_date + 'T' + (t5(s.start_time) || '00:00') + ':00');
+      const sessEnd = s => new Date(s.session_date + 'T' + (t5(s.end_time) || t5(s.start_time) || '00:00') + ':00');
+      function nextSid() {
+        const k = Math.floor(Date.now() / 60000), src = st.nowSessions || [];
+        if (st._nxK !== k || st._nxS !== src) {
+          const now = new Date();
+          const l = src.filter(s => s.status !== 'cancel' && s.status !== 'holiday' && sessEnd(s) >= now).sort((a, b) => sessStart(a) - sessStart(b));
+          st._nxK = k; st._nxS = src; st._nxId = l.length ? l[0].id : null;
+        }
+        return st._nxId;
+      }
+      function sessCls(s) {
+        if (sessEnd(s) < new Date()) return ' is-past';
+        return nextSid() === s.id ? ' is-next' : '';
+      }
+      const SW_DOW = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+      const sw = { shown: new Set(), dismissed: new Set(), busy: false, sig: '', html: '', byId: {} };
+      const swDow = s => SW_DOW[new Date(s.session_date + 'T00:00:00').getDay()];
+      const swDm = s => s.session_date.slice(8, 10) + '/' + s.session_date.slice(5, 7);
+      const swHide = () => { try { return localStorage.getItem('gb.sw.hide') || ''; } catch (_) { return ''; } };
+
+      async function swTick() {
+        if (!st.c || sw.busy || document.hidden) return;
+        sw.busy = true;
+        try {
+          const now = new Date(), today = ymd(now), from = ymd(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 14));
+          const r = await st.c.from('sessions').select('id,class_id,session_date,start_time,end_time,status,mode')
+            .gte('session_date', from).lte('session_date', today).eq('status', 'planned');
+          if (r.error) return;
+          const list = (r.data || []).filter(s => sessStart(s) <= now);
+          const live = list.filter(s => sessEnd(s) >= now);
+          const cut = s => new Date(sessEnd(s) - 5 * 60000);
+          const dueEnd = live.filter(s => now >= cut(s));
+          const startable = live.filter(s => now < cut(s) && !sw.dismissed.has('a' + s.id));
+          const hide = swHide();
+          const backlog = list.filter(s => sessEnd(s) < now && s.session_date > hide).sort((a, b) => sessStart(b) - sessStart(a));
+          let taken = new Set();
+          if (startable.length) {
+            const a = await st.c.from('attendance').select('session_id').in('session_id', startable.map(s => s.id));
+            if (!a.error) taken = new Set((a.data || []).map(x => x.session_id));
+          }
+          swRender(startable.filter(s => !taken.has(s.id)), backlog);
+          if (!document.querySelector('.dlg:not([hidden])')) {
+            const s = dueEnd.find(x => !sw.shown.has(x.id));
+            if (s) { sw.shown.add(s.id); swOpen(s, 'full'); }
+          }
+          const sig = nextSid() + '|' + (st.sessions || []).filter(s => sessEnd(s) < now).length;
+          if (sig !== sw.sig) { const first = sw.sig === ''; sw.sig = sig; if (!first && st.view === 'schedule') render(); }
+        } catch (_) { /* lần sau thử lại */ } finally { sw.busy = false; }
+      }
+
+      function swRender(starts, backlog) {
+        let box = document.getElementById('sw-box');
+        if (!box) {
+          box = document.createElement('div'); box.id = 'sw-box'; box.className = 'sw-box'; document.body.appendChild(box);
+          box.addEventListener('click', e => {
+            const b = e.target.closest('[data-sw]'); if (!b) return;
+            const k = b.dataset.sw, id = Number(b.dataset.swid), s = sw.byId[id], card = b.closest('.sw-card');
+            if (k === 'att-later') { sw.dismissed.add('a' + id); if (card) card.remove(); sw.html = ''; }
+            else if (k === 'att-open' && s) swOpen(s, 'att');
+            else if (k === 'open' && s) swOpen(s, 'full');
+            else if (k === 'hide') { try { localStorage.setItem('gb.sw.hide', b.dataset.upto); } catch (_) { /* bỏ qua */ } if (card) card.remove(); sw.html = ''; }
+          });
+        }
+        sw.byId = {}; starts.concat(backlog).forEach(s => { sw.byId[s.id] = s; });
+        let h = starts.map(s => `<div class="sw-card"><b>Điểm danh lớp ${esc(classLabel(s.class_id))}</b><p>${swDow(s)}, buổi bắt đầu lúc ${t5(s.start_time)}.</p><div class="sw-btns"><button type="button" data-sw="att-later" data-swid="${s.id}">Để sau</button><button type="button" class="sw-primary" data-sw="att-open" data-swid="${s.id}">Điểm danh</button></div></div>`).join('');
+        if (backlog.length) {
+          const rows = backlog.slice(0, 6).map(s => `<div class="sw-row"><span><b>${esc(classLabel(s.class_id))}</b><small>${swDow(s)}, ${swDm(s)} · ${t5(s.start_time)}</small></span><button type="button" data-sw="open" data-swid="${s.id}">Cập nhật</button></div>`).join('');
+          h += `<div class="sw-card"><b>${backlog.length} buổi chưa cập nhật</b>${rows}${backlog.length > 6 ? `<p>Và ${backlog.length - 6} buổi khác.</p>` : ''}<div class="sw-btns" style="margin-top:8px"><button type="button" data-sw="hide" data-upto="${backlog[0].session_date}">Ẩn danh sách</button></div></div>`;
+        }
+        if (h !== sw.html) { sw.html = h; box.innerHTML = h; }
+      }
+
+      function closeSw() { const d = document.getElementById('dlg-sw'); if (d) d.remove(); }
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSw(); });
+
+      async function swOpen(s, mode) {
+        closeSw();
+        const full = mode === 'full'; let status = 'done';
+        const d = document.createElement('div'); d.id = 'dlg-sw'; d.className = 'dlg';
+        d.innerHTML = `<div class="card sw-dlg" role="dialog" aria-modal="true"><h2>${esc(classLabel(s.class_id))} · ${swDow(s)}, ${t5(s.start_time)} đến ${t5(s.end_time)}</h2><p class="sw-sub">${full ? 'Buổi này diễn ra thế nào?' : 'Điểm danh đầu buổi'}</p>`
+          + (full ? '<div class="sw-seg" id="sw-st"><button type="button" data-v="done" class="on-ok">Hoàn thành</button><button type="button" data-v="makeup">Bù</button><button type="button" data-v="cancel">Hủy</button></div>' : '')
+          + '<div id="sw-att"><p class="sw-sub">Đang tải học viên…</p></div><p class="sw-err" id="sw-err" role="alert"></p><div class="sw-foot"><button type="button" id="sw-later">Để sau</button><button type="button" id="sw-save" class="sw-primary">Lưu</button></div></div>';
+        document.body.appendChild(d);
+        d.addEventListener('click', e => { if (e.target === d) closeSw(); });
+        d.querySelector('#sw-later').onclick = closeSw;
+        const err = d.querySelector('#sw-err'), box = d.querySelector('#sw-att'), save = d.querySelector('#sw-save');
+        const SEGC = { done: 'on-ok', makeup: 'on-bu', cancel: 'on-no' };
+        const seg = d.querySelector('#sw-st');
+        if (seg) seg.addEventListener('click', e => {
+          const b = e.target.closest('[data-v]'); if (!b) return;
+          status = b.dataset.v;
+          seg.querySelectorAll('button').forEach(x => { x.className = x === b ? SEGC[status] : ''; });
+          box.classList.toggle('hidden', status === 'cancel');
+        });
+        const [sr, ar] = await Promise.all([
+          st.c.from('students').select('id,student_name').eq('class_id', s.class_id).eq('is_active', true).order('student_name'),
+          st.c.from('attendance').select('student_id,status').eq('session_id', s.id)]);
+        if (!document.getElementById('dlg-sw')) return;
+        if (sr.error || ar.error) { box.innerHTML = ''; err.textContent = LMS.friendlyError(sr.error || ar.error); return; }
+        const stu = sr.data || [], cur = {}, val = {};
+        (ar.data || []).forEach(x => { cur[x.student_id] = x.status; });
+        stu.forEach(u => { val[u.id] = cur[u.id] || 'present'; });
+        const AC = { present: 'on-ok', late: 'on-late', absent: 'on-no', excused: 'on-late' }, AT = { present: 'Có mặt', late: 'Trễ', absent: 'Vắng', excused: 'Phép' };
+        box.innerHTML = stu.length
+          ? '<p class="sw-sub">Mặc định có mặt, chạm để đổi.</p>' + stu.map(u => `<div class="sw-row"><span>${esc(u.student_name)}</span><div class="sw-chips" data-stu="${u.id}">${['present', 'late', 'absent'].concat(cur[u.id] === 'excused' ? ['excused'] : []).map(k => `<button type="button" data-v="${k}" class="${val[u.id] === k ? AC[k] : ''}">${AT[k]}</button>`).join('')}</div></div>`).join('')
+          : '<p class="sw-sub">Lớp chưa có học viên.</p>';
+        box.addEventListener('click', e => {
+          const b = e.target.closest('[data-v]'), g = b && b.parentNode; if (!g || !g.dataset.stu) return;
+          val[g.dataset.stu] = b.dataset.v;
+          g.querySelectorAll('button').forEach(x => { x.className = x === b ? AC[b.dataset.v] : ''; });
+        });
+        save.onclick = async () => {
+          save.disabled = true; err.textContent = '';
+          try {
+            const ts = new Date().toISOString();
+            if (full && status === 'cancel') {
+              const x = await st.c.from('attendance').delete().eq('session_id', s.id); if (x.error) throw x.error;
+            } else if (stu.length) {
+              const x = await st.c.from('attendance').upsert(stu.map(u => ({ session_id: s.id, student_id: u.id, status: val[u.id], updated_at: ts }))); if (x.error) throw x.error;
+            }
+            if (full) { const y = await st.c.from('sessions').update({ status, updated_at: ts }).eq('id', s.id); if (y.error) throw y.error; }
+            closeSw(); sw.dismissed.add('a' + s.id);
+            await refresh(full ? 'Đã chuyển sang: ' + STATUS_TXT[status] + '.' : 'Đã lưu điểm danh.');
+            sw.html = ''; swTick();
+          } catch (e) { err.textContent = LMS.friendlyError(e); save.disabled = false; }
+        };
+      }
+      function swStart() {
+        swTick(); setInterval(swTick, 30000);
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) swTick(); });
+      }
+
       async function boot() {
         icons(); bind();
         st.week = NOW_WEEK; st.selDay = (new Date().getDay() + 6) % 7;
@@ -1819,6 +1995,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           const failed = results.find(r => r.status === 'rejected');
           const route = location.hash === '#lib' ? 'lib' : location.hash === '#schedule' ? 'schedule' : 'overview';
           await setView(route, true);
+          swStart();
           if (failed) $('page-msg').textContent = LMS.friendlyError(failed.reason);
         } catch (e) {
           $('page-msg').textContent = LMS.friendlyError(e);
