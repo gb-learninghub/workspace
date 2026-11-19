@@ -1463,3 +1463,11 @@ body.student-dashboard-view .t-sub-row{grid-template-columns:minmax(0,1.2fr) min
 .t-sub-row .t-sub-meta .sl{display:flex;align-items:center;justify-content:center;font-style:normal;min-width:0;white-space:nowrap;overflow:hidden}
 .t-sub-row .t-sub-meta .sl-res{justify-content:flex-end;gap:4px}
 .t-sub-row.t-sub-cap .t-sub-meta{display:block!important;text-align:right}
+
+/* Trang giáo viên: 3 mục giảng dạy thành pill trong nội dung */
+.t-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.t-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:1px solid #E4E6EA;background:#fff;border-radius:999px;font-weight:700;font-size:.9375rem;color:#475569;cursor:pointer;transition:background .15s,color .15s}
+.t-pill svg{width:18px;height:18px;flex:none}
+.t-pill.on{background:#16181D;border-color:#16181D;color:#fff}
+.t-pill.m-only{display:none}
+@media(max-width:780px){.t-pill.m-only{display:inline-flex}}
