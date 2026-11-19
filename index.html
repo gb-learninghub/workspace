@@ -1946,10 +1946,10 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
 
       async function swOpen(s, mode) {
         closeSw();
-        const full = mode === 'full'; let status = 'done';
+        const full = mode === 'full'; let status = full ? 'done' : null;
         const d = document.createElement('div'); d.id = 'dlg-sw'; d.className = 'dlg';
         d.innerHTML = `<div class="card sw-dlg" role="dialog" aria-modal="true"><h2>${esc(classLabel(s.class_id))} · ${swDow(s)}, ${t5(s.start_time)} đến ${t5(s.end_time)}</h2><p class="sw-sub">${full ? 'Buổi này diễn ra thế nào?' : 'Điểm danh đầu buổi'}</p>`
-          + (full ? '<div class="sw-seg" id="sw-st"><button type="button" data-v="done" class="on-ok">Hoàn thành</button><button type="button" data-v="makeup">Bù</button><button type="button" data-v="cancel">Hủy</button></div>' : '')
+          + ('<div class="sw-seg" id="sw-st"><button type="button" data-v="done"' + (full ? ' class="on-ok"' : '') + '>Hoàn thành</button><button type="button" data-v="makeup">Bù</button><button type="button" data-v="cancel">Hủy</button></div>')
           + '<div id="sw-att"><p class="sw-sub">Đang tải học viên…</p></div><p class="sw-err" id="sw-err" role="alert"></p><div class="sw-foot"><button type="button" id="sw-later">Để sau</button><button type="button" id="sw-save" class="sw-primary">Lưu</button></div></div>';
         document.body.appendChild(d);
         d.addEventListener('click', e => { if (e.target === d) closeSw(); });
@@ -1984,14 +1984,14 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           save.disabled = true; err.textContent = '';
           try {
             const ts = new Date().toISOString();
-            if (full && status === 'cancel') {
+            if (status === 'cancel') {
               const x = await st.c.from('attendance').delete().eq('session_id', s.id); if (x.error) throw x.error;
             } else if (stu.length) {
               const x = await st.c.from('attendance').upsert(stu.map(u => ({ session_id: s.id, student_id: u.id, status: val[u.id], updated_at: ts }))); if (x.error) throw x.error;
             }
-            if (full) { const y = await st.c.from('sessions').update({ status, updated_at: ts }).eq('id', s.id); if (y.error) throw y.error; }
+            if (status) { const y = await st.c.from('sessions').update({ status, updated_at: ts }).eq('id', s.id); if (y.error) throw y.error; }
             closeSw(); sw.dismissed.add('a' + s.id);
-            await refresh(full ? 'Đã chuyển sang: ' + STATUS_TXT[status] + '.' : 'Đã lưu điểm danh.');
+            await refresh(status ? 'Đã chuyển sang: ' + STATUS_TXT[status] + '.' : 'Đã lưu điểm danh.');
             sw.html = ''; swTick();
           } catch (e) { err.textContent = LMS.friendlyError(e); save.disabled = false; }
         };
