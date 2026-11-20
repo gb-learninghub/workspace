@@ -1942,8 +1942,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         if (h !== sw.html) { sw.html = h; box.innerHTML = h; }
       }
 
-      function closeSw() { const d = document.getElementById('dlg-sw'); if (d) d.remove(); }
-      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSw(); });
+      function closeSw() { const d = document.getElementById('dlg-sw'); if (d) { if (d._lmsModal) d._lmsModal.close(); else d.remove(); } }
 
       async function swOpen(s, mode) {
         closeSw();
@@ -1952,7 +1951,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         d.innerHTML = `<div class="card sw-dlg" role="dialog" aria-modal="true"><h2>${esc(classLabel(s.class_id))} · ${swDow(s)}, ${t5(s.start_time)} đến ${t5(s.end_time)}</h2><p class="sw-sub">${full ? 'Buổi này diễn ra thế nào?' : 'Điểm danh đầu buổi'}</p>`
           + ('<div class="sw-seg" id="sw-st"><button type="button" data-v="done"' + (full ? ' class="on-ok"' : '') + '>Hoàn thành</button><button type="button" data-v="makeup">Bù</button><button type="button" data-v="cancel">Hủy</button></div>')
           + '<div id="sw-att"><p class="sw-sub">Đang tải học viên…</p></div><p class="sw-err" id="sw-err" role="alert"></p><div class="sw-foot"><button type="button" id="sw-later">Để sau</button><button type="button" id="sw-save" class="sw-primary">Lưu</button></div></div>';
-        document.body.appendChild(d);
+        document.body.appendChild(d); LMS.modal(d, { onClose: () => d.remove() });
         d.addEventListener('click', e => { if (e.target === d) closeSw(); });
         d.querySelector('#sw-later').onclick = closeSw;
         const err = d.querySelector('#sw-err'), box = d.querySelector('#sw-att'), save = d.querySelector('#sw-save');
