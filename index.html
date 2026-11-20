@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://unpkg.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="lms.css?v=3">
-  <script src="lms.js?v=4"></script><script src="lms-tiles.js?v=2"></script><script src="lms-att.js?v=2"></script>
+  <script src="lms.js?v=5"></script><script src="lms-tiles.js?v=2"></script><script src="lms-att.js?v=2"></script>
   <script>document.documentElement.dataset.lmsView=location.hash==='#schedule'?'schedule':location.hash==='#lib'?'lib':'overview';</script>
   <style>
     [class~=qs-menu]{max-width:calc(100vw - 16px);position:fixed;z-index:95;width:190px;padding:6px;background:#fff;border:1px solid #E4E6EA;border-radius:14px;animation:qsIn .18s cubic-bezier(.2,.8,.2,1) both}
@@ -1551,8 +1551,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         await refresh((given ? 'Đã giao ' + code + ' cho ' + given + ' lớp.' : '') + (drop.length ? (given ? ' ' : '') + 'Đã gỡ khỏi ' + drop.length + ' lớp.' : ''));
       }
 
-      function openDlg(id) { $(id).hidden = false; }
-      function closeDlgs() { document.querySelectorAll('.dlg').forEach(d => { d.hidden = true; }); }
+      function openDlg(id) { const d = $(id); d.hidden = false; LMS.modal(d, { onClose: () => { d.hidden = true; } }); }
+      function closeDlgs() { document.querySelectorAll('.dlg').forEach(d => { if (d._lmsModal) d._lmsModal.close(); else d.hidden = true; }); }
       const classLabel = id => { const c = st.classes.find(x => x.id === Number(id)); return c ? c.class_code : ''; };
 
       /* Bài học của buổi: tự lấy từ Học liệu (lớp + ngày đã giao), nếu chưa có thì dùng chữ nhập tay */
@@ -1862,7 +1862,6 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         });
         document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeDlgs));
         document.querySelectorAll('.dlg').forEach(d => d.addEventListener('click', e => { if (e.target === d) closeDlgs(); }));
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDlgs(); });
       }
 
       /* ---------- Màu theo thời gian và popup xác nhận buổi học ---------- */
