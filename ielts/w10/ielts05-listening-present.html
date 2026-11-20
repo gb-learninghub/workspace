@@ -20,7 +20,7 @@ body.disp{overflow:hidden}
 #D{height:100vh;height:100dvh;display:flex;flex-direction:column;padding:2.2vh 3vw;gap:1.6vh}
 #dh{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 #dh .ttl{font-weight:700;font-size:22px}
-.tag{display:inline-flex;align-items:center;height:36px;padding:0 16px;border-radius:999px;background:var(--panel);font-weight:700;font-size:17px}
+.tag{display:inline-flex;align-items:center;height:36px;padding:0 16px;border-radius:999px;background:var(--panel);font-weight:700;font-size:16px}
 .tag.cur{background:var(--pri);color:#fff}
 #dh .sp{flex:1}
 #dh small{color:var(--mut);font-size:14px}
@@ -78,7 +78,7 @@ body.rem{background:#fff}
 #rt button.rv{background:var(--ok);border-color:var(--okl);color:var(--okl)}
 #rt button.tgd::after{content:"";position:absolute;right:5px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--badl)}
 #rt button.fok{outline:2px solid var(--okl)}#rt button.fbad{outline:2px solid var(--badl)}
-#fi{flex:1;min-width:0;height:44px;border:0;border-bottom:2px solid var(--line);background:#fff;border-radius:10px 10px 0 0;padding:0 12px;font-size:17px}
+#fi{flex:1;min-width:0;height:44px;border:0;border-bottom:2px solid var(--line);background:#fff;border-radius:10px 10px 0 0;padding:0 12px;font-size:16px}
 #rp .pill.ghost{background:#fff;border:1px solid var(--line)}
 #rl{display:flex;flex-direction:column;gap:8px}
 .rg2{font-weight:700;font-size:15px;margin-top:6px;padding:6px 12px;border-radius:999px;background:var(--panel);align-self:flex-start}
@@ -92,7 +92,7 @@ body.rem{background:#fff}
 .qs{font-weight:700;font-size:14px}
 .qr .pnl{background:#fff;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px}
 #rp{background:var(--panel);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px}
-#rp .t{font-weight:600;font-size:17px}#rp .a{font-size:24px;font-weight:700;color:var(--okl)}#rp .e{font-size:15px;color:var(--mut)}
+#rp .t{font-weight:600;font-size:16px}#rp .a{font-size:24px;font-weight:700;color:var(--okl)}#rp .e{font-size:15px;color:var(--mut)}
 .chip{height:44px;border-radius:999px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:15px;padding:0 14px}
 .chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
 .rw{display:flex;gap:8px;flex-wrap:wrap}
@@ -243,7 +243,7 @@ function buildDisplay() {
   document.body.className = "disp"; au = $("#aud");
   var link = location.href.split("#")[0].split("?")[0] + "#remote";
   var D_ = h("div", { id: "D" },
-    h("div", { id: "dh" }, h("span", { cls: "ttl", text: D.title }), h("span", { cls: "tag cur", id: "dtag" }), h("span", { cls: "tag", id: "dstep" }), h("span", { id: "dfoc", style: "color:#6b6f78;font-size:17px" }), h("span", { cls: "sp" }), h("small", { text: "Remote: " + link }), h("span", { id: "dot" })),
+    h("div", { id: "dh" }, h("span", { cls: "ttl", text: D.title }), h("span", { cls: "tag cur", id: "dtag" }), h("span", { cls: "tag", id: "dstep" }), h("span", { id: "dfoc", style: "color:#6b6f78;font-size:16px" }), h("span", { cls: "sp" }), h("small", { text: "Remote: " + link }), h("span", { id: "dot" })),
     h("div", { id: "da" }, h("button", { cls: "ib dark", id: "dpp", "aria-label": "Play or pause", html: IC.play, onclick: function () { if (au.paused) exec2play(); else au.pause(); } }), h("div", { id: "dsk" }, h("div", { cls: "trk" }), h("div", { cls: "rg" }), h("div", { cls: "fl" })), h("span", { id: "dtm", text: "0:00 / 0:00" })),
     h("div", { id: "dhint" }),
     h("div", { id: "db" }, h("div", { id: "dl" }), h("div", { id: "dr" })));
@@ -292,7 +292,7 @@ function qrow(q) {
   }
   var ctl = h("div", { cls: "qc" }), letters = Qd.o ? "ABC".slice(0, Qd.o.length).split("") : /→ ____$/.test(Qd.t) ? (groupOf(q).list || []).map(function (x) { return x[0]; }) : null, cur = S.draft[q] != null ? S.draft[q] : (f ? f.v : ""), inp = null;
   if (letters) letters.forEach(function (L) { ctl.appendChild(h("button", { cls: "chip" + (cur === L ? " on" : ""), text: L, onclick: function () { S.draft[q] = L; render(); push(); } })); });
-  else { inp = h("input", { id: "fi" + q, type: "text", autocomplete: "off", autocapitalize: "off", spellcheck: "false", placeholder: "Answer", "aria-label": "Answer " + q, style: "flex:1;min-width:120px;height:44px;border:0;border-bottom:2px solid #E4E6EA;background:#fff;border-radius:10px 10px 0 0;padding:0 12px;font-size:17px" }); inp.value = cur;
+  else { inp = h("input", { id: "fi" + q, type: "text", autocomplete: "off", autocapitalize: "off", spellcheck: "false", placeholder: "Answer", "aria-label": "Answer " + q, style: "flex:1;min-width:120px;height:44px;border:0;border-bottom:2px solid #E4E6EA;background:#fff;border-radius:10px 10px 0 0;padding:0 12px;font-size:16px" }); inp.value = cur;
     inp.addEventListener("input", function () { S.draft[q] = inp.value; typed(); }); inp.addEventListener("keydown", function (e) { if (e.key === "Enter") doCheck(); }); ctl.appendChild(inp); }
   function doCheck() { var v = inp ? inp.value.trim() : (cur || ""); if (!v) return; S.draft[q] = v; setFill(q, v); }
   ctl.appendChild(h("button", { cls: "ib", title: "Check", "aria-label": "Check", html: IC.tick, onclick: doCheck }));
