@@ -274,7 +274,7 @@
       function render() {
         fillClassSelects();
         syncStudentColumns();
-        document.querySelectorAll('.sortbtn').forEach(b => { const on = b.dataset.sort === state.sort.key; b.querySelector('.sarr').textContent = on ? (state.sort.dir === 1 ? '↑' : '↓') : '↕'; b.style.opacity = on ? '1' : '.55'; b.setAttribute('aria-label', 'Sắp xếp theo ' + b.dataset.sort); });
+        document.querySelectorAll('.sortbtn').forEach(b => { const on = b.dataset.sort === state.sort.key; b.querySelector('.sarr').textContent = on ? (state.sort.dir === 1 ? '↑' : '↓') : '↕'; b.setAttribute('aria-label', 'Sắp xếp theo ' + b.dataset.sort); });
         const all = state.students;
         $('total-count').textContent = all.length;
         $('assigned-count').textContent = all.filter(s => s.class_id).length;
