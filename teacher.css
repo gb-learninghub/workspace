@@ -11,12 +11,12 @@ body.student-dashboard-view .overview-week-label>span:not(.week-name){display:no
 .t-sub-cap{display:none!important}
 .t-class{grid-template-columns:1fr!important;gap:6px}
 body.student-dashboard-view .t-content{display:flex;flex-direction:column;gap:12px}
-body.student-dashboard-view .t-sub-cap{display:grid!important;font-size:.6875rem}
+body.student-dashboard-view .t-sub-cap{display:grid!important;font-size:.75rem}
 body.student-dashboard-view .t-sub-row{display:grid!important;grid-template-columns:minmax(0,1.2fr) minmax(0,.9fr) minmax(0,.9fr) 92px!important;column-gap:8px!important;align-items:center;font-size:.75rem}
 body.student-dashboard-view .t-sub-row>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;grid-column:auto!important}
 body.student-dashboard-view .t-sub-row .t-sr-name{font-weight:700}
 body.student-dashboard-view .t-sub-row .t-sub-meta{justify-self:end;justify-content:flex-end;overflow:visible;flex-wrap:nowrap}
-body.student-dashboard-view .t-sub-row .t-sub-meta .tag{white-space:nowrap;font-size:.625rem;padding:2px 6px}
+body.student-dashboard-view .t-sub-row .t-sub-meta .tag{white-space:nowrap;font-size:.75rem;padding:2px 6px}
 body.student-dashboard-view .t-sr-cls small{display:none}
 }
 .t-content{display:flex;flex-direction:column;gap:14px;flex:1 1 auto;min-height:0}
@@ -55,8 +55,8 @@ body.student-dashboard-view .t-sum .t-chip{min-height:0!important;min-width:0!im
 body.student-dashboard-view .t-sum .t-chip svg{width:12px!important;height:12px!important}
 body.student-dashboard-view .t-sum .t-chip,body.student-dashboard-view .t-sum .tag{box-sizing:border-box!important;height:24px!important;display:inline-flex!important;align-items:center!important;padding-top:0!important;padding-bottom:0!important;line-height:1!important}
 body.student-dashboard-view .t-sum{gap:6px!important;flex-wrap:nowrap!important}
-body.student-dashboard-view .t-sum .tag{font-size:.6875rem!important;padding:2px 7px!important;line-height:1.4!important;white-space:nowrap}
-body.student-dashboard-view .t-sum .t-chip{font-size:.6875rem!important;padding:2px 7px!important}
+body.student-dashboard-view .t-sum .tag{font-size:.75rem!important;padding:2px 7px!important;line-height:1.4!important;white-space:nowrap}
+body.student-dashboard-view .t-sum .t-chip{font-size:.75rem!important;padding:2px 7px!important}
 body.student-dashboard-view .t-class-name{display:flex!important;flex-direction:row!important;align-items:baseline;justify-content:space-between;gap:10px}
 body.student-dashboard-view .t-class-name b,body.student-dashboard-view .t-class-name span{font-size:.9375rem!important;font-weight:700!important;color:var(--t-ink)}
 body.student-dashboard-view .t-class-name span{color:#64748b!important;font-variant-numeric:tabular-nums}
@@ -138,7 +138,7 @@ a.t-open:hover span{text-decoration:underline}
 .t-rail>*{margin:0!important}
 .t-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
 .t-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:12px 4px;border-radius:14px}
-.t-stat b{font-size:1.375rem;line-height:1.1}
+.t-stat b{font-size:1.25rem;line-height:1.1}
 .t-stat span{font-size:.75rem;font-weight:700}
 .t-stat.c-all{background:#f1ecff;color:#6d28d9}
 .t-stat.c-done{background:#e7f6ef;color:#047857}
@@ -174,7 +174,7 @@ a.t-open:hover span{text-decoration:underline}
 .t-sub-body[hidden]{display:none!important}
 .t-sub-row{display:grid!important;grid-template-columns:minmax(120px,1.3fr) minmax(110px,1fr) 100px minmax(96px,auto)}
 .t-sub-row .t-sub-meta{justify-self:end;display:flex;gap:6px;align-items:center}
-.t-sr-cls small{display:block;font-size:.6875rem;color:var(--t-muted)}
+.t-sr-cls small{display:block;font-size:.75rem;color:var(--t-muted)}
 .t-sr-code{font-variant-numeric:tabular-nums;color:var(--t-muted)}
 .t-sub-cap{font-size:.75rem;font-weight:700;color:var(--t-muted);border-bottom:1px solid var(--t-border);padding-bottom:6px;margin-top:10px}
 .t-tt-cls{display:block;margin-top:2px;font-size:.75rem;font-weight:500;color:#64748b;font-variant-numeric:normal}
@@ -195,7 +195,7 @@ a.t-open:hover span{text-decoration:underline}
 .t-mode-head{display:none}
 @media(max-width:780px){
 body.student-dashboard-view .t-slot.mode-up .t-sum .t-mode{display:none!important}
-body.student-dashboard-view .t-slot.mode-up .t-mode-head{display:inline-flex;align-items:center;box-sizing:border-box;height:24px;padding:0 9px;border-radius:9999px;background:#F4F5F7;color:#475569;font-size:.6875rem;font-weight:700;white-space:nowrap}
+body.student-dashboard-view .t-slot.mode-up .t-mode-head{display:inline-flex;align-items:center;box-sizing:border-box;height:24px;padding:0 9px;border-radius:9999px;background:#F4F5F7;color:#475569;font-size:.75rem;font-weight:700;white-space:nowrap}
 body.student-dashboard-view .t-row-head{grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:8px!important}
 body.student-dashboard-view .t-row-head .t-sum{flex-wrap:nowrap!important;justify-content:flex-end!important}
 }
@@ -225,6 +225,6 @@ body.student-dashboard-view .t-sub-row{grid-template-columns:minmax(0,1.2fr) min
 @media(max-width:780px){
 body.student-dashboard-view .student-nav.t-gnav{display:flex!important;grid-template-columns:none!important;overflow-x:auto!important;overflow-y:hidden;flex-wrap:nowrap;gap:4px;scroll-snap-type:x proximity;scrollbar-width:none}
 body.student-dashboard-view .student-nav.t-gnav::-webkit-scrollbar{display:none}
-body.student-dashboard-view .student-nav.t-gnav button{flex:0 0 auto;min-width:68px;min-height:46px!important;padding:0 8px!important;gap:2px!important;font-size:.625rem!important;font-weight:700;letter-spacing:0;border-radius:12px!important;background:transparent!important;color:#aeb9cc!important;scroll-snap-align:center}
+body.student-dashboard-view .student-nav.t-gnav button{flex:0 0 auto;min-width:68px;min-height:46px!important;padding:0 8px!important;gap:2px!important;font-size:.75rem!important;font-weight:700;letter-spacing:0;border-radius:12px!important;background:transparent!important;color:#aeb9cc!important;scroll-snap-align:center}
 body.student-dashboard-view .student-nav.t-gnav button.active{background:rgba(255,255,255,.14)!important;color:#e5c16b!important}
 }
