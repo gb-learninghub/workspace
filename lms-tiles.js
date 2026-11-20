@@ -36,7 +36,7 @@
 #lms-tile-dlg .lmt-act[data-st=present]{background:#e7f6ec;border-color:#9bd3ad;color:#1d7a3e}#lms-tile-dlg .lmt-act[data-st=late]{background:#fdf3dc;border-color:#e6c46f;color:#8a6410}#lms-tile-dlg .lmt-act[data-st=absent]{background:#fde8e6;border-color:#eba39d;color:#b42318}
 #lms-tile-dlg .lmt-close{min-height:44px;padding:0 18px;border:0;border-radius:12px;background:#F4F5F7;color:#1B1D22;font-weight:700;cursor:pointer;transition:transform .12s ease}#lms-tile-dlg .lmt-close:active{transform:scale(.96)}
 [data-tile-list]{cursor:pointer;transition:transform .15s ease,background-color .15s ease}[data-tile-list]:hover{transform:translateY(-1px)}[data-tile-list]:active{transform:scale(.97)}
-@media(max-width:520px){#lms-tile-dlg .lmt-list{--c2:64px;--c3:84px}#lms-tile-dlg .lmt-card{padding:16px;border-radius:20px}}
+@media(max-width:520px){#lms-tile-dlg .lmt-list{--c2:64px;--c3:84px}#lms-tile-dlg .lmt-card{padding:16px;border-radius:20px}#lms-tile-dlg .lmt-row:has(.lmt-acts-cell){grid-template-columns:minmax(0,1fr) auto var(--c4);grid-template-rows:auto auto;row-gap:0}#lms-tile-dlg .lmt-row:has(.lmt-acts-cell)>:nth-child(1){grid-column:1/3;grid-row:1}#lms-tile-dlg .lmt-row:has(.lmt-acts-cell)>:nth-child(2){grid-column:1;grid-row:2}#lms-tile-dlg .lmt-row:has(.lmt-acts-cell)>:nth-child(3){grid-column:2;grid-row:2}#lms-tile-dlg .lmt-row:has(.lmt-acts-cell)>.lmt-acts-cell{grid-column:3;grid-row:1/3}}
 @keyframes lmtFade{from{opacity:0}to{opacity:1}}@keyframes lmtFadeOut{to{opacity:0}}
 @keyframes lmtPop{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}@keyframes lmtPopOut{to{opacity:0;transform:translateY(8px) scale(.97)}}
 @keyframes lmtRow{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes lmtPulse{50%{opacity:.45}}
@@ -54,7 +54,7 @@
     cur = { title, rows, opt };
     const bb = box.querySelector('.lmt-backb'); if (bb) bb.hidden = !opt.back;
     document.getElementById('lmt-title').textContent = title;
-    const list = document.getElementById('lmt-list'), widthOf = r => (r.acts || []).reduce((n, a, i) => n + (a.options ? (a.w || 96) : 36) + (i ? 6 : 0), 0), maxW = rows.reduce((n, r) => Math.max(n, widthOf(r)), 0), maxActs = maxW ? 1 : 0;
+    const list = document.getElementById('lmt-list'), widthOf = r => (r.acts || []).reduce((n, a, i) => n + (a.options ? (a.w || 96) : 44) + (i ? 6 : 0), 0), maxW = rows.reduce((n, r) => Math.max(n, widthOf(r)), 0), maxActs = maxW ? 1 : 0;
     if (opt.cols) list.style.setProperty('--cols', opt.cols); else list.style.removeProperty('--cols');
     list.style.setProperty('--c4', maxW + 'px');
     const scroll = list.scrollTop;
