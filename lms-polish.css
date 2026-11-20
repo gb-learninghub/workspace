@@ -506,14 +506,14 @@ html[data-lms-view="overview"] #view-overview .overview-panel{padding:24px 26px}
 #lib-list .lib-week-group.is-current{border-color:#e5c16b!important;background:#fffaf0!important;box-shadow:0 0 0 1px #e5c16b}
 #lib-list .lib-week-group.is-current .lib-week-title{color:#8a6414}
 .lib-now{display:inline-flex;align-items:center;height:22px;margin-left:10px;padding:0 10px;border-radius:999px;background:#e5c16b;color:#1B1D22;font-size:.75rem;font-weight:800;vertical-align:middle}
-@media(min-width:481px){
+@media(min-width:521px){
 .overview-stat-icon{align-self:stretch;height:auto;border-radius:14px}
 .overview-stat-icon svg{width:24px;height:24px}
 .overview-stat-icon{aspect-ratio:auto;width:60px;min-width:60px}
 .overview-stat{column-gap:14px}
 .overview-stat-label{white-space:normal;overflow:visible;text-overflow:clip}
 }
-@media(min-width:1101px){
+@media(min-width:1024px){
 .overview-finance .overview-section-title{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:start}
 .overview-finance .overview-section-title>div{grid-column:1/5}
 .overview-finance .overview-section-title>a{grid-column:5;justify-self:end;padding:0 14px 0 0;white-space:nowrap}
@@ -960,8 +960,8 @@ main>section.rounded-2xl,main>.bg-white.rounded-2xl,.overview-finance,.overview-
 #lib-list .mt-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
 #lib-list .mt-grid>.mt-sect{margin:0;padding:0;border:0;border-radius:0;background:transparent;min-width:0}
 #lib-list .mt-grid .mt-row .mt-name{overflow-wrap:anywhere}
-@media(max-width:900px){#lib-list .mt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){#lib-list .mt-grid{grid-template-columns:1fr}}
+@media(max-width:1023px){#lib-list .mt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){#lib-list .mt-grid{grid-template-columns:1fr}}
 
 /* Học liệu: bảng theo bài */
 #lib-list .mt-tbl{display:flex;flex-direction:column}
@@ -1010,13 +1010,13 @@ main>section.rounded-2xl,main>.bg-white.rounded-2xl,.overview-finance,.overview-
 .stu-btn em{font-style:normal;font-weight:700;color:#718096}
 .s-none{color:#b6bcc6;font-weight:600}
 .chip.s-chip{margin:0 auto;padding:5px 4px;font-size:.75rem;white-space:nowrap}
-@media(min-width:721px){
+@media(min-width:641px){
 #grid{min-width:1060px}
 #grid .c-name{width:150px}
 #grid th.stu,#grid td.stu{width:132px;padding:8px 8px}
 #grid th.sn,#grid td.sn{width:64px;padding:6px 3px}
 }
-@media(max-width:720px){
+@media(max-width:640px){
 #grid .scol{display:none!important}
 .wk-tab{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:45;width:28px;height:64px;align-items:center;justify-content:center;background:#16181D;color:#e5c16b;border:0;border-radius:0 12px 12px 0;cursor:pointer;transition:left .22s ease}
 .wk-tab svg{transition:transform .22s ease}
@@ -1051,7 +1051,7 @@ p:not([class*="text-center"]):not(.m-none),.dlg p,.card p,.text-sm.text-slate-50
 textarea.field{text-align:justify}
 
 /* Danh sách buổi học trong tuần: dùng cả trên máy tính */
-@media(min-width:721px){
+@media(min-width:641px){
 .wk-tab{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:45;width:28px;height:64px;align-items:center;justify-content:center;background:#16181D;color:#e5c16b;border:0;border-radius:0 12px 12px 0;cursor:pointer;transition:left .22s ease}
 .wk-tab svg{transition:transform .22s ease}
 body.wk-open .wk-tab{left:min(86vw,360px)}
@@ -1077,7 +1077,7 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 #grid .sg-btn span{width:8px;height:8px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s}
 #grid.sn-off .sg-btn span{transform:rotate(-135deg)}
 #grid.sn-off .sn{display:none!important}
-@media(max-width:720px){#grid .sg{display:none!important}}
+@media(max-width:640px){#grid .sg{display:none!important}}
 
 /* Buổi học xếp ngang ngay cạnh cột Lớp, thu gọn được (máy tính); ngăn kéo chỉ dùng trên màn hình nhỏ */
 @media(min-width:1024px){
@@ -1222,7 +1222,7 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 .sw-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
 .sw-foot button{flex:0 0 auto;padding:0 22px}
 #sw-att.hidden{display:none}
-@media(max-width:720px){.sw-box{left:16px;right:16px;bottom:72px;width:auto}}
+@media(max-width:640px){.sw-box{left:16px;right:16px;bottom:72px;width:auto}}
 
 /* Biểu tượng hình thức học: nằm cùng dòng với giờ, đổi màu theo chữ của thẻ */
 #grid .chip .c-t{display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
