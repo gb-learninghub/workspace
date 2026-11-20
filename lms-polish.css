@@ -1321,6 +1321,7 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 .chip.dv-b small{flex-basis:100%}
 .chip.dv-b b{font-weight:700}
 .chip.dv-b small{text-align:left!important;font-size:.75rem}
+@media(min-width:641px){.chip.dv-b .c-t{font-variant-numeric:tabular-nums}.chip.dv-b small{padding-left:19px}}
 .dv-now{position:absolute;left:0;right:0;border-top:2px solid #e11d48;z-index:3;pointer-events:none}
 .dv-now span{position:absolute;right:0;top:-10px;padding:0 6px;border-radius:999px;background:#e11d48;color:#fff;font-size:.75rem;font-weight:700}
 .dv-empty{margin-top:10px;text-align:center;color:#8a93a3;font-size:.8125rem}
