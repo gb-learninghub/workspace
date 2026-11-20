@@ -185,7 +185,10 @@ body .stat-tile:first-child{border-top-color:#E4E6EA!important}
 body .stat-tile::before,body .stat-tile::after{display:none!important}
 body main .bg-white.rounded-2xl,body main section.bg-white{background-image:none!important;border:1px solid #E4E6EA!important}
 body #lms-nav{box-shadow:none!important;border:1px solid #E4E6EA!important}
-body.student-list-page table.stack thead{display:grid!important;grid-template-columns:minmax(0,1.2fr) minmax(0,.85fr) minmax(0,.85fr) 14px 80px;column-gap:6px}
+body.student-list-page table.stack thead{display:flex!important;align-items:center;gap:14px;padding:0 2px}
+body.student-list-page table.stack thead::before{content:"Sắp xếp:";font-size:.75rem;font-weight:650;color:#5F6B7A}
+body.student-list-page table.stack thead th:not(:has(.sortbtn)){display:none!important}
+body.student-list-page table.stack thead .sortbtn{min-height:44px}
 body.student-list-page table.stack thead tr{display:contents!important}
 body.student-list-page table.stack thead th{padding:0!important;font-size:.75rem!important;border:0!important}
 body.student-list-page table.stack tbody tr{display:grid!important;grid-template-columns:minmax(0,1.2fr) minmax(0,.85fr) minmax(0,.85fr) 14px 80px;column-gap:6px;align-items:center!important;padding:8px 2px!important}
