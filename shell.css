@@ -45,7 +45,7 @@ details.card[open] > summary{margin-bottom:8px}
 .hidden{display:none}
 body.student-dashboard-view{--t-primary:#16181D;--t-primary-2:#23262D;--t-accent:#4A4E57;--t-tint:#F4F5F7;--t-tint-2:#E4E6EA;--t-soft:#f5f7fa;--t-border:#E4E6EA;--t-line:#c5ceda;--t-muted:#596579;--t-ink:#1B1D22;--page-bg:transparent;background:transparent;color:#1B1D22}
 body{background:transparent;color:#1B1D22}
-.wrap{max-width:1740px;padding:18px 24px calc(30px + env(safe-area-inset-bottom))}
+.wrap{max-width:1440px;padding:18px 24px calc(30px + env(safe-area-inset-bottom))}
 .student-logo{display:none}
 .student-header-inner>.student-greeting{display:none}
 .student-header-inner{min-height:58px;padding:8px 24px!important;justify-content:flex-end!important}
