@@ -986,7 +986,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
     if (a && a.tagName === "TEXTAREA" && state.npEl && state.npEl.contains(a) && a.selectionEnd > a.selectionStart) {
       t = a.value.slice(a.selectionStart, a.selectionEnd); var r = a.getBoundingClientRect(); rect = { left: r.left, top: r.top + 4, bottom: r.top + 4 };
     } else {
-      var s = window.getSelection(); if (s && s.rangeCount && !s.isCollapsed && $("#passage").contains(s.anchorNode)) { t = s.toString(); rect = s.getRangeAt(0).getBoundingClientRect(); inf = selInfo(); }
+      var s = window.getSelection(); if (s && s.rangeCount && !s.isCollapsed && ($("#passage").contains(s.anchorNode) || $("#qs").contains(s.anchorNode))) { t = s.toString(); rect = s.getRangeAt(0).getBoundingClientRect(); inf = selInfo(); }
     }
     t = String(t).replace(/\s+/g, " ").trim();
     var word = /^[A-Za-z][A-Za-z' -]{1,38}$/.test(t) && t.split(" ").length <= 3;
