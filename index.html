@@ -1756,6 +1756,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         $('btn-copy').addEventListener('click', copyNextWeek);
         ['search', 'filter-status', 'sort'].forEach(id => $(id).addEventListener(id === 'search' ? 'input' : 'change', render));
         $('day-nav-label').addEventListener('click', () => $('day-today').click());
+        $('day-nav-label').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('day-today').click(); } });
         $('day-today').addEventListener('click', () => { st.week = NOW_WEEK; st.selDay = (new Date().getDay() + 6) % 7; refresh(); });
         $('day-prev').addEventListener('click', () => { if (st.selDay > 0) { st.selDay -= 1; render(); } else if (st.week > 1) { st.week -= 1; st.selDay = 6; refresh(); } });
         $('day-next').addEventListener('click', () => { if (st.selDay < 6) { st.selDay += 1; render(); } else { st.week += 1; st.selDay = 0; refresh(); } });
