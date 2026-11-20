@@ -616,9 +616,35 @@
 
 /* Số tiền ẩn mặc định: phần tử .mh hiện icon mắt, bấm vào để hiện số (bấm lại để ẩn) */
 (function () {
+  /* Cho bàn phím và trình đọc màn hình dùng được: role=button, Tab tới được, Enter hoặc Space để hiện/ẩn */
+  function lab(m) {
+    if (m.classList.contains('m-show')) { m.removeAttribute('aria-label'); m.setAttribute('aria-pressed', 'true'); }
+    else { m.setAttribute('aria-label', 'Số tiền đang ẩn. Bấm để hiện'); m.setAttribute('aria-pressed', 'false'); }
+  }
+  function enh(m) {
+    if (m.__mhA || m.closest('button,a')) return;
+    m.__mhA = true; m.setAttribute('role', 'button'); m.tabIndex = 0; lab(m);
+  }
+  function scan(r) {
+    if (r.classList && r.classList.contains('mh')) enh(r);
+    if (r.querySelectorAll) Array.prototype.forEach.call(r.querySelectorAll('.mh'), enh);
+  }
+  function flip(m) { m.classList.toggle('m-show'); if (m.__mhA) lab(m); }
   document.addEventListener('click', function (e) {
     var m = e.target.closest('.mh'); if (!m) return;
     e.preventDefault(); e.stopPropagation();
-    m.classList.toggle('m-show');
+    flip(m);
   }, true);
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var m = e.target.closest && e.target.closest('.mh'); if (!m || m !== e.target) return;
+    e.preventDefault(); flip(m);
+  });
+  function start() {
+    scan(document.body);
+    new MutationObserver(function (ms) {
+      ms.forEach(function (x) { Array.prototype.forEach.call(x.addedNodes, function (n) { if (n.nodeType === 1) scan(n); }); });
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
