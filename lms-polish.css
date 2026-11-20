@@ -1234,6 +1234,13 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 .sw-foot button{flex:0 0 auto;padding:0 22px}
 #sw-att.hidden{display:none}
 @media(max-width:640px){.sw-box{left:16px;right:16px;bottom:72px;width:auto}}
+/* Danh sách buổi chưa cập nhật: mặc định gọn một dòng, bấm để mở */
+.sw-fold:not(.is-open)>.sw-row,.sw-fold:not(.is-open)>p,.sw-fold:not(.is-open)>.sw-btns{display:none}
+.sw-fold{padding-top:2px;padding-bottom:2px}
+.sw-fold.is-open{padding-bottom:14px}
+.sw-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:0;border:0;background:none;font:inherit;font-size:.9375rem;font-weight:800;color:#1B1D22;text-align:left;cursor:pointer}
+.sw-toggle::after{content:"";flex:none;width:8px;height:8px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg);margin:-3px 4px 0 0;transition:transform .15s}
+.sw-fold.is-open .sw-toggle::after{transform:rotate(-135deg);margin-top:3px}
 
 /* Biểu tượng hình thức học: nằm cùng dòng với giờ, đổi màu theo chữ của thẻ */
 #grid .chip .c-t{display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}

@@ -122,7 +122,7 @@
     }
   </style>
   <script src="lms-mode.js?v=1"></script><link rel="stylesheet" href="overview-redesign.css?v=3">
-  <link rel="stylesheet" href="lms-polish.css?v=17">
+  <link rel="stylesheet" href="lms-polish.css?v=18">
 <link rel="stylesheet" href="tailwind.css?v=1"></head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
   <nav id="lms-nav" aria-label="Điều hướng chính">
@@ -1930,6 +1930,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
             if (k === 'att-later') { sw.dismissed.add('a' + id); if (card) card.remove(); sw.html = ''; }
             else if (k === 'att-open' && s) swOpen(s, 'att');
             else if (k === 'open' && s) swOpen(s, 'full');
+            else if (k === 'toggle' && card) { const open = card.classList.toggle('is-open'); b.setAttribute('aria-expanded', open ? 'true' : 'false'); }
             else if (k === 'hide') { try { localStorage.setItem('gb.sw.hide', b.dataset.upto); } catch (_) { /* bỏ qua */ } if (card) card.remove(); sw.html = ''; }
           });
         }
@@ -1937,7 +1938,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         let h = starts.map(s => `<div class="sw-card"><b>Điểm danh lớp ${esc(classLabel(s.class_id))}</b><p>${swDow(s)}, buổi bắt đầu lúc ${t5(s.start_time)}.</p><div class="sw-btns"><button type="button" data-sw="att-later" data-swid="${s.id}">Để sau</button><button type="button" class="sw-primary" data-sw="att-open" data-swid="${s.id}">Điểm danh</button></div></div>`).join('');
         if (backlog.length) {
           const rows = backlog.slice(0, 6).map(s => `<div class="sw-row"><span><b>${esc(classLabel(s.class_id))}</b><small>${swDow(s)}, ${swDm(s)} · ${t5(s.start_time)}</small></span><button type="button" data-sw="open" data-swid="${s.id}">Cập nhật</button></div>`).join('');
-          h += `<div class="sw-card"><b>${backlog.length} buổi chưa cập nhật</b>${rows}${backlog.length > 6 ? `<p>Và ${backlog.length - 6} buổi khác.</p>` : ''}<div class="sw-btns" style="margin-top:8px"><button type="button" data-sw="hide" data-upto="${backlog[0].session_date}">Ẩn danh sách</button></div></div>`;
+          h += `<div class="sw-card sw-fold"><button type="button" class="sw-toggle" data-sw="toggle" aria-expanded="false"><span>${backlog.length} buổi chưa cập nhật</span></button>${rows}${backlog.length > 6 ? `<p>Và ${backlog.length - 6} buổi khác.</p>` : ''}<div class="sw-btns" style="margin-top:8px"><button type="button" data-sw="hide" data-upto="${backlog[0].session_date}">Ẩn danh sách</button></div></div>`;
         }
         if (h !== sw.html) { sw.html = h; box.innerHTML = h; }
       }
