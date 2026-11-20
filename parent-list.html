@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://unpkg.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="lms.css?v=3">
-  <script src="lms.js?v=4"></script><script src="lms-tiles.js?v=2"></script>
+  <script src="lms.js?v=5"></script><script src="lms-tiles.js?v=2"></script>
   <style>
     .edlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(22,24,29,.35)}
     .edlg[hidden]{display:none}
@@ -206,9 +206,9 @@ table.stack thead{display:none!important}
         ph.editId = p ? p.id : null; ph.sel = new Set(p ? kidsOf(p).map(k => k.id) : []);
         $('editor-title').textContent = p ? 'Sửa phụ huynh' : 'Thêm phụ huynh';
         $('ph-label').value = p ? p.label : ''; $('ph-search').value = ''; setMsg(''); renderPick();
-        $('editor').hidden = false; setTimeout(() => $('ph-label').focus(), 30);
+        $('editor').hidden = false; LMS.modal($('editor'), { onClose: () => { $('editor').hidden = true; } }); setTimeout(() => $('ph-label').focus(), 30);
       }
-      const closeEditor = () => { $('editor').hidden = true; };
+      const closeEditor = () => { const m = $('editor')._lmsModal; if (m) m.close(); else $('editor').hidden = true; };
 
       async function reload() { await load(); render(); }
 
@@ -255,7 +255,6 @@ table.stack thead{display:none!important}
         $('ph-cancel').addEventListener('click', closeEditor);
         $('ph-save').addEventListener('click', save);
         $('editor').addEventListener('mousedown', e => { if (e.target === $('editor')) closeEditor(); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('editor').hidden) closeEditor(); });
         $('ph-search').addEventListener('input', renderPick);
         $('ph-label').addEventListener('input', renderPick);
         $('ph-pick').addEventListener('change', e => { const cb = e.target.closest('[data-sid]'); if (!cb) return; const id = Number(cb.dataset.sid); if (cb.checked) ph.sel.add(id); else ph.sel.delete(id); });
