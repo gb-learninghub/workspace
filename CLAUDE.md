@@ -22,6 +22,14 @@ Giao tiếp bằng tiếng Việt tự nhiên, ngắn gọn. Bảo không biết
 - `sessionStorage.lms_teacher_ok` cache kết quả kiểm giáo viên 30 phút; `signOut` xoá nó.
 - Điểm Reading cộng cả 3 part (`sumFirst`), không lấy một part.
 
+## Thang cỡ chữ
+
+- Giao diện LMS (CSS, JS, HTML gốc): chỉ dùng 12, 13, 14, 15, 16, 18, 20px. Trang bài học `<lớp>/w<số>/` thêm 22px.
+- Sàn 12px cho mọi chữ đọc, kể cả nhãn, huy hiệu, chữ phụ. Không dùng cỡ lẻ (12.8, 14.5, 19.2...) và không dùng 17px.
+- Từ 24px trở lên là chữ trang trí (tiêu đề, số lớn), tự do. Cỡ theo `em` hoặc `%` giữ nguyên.
+- Ô nhập trên iPad giữ ít nhất 16px, nếu không Safari tự phóng to trang.
+- Chữ to lên có thể làm tràn khung cố định (`max-width`, `height`, `overflow:hidden`). Sau khi đổi cỡ chữ phải soát các khung này.
+
 ## Supabase
 
 Bảng chính: `grades`, `submissions`, `attendance`, `sessions`, `student_targets`, `student_scores`, `week_materials`, `assignments`, `assignment_classes`. RPC: `student_portal`, `student_grades`, `submit_assignment`, `is_teacher`. Đổi schema phải hỏi Bảo trước.
