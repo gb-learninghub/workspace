@@ -60,7 +60,9 @@ body.student-dashboard-view #app.wrap{height:100dvh;min-height:0;box-sizing:bord
 .student-brand img{width:100%;max-width:100%;height:auto;object-fit:contain}
 .student-nav{display:flex;flex-direction:column}
 .student-nav button{display:flex;align-items:center;width:100%;border:0;background:transparent;text-align:left;cursor:pointer;transition:background .15s,color .15s}
-.student-nav button:hover,.student-nav button:focus-visible{outline:none}
+.student-nav button:hover{outline:none}
+.student-nav button:focus-visible{outline:2px solid #16181D;outline-offset:-3px}
+.student-nav button.active:focus-visible{outline-color:#e5c16b}
 .student-nav button.active{cursor:default}
 .student-nav svg{flex:none}
 .student-main{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
@@ -411,3 +413,7 @@ body.student-dashboard-view .student-shell>.student-sidebar[aria-label="Điều 
 }
 html.lms-leaving::before{content:"";position:fixed;left:0;top:0;height:3px;width:100%;background:#e5c16b;z-index:9999;transform-origin:left;animation:lms-go 1.2s cubic-bezier(.2,.7,.2,1) forwards;pointer-events:none}
 @keyframes lms-go{from{transform:scaleX(.05)}60%{transform:scaleX(.7)}to{transform:scaleX(.92)}}
+
+/* vùng bấm rộng hơn cho nút icon nhỏ, không đổi hình dạng */
+.overview-week-controls .icon-btn,.student-welcome-tools .icon-btn,#btn-theme{position:relative}
+.overview-week-controls .icon-btn::after,.student-welcome-tools .icon-btn::after,#btn-theme::after{content:"";position:absolute;inset:-8px -4px}

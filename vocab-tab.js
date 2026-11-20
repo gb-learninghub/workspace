@@ -345,7 +345,9 @@
       }
       else if (a === 'del' && x) {
         var go = function () { api.remove(x.id).then(function () { st.items = st.items.filter(function (y) { return y !== x; }); if (st.pop === x.id) V.closeModal(); renderBar(); renderList(); toast('Đã xóa từ'); }).catch(function (er) { toast(err(er)); }); };
-        if (w.confirm('Xóa từ "' + x.word + '" khỏi sổ?')) go();
+        var msg = 'Xóa từ "' + x.word + '" khỏi sổ?';
+        if (w.LMS && w.LMS.confirm) w.LMS.confirm(msg, { ok: 'Xóa', danger: true }).then(function (yes) { if (yes) go(); });
+        else if (w.confirm(msg)) go();
       }
     }
     root.addEventListener('click', onClick);
