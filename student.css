@@ -965,5 +965,7 @@ html body.student-dashboard-view .asg-row .asg-lock-note{margin-top:2px;text-ali
 html body.student-dashboard-view .asg-row .asg-line .asg-slot{width:34px;height:34px}
 }
 
-/* Vùng bấm tối thiểu 44px trên điện thoại (khu E) */
-@media(max-width:640px){body.student-dashboard-view .g-week-sched .week-calendar.week-calendar{column-gap:1px!important}body.student-dashboard-view .g-week-sched .week-calendar .week-calendar-day.week-calendar-day.week-calendar-day{width:100%!important}}
+/* Vùng bấm tối thiểu 44px trên điện thoại và iPad (khu E) */
+@media(max-width:1023px){body.student-dashboard-view .g-week-sched .week-calendar.week-calendar{column-gap:1px!important}body.student-dashboard-view .g-week-sched .week-calendar .week-calendar-day.week-calendar-day.week-calendar-day{width:100%!important}}
+.overview-week-controls .icon-btn{min-width:44px!important;min-height:44px!important}
+.t-thisweek{min-height:44px}
