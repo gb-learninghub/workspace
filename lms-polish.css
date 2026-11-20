@@ -17,7 +17,7 @@ main .panel-overview{background:#F4F5F7!important;border:1px solid #E4E6EA!impor
 .hero-card{background:linear-gradient(115deg,#23262D 0%,#23262D 100%)!important;border-left:4px solid #b38324!important;border-radius:16px!important;box-shadow:0 8px 22px rgba(22,24,29,.12)!important}
 .hero-card::after{display:none!important}
 .panel-soft{background:#f7f8fa!important;border:1px solid #E4E6EA!important;border-radius:12px!important}
-.btn-primary,.btn-soft{min-height:42px!important;border-radius:10px!important;font-weight:650!important;letter-spacing:0!important}
+.btn-primary,.btn-soft{min-height:42px!important;border-radius:9999px!important;font-weight:650!important;letter-spacing:0!important}
 .btn-primary{background:#23262D!important;box-shadow:0 2px 4px rgba(22,24,29,.12)}
 .btn-primary:hover{background:#23262D!important}
 .btn-soft{background:#fff!important;border-color:#E4E6EA!important;color:#1B1D22!important}
