@@ -159,7 +159,7 @@ body.student-dashboard-view #app.wrap{padding:10px 14px}
 .student-welcome-tools{gap:2px}
 .student-welcome h1{font-size:.9375rem}
 .student-welcome p{display:none}
-.overview-week-label{max-width:74px;font-size:.75rem}
+.overview-week-label{max-width:100px;font-size:.75rem}
 .overview-week-controls .icon-btn{width:22px;height:28px}
 .student-welcome-tools .icon-btn,#btn-theme{width:26px;height:28px}
 }
@@ -234,7 +234,7 @@ body.student-dashboard-view #app.wrap{width:100%;padding:8px 10px calc(8px + env
 .student-nav svg{width:19px;height:19px}
 .student-workspace{grid-column:1;grid-row:3;min-height:0}
 .student-main,.student-main.student-overview-view{padding:14px 15px;background:#f5f6f8}
-.student-welcome .overview-week-label{min-width:0;max-width:90px;font-size:.75rem}
+.student-welcome .overview-week-label{min-width:0;max-width:112px;font-size:.75rem}
 .overview-week-controls{gap:0}
 .overview-week-controls .icon-btn{width:24px;height:28px}
 }
