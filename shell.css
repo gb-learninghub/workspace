@@ -85,7 +85,6 @@ body.student-dashboard-view #app.wrap{height:100dvh;min-height:0;box-sizing:bord
 .student-welcome-tools{display:flex;align-items:center;justify-content:flex-end;min-width:0}
 .student-welcome-actions .icon-btn,#btn-theme{width:38px;height:38px;border-radius:11px;background:#fff;border:1px solid var(--t-border);color:var(--t-primary)}
 .overview-week-controls{display:flex;align-items:center;margin-right:2px}
-.overview-week-controls .icon-btn{border:0;background:transparent}
 .overview-week-label{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;line-height:1.25;white-space:nowrap;font-variant-numeric:tabular-nums}
 .student-main-content{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:0 4px 16px 0}
 .student-main-section h2,.student-rail h2{color:#1B1D22}
@@ -111,12 +110,10 @@ body.student-dashboard-view #app.wrap{height:100dvh;min-height:0;box-sizing:bord
 .student-welcome-brand-divider{display:none}
 .student-welcome-right{padding-left:0}
 .student-welcome p{font-size:.75rem}
-.student-welcome-tools{gap:4px}
 }
 @media(max-width:520px){
 .student-welcome-brand-divider{display:none}
 .student-welcome-title{padding-left:7px}
-.overview-week-controls{gap:0}
 }
 @media(max-width:1050px){
 body.student-dashboard-view #app.wrap{padding:10px 14px}
@@ -141,8 +138,6 @@ body.student-dashboard-view #app.wrap{padding:10px 14px}
 .student-rail{grid-column:1;display:flex;flex-direction:column;align-items:stretch;padding:15px}
 .student-rail>*{min-width:0;width:auto}
 .student-welcome{margin-bottom:10px}
-.overview-week-controls{margin:0}
-.overview-week-controls .icon-btn{padding:0}
 .overview-week-label{min-width:0;max-width:150px;white-space:normal;font-size:.75rem}
 .student-welcome-actions{gap:4px}
 }
@@ -156,12 +151,9 @@ body.student-dashboard-view #app.wrap{padding:10px 14px}
 .student-welcome-left{gap:5px}
 .student-welcome-brand-divider{height:28px}
 .student-welcome-right{gap:3px;padding-left:0}
-.student-welcome-tools{gap:2px}
 .student-welcome h1{font-size:.9375rem}
 .student-welcome p{display:none}
 .overview-week-label{max-width:100px;font-size:.75rem}
-.overview-week-controls .icon-btn{width:22px;height:28px}
-.student-welcome-tools .icon-btn,#btn-theme{width:26px;height:28px}
 }
 .student-nav button{color:#73777e}
 .student-nav button.active{box-shadow:none}
@@ -197,7 +189,7 @@ body.student-dashboard-view #app.wrap{width:100vw;max-width:none;padding:0!impor
 .student-welcome-right{gap:24px}
 .student-welcome-actions{color:#e5c16b}
 .overview-week-controls{gap:4px;margin:0}
-.overview-week-controls .icon-btn{width:32px;height:36px;color:#e5c16b}
+.overview-week-controls .icon-btn{border:0;background:transparent;width:32px;height:36px;color:#e5c16b}
 .overview-week-controls .icon-btn:hover{background:rgba(255,255,255,.1);color:#f0d58e}
 .overview-week-label{min-width:176px;color:#e5c16b;font-size:.875rem;font-weight:700}
 .student-welcome-tools{gap:8px}
@@ -224,7 +216,6 @@ body.student-dashboard-view #app.wrap{width:100%;padding:8px 10px calc(8px + env
 .student-welcome-title{align-items:center;text-align:center}
 .student-welcome h1{font-size:1rem}
 .student-welcome-right{gap:4px}
-.student-welcome-tools .icon-btn,#btn-theme{width:30px;height:32px}
 .student-shell>.student-sidebar{grid-column:1;grid-row:2;padding-top:0}
 .student-sidebar{padding:8px 13px 10px;border-bottom:0}
 .student-sidebar .student-brand{display:none}
@@ -236,7 +227,7 @@ body.student-dashboard-view #app.wrap{width:100%;padding:8px 10px calc(8px + env
 .student-main,.student-main.student-overview-view{padding:14px 15px;background:#f5f6f8}
 .student-welcome .overview-week-label{min-width:0;max-width:112px;font-size:.75rem}
 .overview-week-controls{gap:0}
-.overview-week-controls .icon-btn{width:24px;height:28px}
+.overview-week-controls .icon-btn{width:24px;height:28px;padding:0}
 }
 @media(min-width:781px){
 .student-shell-inner-tabs .student-workspace{grid-template-columns:minmax(0,1fr) 360px}
