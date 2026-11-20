@@ -181,11 +181,35 @@
       return { w: norm(k[0]), p: '', m: norm(k.slice(1).join(' - ')) };
     }).filter(function (f) { return f.w; });
   }
-  /* find(f) trả về { attr, meaning } nếu dạng từ này có trong sổ / từ điển: bấm vào sẽ mở từ đó */
-  function formsHtml(text, find) {
-    var L = parseForms(text); if (!L.length) return '';
+  /* Hai từ đơn cùng gốc: chung ít nhất 4 chữ cái đầu và gần trùng hết từ ngắn hơn (assume/assumption, know/knowledge).
+     Thử trên 143 từ của kho: 29 cặp đúng, không cặp nào sai. */
+  function famRel(a, b) { var L = 0, n = Math.min(a.length, b.length); while (L < n && a[L] === b[L]) L++; return L >= 4 && L >= n - 2; }
+  /* Tự tìm trong danh sách (sổ hoặc từ điển) các từ cùng gốc với x, ghép theo chuỗi: comparable - compare - comparison */
+  function wordFamily(x, list, wordOf, posOf) {
+    var k = key(wordOf(x)); if (!k || /\s/.test(k)) return [];
+    var fam = [k], out = [], seen = {}, grew = true;
+    seen[k + '|' + posShort(posOf(x))] = 1;
+    while (grew) {
+      grew = false;
+      list.forEach(function (y) {
+        var wy = key(wordOf(y)), sk = wy + '|' + posShort(posOf(y));
+        if (y === x || !wy || /\s/.test(wy) || seen[sk]) return;
+        if (fam.some(function (f) { return f === wy || famRel(f, wy); })) { seen[sk] = 1; if (fam.indexOf(wy) < 0) fam.push(wy); out.push(y); grew = true; }
+      });
+    }
+    return out.sort(function (a, b) { return key(wordOf(a)) < key(wordOf(b)) ? -1 : 1; });
+  }
+  /* find(f) trả về { attr, meaning } nếu dạng từ ghi tay có trong sổ / từ điển: bấm vào sẽ mở từ đó.
+     auto: các từ cùng gốc tự tìm được [{ w, p, m, attr }], thêm sau phần ghi tay, bỏ những từ đã ghi tay. */
+  function formsHtml(text, find, auto) {
+    var L = parseForms(text).map(function (f) { var hit = find ? find(f) : null; return { w: f.w, p: f.p, m: f.m || (hit && hit.meaning) || '', attr: hit ? hit.attr : '' }; });
+    (auto || []).forEach(function (a) {
+      if (L.some(function (f) { return key(f.w) === key(a.w) && (!f.p || !a.p || f.p === a.p); })) return;
+      L.push(a);
+    });
+    if (!L.length) return '';
     return '<div class="vm-forms">' + L.map(function (f) {
-      var hit = find ? find(f) : null, mean = f.m || (hit && hit.meaning) || '';
+      var hit = f.attr ? f : null, mean = f.m || '';
       var w0 = hit ? '<button type="button" class="fw link" ' + hit.attr + ' title="Mở từ này">' + esc(f.w) + '</button>' : '<span class="fw">' + esc(f.w) + '</span>';
       return '<div class="vm-f">' + w0 + (f.p ? '<span class="fp">(' + esc(f.p) + ')</span>' : '') + (mean ? '<span class="fm">' + esc(mean) + '</span>' : '') + '</div>';
     }).join('') + '</div>';
@@ -290,5 +314,5 @@
 
   w.GBVocab = { norm: norm, key: key, esc: esc, dict: dict, speak: speak, api: api, parseList: parseList, rpcClient: rpcClient, POS: POS,
     posShort: posShort, posPill: posPill, pill: pill, POS_LIST: POS_LIST, uiCss: uiCss,
-    entryTop: entryTop, entryRow2: entryRow2, topicPill: topicPill, fullHtml: fullHtml, parseForms: parseForms, formsHtml: formsHtml, findForm: findForm, modal: modal, closeModal: closeModal, modalOpen: function () { return M; }, select: select, filterOpts: filterOpts, match: match };
+    entryTop: entryTop, entryRow2: entryRow2, topicPill: topicPill, fullHtml: fullHtml, parseForms: parseForms, formsHtml: formsHtml, findForm: findForm, wordFamily: wordFamily, modal: modal, closeModal: closeModal, modalOpen: function () { return M; }, select: select, filterOpts: filterOpts, match: match };
 })(window);

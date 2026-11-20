@@ -131,7 +131,8 @@
     var sg = suggested(b);
     return '<div class="td">' + V.fullHtml({ word: b.word, pos: b.pos, ipa: b.ipa, topic: b.topic, au: 'data-td="say" data-id="' + b.id + '"',
       mean: sg ? esc(sg) : V.pill('chưa có nghĩa', 'warn'), def: b.definition_en, ex: b.example,
-      forms: V.formsHtml(b.word_forms, function (f) { var y = V.findForm(S.bank, f, function (z) { return z.word; }, function (z) { return z.pos; }); return y && y.id !== b.id ? { attr: 'data-td="open" data-id="' + y.id + '"', meaning: suggested(y) } : null; }),
+      forms: V.formsHtml(b.word_forms, function (f) { var y = V.findForm(S.bank, f, function (z) { return z.word; }, function (z) { return z.pos; }); return y && y.id !== b.id ? { attr: 'data-td="open" data-id="' + y.id + '"', meaning: suggested(y) } : null; },
+        V.wordFamily(b, S.bank, function (z) { return z.word; }, function (z) { return z.pos; }).map(function (y) { return { w: y.word, p: V.posShort(y.pos), m: suggested(y), attr: 'data-td="open" data-id="' + y.id + '"' }; })),
       meta: b.level ? 'Cấp độ ' + esc(b.level) : '', edit: 'data-td="edit" data-id="' + b.id + '" aria-label="Sửa từ" title="Sửa"' }) + ownHtml(b) + '</div>';
   }
   function syncPop() {

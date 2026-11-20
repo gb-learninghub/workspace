@@ -120,7 +120,8 @@
       var edit = ed ? '<div class="vnb-edit" style="margin-top:18px"><input data-vnb-edit value="' + esc(x.status === 'typed' ? x.meaning : '') + '" placeholder="Nghĩa tiếng Việt của em" aria-label="Nghĩa tiếng Việt"><button type="button" class="vnb-btn pri" data-vnb="edit-save" data-id="' + x.id + '">Lưu</button><button type="button" class="vnb-btn" data-vnb="edit-cancel">Hủy</button></div>' : '';
       return '<div class="vnb">' + V.fullHtml({ word: x.word, pos: x.pos, ipa: x.ipa, topic: x.topic, au: 'data-vnb="say" data-id="' + x.id + '"',
         mean: x.meaning ? meanHtml(x) : V.pill('chờ nghĩa', 'warn'), def: x.definition, ex: x.example, note: x.note,
-        forms: V.formsHtml(x.word_forms, function (f) { var y = V.findForm(st.items || [], f, function (z) { return z.word; }, function (z) { return z.pos; }); return y && y.id !== x.id ? { attr: 'data-vnb="open" data-id="' + y.id + '"', meaning: y.meaning || '' } : null; }),
+        forms: V.formsHtml(x.word_forms, function (f) { var y = V.findForm(st.items || [], f, function (z) { return z.word; }, function (z) { return z.pos; }); return y && y.id !== x.id ? { attr: 'data-vnb="open" data-id="' + y.id + '"', meaning: y.meaning || '' } : null; },
+          V.wordFamily(x, st.items || [], function (z) { return z.word; }, function (z) { return z.pos; }).map(function (y) { return { w: y.word, p: V.posShort(y.pos), m: y.meaning || '', attr: 'data-vnb="open" data-id="' + y.id + '"' }; })),
         meta: (x.level ? 'Cấp độ ' + esc(x.level) + ' · ' : '') + (x.source === 'lesson' ? 'Từ bài học' : 'Em tự thêm') + ' · gặp ' + x.seen + ' lần',
         edit: ed ? '' : 'data-vnb="edit" data-id="' + x.id + '" aria-label="Sửa nghĩa" title="Sửa nghĩa"', extra: edit, actions: actions }) + '</div>';
     }
