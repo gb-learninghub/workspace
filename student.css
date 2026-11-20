@@ -967,4 +967,3 @@ html body.student-dashboard-view .asg-row .asg-line .asg-slot{width:34px;height:
 
 /* Vùng bấm tối thiểu 44px trên điện thoại (khu E) */
 @media(max-width:640px){body.student-dashboard-view .g-week-sched .week-calendar.week-calendar{column-gap:1px!important}body.student-dashboard-view .g-week-sched .week-calendar .week-calendar-day.week-calendar-day.week-calendar-day{width:100%!important}}
-.logo-home{padding:12px 0;margin:-12px 0}

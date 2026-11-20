@@ -222,3 +222,7 @@ body.student-dashboard-view .student-nav.t-gnav::-webkit-scrollbar{display:none}
 body.student-dashboard-view .student-nav.t-gnav button{flex:0 0 auto;min-width:68px;min-height:46px!important;padding:0 8px!important;gap:2px!important;font-size:.75rem;font-weight:700;letter-spacing:0;border-radius:12px;background:transparent;color:#aeb9cc!important;scroll-snap-align:center}
 body.student-dashboard-view .student-nav.t-gnav button.active{background:rgba(255,255,255,.14)!important;color:#e5c16b!important}
 }
+
+/* Vùng bấm 44px cho nhãn nhỏ, không đổi hình (khu E) */
+.t-sum .t-chip{position:relative}
+.t-sum .t-chip::after{content:"";position:absolute;inset:-10px -2px}
