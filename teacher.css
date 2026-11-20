@@ -216,12 +216,6 @@ body.student-dashboard-view .t-sub-row{grid-template-columns:minmax(0,1.2fr) min
 .t-pill{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:1px solid #E4E6EA;background:#fff;border-radius:999px;font-weight:700;font-size:.9375rem;color:#475569;cursor:pointer;transition:background .15s,color .15s}
 .t-pill svg{width:18px;height:18px;flex:none}
 .t-pill.on{background:#16181D;border-color:#16181D;color:#fff}
-@media(max-width:780px){
-body.student-dashboard-view .student-nav.t-gnav{display:flex!important;grid-template-columns:none;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;gap:4px;scroll-snap-type:x proximity;scrollbar-width:none}
-body.student-dashboard-view .student-nav.t-gnav::-webkit-scrollbar{display:none}
-body.student-dashboard-view .student-nav.t-gnav button{flex:0 0 auto;min-width:68px;min-height:46px!important;padding:0 8px!important;gap:2px!important;font-size:.75rem;font-weight:700;letter-spacing:0;border-radius:12px;background:transparent;color:#aeb9cc!important;scroll-snap-align:center}
-body.student-dashboard-view .student-nav.t-gnav button.active{background:rgba(255,255,255,.14)!important;color:#e5c16b!important}
-}
 
 /* Vùng bấm 44px cho nhãn nhỏ, không đổi hình (khu E) */
 .t-sum .t-chip{position:relative}
