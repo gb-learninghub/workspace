@@ -717,30 +717,30 @@ body.student-dashboard-view .student-history-row>.tag{justify-self:end!important
 }
 /* ==== m-profile: thanh hồ sơ và nhãn tuần trên mobile (gom m-prof-fix 1-7, m-hide-wk; giữ nguyên thứ tự) ==== */
 @media(max-width:780px){
-body.student-dashboard-view .m-av{width:40px!important;height:40px!important;border-radius:12px!important;background:#F4F5F7!important;background-image:none!important;border:0!important;color:#1B1D22!important}
-body.student-dashboard-view .m-av svg{width:20px!important;height:20px!important;stroke-width:1.8}
+body.student-dashboard-view .m-av{width:40px;height:40px;border-radius:12px;background:#F4F5F7;background-image:none;border:0;color:#1B1D22}
+body.student-dashboard-view .m-av svg{width:20px;height:20px;stroke-width:1.8}
 body.student-dashboard-view .student-workspace .m-profile .m-pi{flex:1 1 auto;min-width:0}
-body.student-dashboard-view .m-profile>.m-week{display:flex!important;flex:none;align-items:center;margin:0 0 0 auto!important;padding:0!important;border:0!important;background:transparent!important;width:auto}
+body.student-dashboard-view .m-profile>.m-week{display:flex;flex:none;align-items:center;margin:0 0 0 auto!important;padding:0;border:0;background:transparent;width:auto}
 body.student-dashboard-view .m-profile .overview-week-controls{gap:0}
-body.student-dashboard-view .m-profile .overview-week-label{min-width:0!important}
-body.student-dashboard-view .m-profile .overview-week-label .week-name{display:inline!important}
-body.student-dashboard-view .m-profile .icon-btn{width:28px!important;height:32px!important}
+body.student-dashboard-view .m-profile .overview-week-label{min-width:0}
+body.student-dashboard-view .m-profile .overview-week-label .week-name{display:inline}
+body.student-dashboard-view .m-profile .icon-btn{width:28px;height:32px}
 body.student-dashboard-view .m-profile .t-thisweek{height:32px;padding:0 6px;font-size:.75rem}
-body.student-dashboard-view .student-workspace .m-profile{padding:0!important;gap:10px!important;overflow:hidden;align-items:stretch!important}
+body.student-dashboard-view .student-workspace .m-profile{padding:0;gap:10px;overflow:hidden;align-items:stretch}
 body.student-dashboard-view .student-workspace .m-profile .m-av{width:52px!important;height:auto!important;min-height:52px;align-self:stretch;border-radius:13px 0 0 13px!important}
 body.student-dashboard-view .student-workspace .m-profile .m-pi{padding:9px 0;justify-content:center}
 body.student-dashboard-view .m-profile>.m-week{padding-right:8px!important;align-self:center}
-body.student-dashboard-view .m-profile .m-week .icon-btn,body.student-dashboard-view .m-profile .m-week .t-thisweek{display:none!important}
+body.student-dashboard-view .m-profile .m-week .icon-btn,body.student-dashboard-view .m-profile .m-week .t-thisweek{display:none}
 body.student-dashboard-view .m-profile .overview-week-label{text-align:right}
 body.student-dashboard-view .m-profile .overview-week-label .week-dates{display:block!important}
 body.student-dashboard-view .m-profile .overview-week-label .week-name{padding:0}
-body.student-dashboard-view .m-profile .overview-week-label{flex-direction:column!important;align-items:flex-end!important;white-space:nowrap}
-body.student-dashboard-view .m-profile .overview-week-label .week-dates{white-space:nowrap!important}
-body.student-dashboard-view .m-profile .overview-week-label{gap:2px!important;line-height:1.15!important;font-family:inherit}
-body.student-dashboard-view .m-profile .overview-week-label .week-name{font-size:.9375rem!important;font-weight:800!important;line-height:1.15!important;color:#1B1D22!important}
-body.student-dashboard-view .m-profile .overview-week-label .week-dates{font-size:.75rem!important;font-weight:400!important;line-height:1.15!important;color:#64748b!important}
-body.student-dashboard-view .student-workspace>.m-stick{padding-bottom:12px!important}
-body.student-dashboard-view .student-week-only-date{display:none!important}
+body.student-dashboard-view .m-profile .overview-week-label{flex-direction:column;align-items:flex-end;white-space:nowrap}
+body.student-dashboard-view .m-profile .overview-week-label .week-dates{white-space:nowrap}
+body.student-dashboard-view .m-profile .overview-week-label{gap:2px;line-height:1.15;font-family:inherit}
+body.student-dashboard-view .m-profile .overview-week-label .week-name{font-size:.9375rem!important;font-weight:800;line-height:1.15;color:#1B1D22}
+body.student-dashboard-view .m-profile .overview-week-label .week-dates{font-size:.75rem;font-weight:400;line-height:1.15;color:#64748b}
+body.student-dashboard-view .student-workspace>.m-stick{padding-bottom:12px}
+body.student-dashboard-view .student-week-only-date{display:none}
 }
 /* ==== att-css ==== */
 .att-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
