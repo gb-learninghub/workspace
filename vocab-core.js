@@ -136,8 +136,13 @@
     '.vm-x{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:0;background:#F2F3F5;color:#1B1D22;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}.vm-x svg{width:18px;height:18px}' +
     '.vm-head{display:flex;align-items:center;gap:8px;padding-right:48px}.vm-tools{margin-left:auto;display:flex;gap:2px;flex:none}.vm-tools .ve-au{margin-left:0}.vm-w{font-size:1.5rem;font-weight:800;line-height:1.25;overflow-wrap:anywhere}.vm-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px}' +
     '.vm-mean{font-size:1.0625rem;line-height:1.5;margin-top:14px;overflow-wrap:anywhere}.vm-sec{margin-top:14px;font-size:.9375rem;line-height:1.55;color:#454B57;overflow-wrap:anywhere}.vm-meta{margin-top:14px;font-size:.8125rem;color:#818999}' +
+    '.vm .vnb-pn{border:0;padding:0;margin:0}.vm .vnb-pt,.vm .td-new-t{font-size:1.25rem;font-weight:800;padding-right:48px}' +
     '.vm-forms{display:flex;flex-direction:column;gap:6px;margin-top:2px}.vm-f{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}.vm-f .fw{font-weight:700;color:#1B1D22}.vm-f .fp{font-size:.8125rem;font-style:italic;color:#596579}.vm-f .fm{color:#454B57}' +
-    '.vm-f button.link{border:0;background:none;padding:0;margin:0;font:inherit;font-weight:700;color:#1D4ED8;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer;min-height:0}' +
+    '.vm-f button.link{border:0;background:none;padding:0;margin:0;font:inherit;font-weight:700;color:#1B1D22;text-decoration:none;cursor:pointer;min-height:0;min-width:0;border-radius:4px}.vm-f button.link:hover{color:#475569}.vm-f button.link:focus-visible{outline:2px solid #16181D;outline-offset:2px}' +
+    /* pop up dạng form: đầu và hàng nút cố định, chỉ vùng giữa cuộn */
+    '.vm.form{display:flex;flex-direction:column;overflow:hidden;padding:0}.vm.form>.vm-body{flex:1;min-height:0;display:flex;flex-direction:column}.vm-fl{flex:1;min-height:0;display:flex;flex-direction:column}' +
+    '.vm-hd{flex:none;padding:20px 64px 12px 20px}.vm-sc{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:4px 20px 16px}' +
+    '.vm-ft{flex:none;display:flex;flex-direction:column;gap:6px;padding:12px 20px 16px;border-top:1px solid #EEF0F3;background:#fff}' +
     '.vm-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.vm-act button{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid #D5D8DE;background:#fff;color:#1B1D22;font:inherit;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}' +
     '.vm-act button.pri{background:#16181D;border-color:#16181D;color:#fff}.vm-act button.del{color:#B42318}.vm-act svg{width:16px;height:16px}' +
     '.vp{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:#ECEEF1;color:#475569;font-size:.75rem;font-weight:700;white-space:nowrap;line-height:1}' +
@@ -220,7 +225,7 @@
     return (f.p && same.filter(function (x) { return posShort(posOf(x)) === f.p; })[0]) || same[0] || null;
   }
 
-  /* Pop up dùng chung: nút đóng, bấm ra ngoài hoặc phím Esc để đóng. o: onClick, onKey, onClose */
+  /* Pop up dùng chung: nút đóng, bấm ra ngoài hoặc phím Esc để đóng. o: onClick, onKey, onInput, onClose, form (đầu và nút cố định, giữa cuộn: dùng .vm-fl > .vm-hd + .vm-sc + .vm-ft) */
   var M = null;
   function closeModal(silent) {
     if (!M) return; var m = M; M = null; m.el.remove();
@@ -230,14 +235,15 @@
   function modal(html, o) {
     closeModal(true);
     var back = document.createElement('div'); back.className = 'vm-back';
-    back.innerHTML = '<div class="vm" role="dialog" aria-modal="true"><button type="button" class="vm-x" data-vm-close aria-label="Đóng"><i data-lucide="x"></i></button><div class="vm-body"></div></div>';
+    back.innerHTML = '<div class="vm' + (o && o.form ? ' form' : '') + '" role="dialog" aria-modal="true"><button type="button" class="vm-x" data-vm-close aria-label="Đóng"><i data-lucide="x"></i></button><div class="vm-body"></div></div>';
     var m = { el: back, body: back.querySelector('.vm-body'), o: o || {}, prev: document.activeElement };
-    m.set = function (h) { m.body.innerHTML = h; if (w.lucide) w.lucide.createIcons(); };
+    m.set = function (h, form) { if (form != null) back.querySelector('.vm').classList.toggle('form', !!form); m.body.innerHTML = h; if (w.lucide) w.lucide.createIcons(); };
     back.addEventListener('click', function (e) {
       if (e.target === back || e.target.closest('[data-vm-close]')) { closeModal(); return; }
       if (m.o.onClick) m.o.onClick(e);
     });
     back.addEventListener('keydown', function (e) { if (m.o.onKey) m.o.onKey(e); });
+    back.addEventListener('input', function (e) { if (m.o.onInput) m.o.onInput(e); });
     document.body.appendChild(back); M = m; m.set(html);
     var x = back.querySelector('.vm-x'); if (x) x.focus({ preventScroll: true });
     return m;

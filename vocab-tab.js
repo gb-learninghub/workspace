@@ -238,13 +238,20 @@
     function renderPanel() {
       renderPanel0(); fit();
     }
+    /* Thêm từ mở trong pop up; Nhập danh sách vẫn mở ngay trên danh sách */
+    function pan() { var m = V.modalOpen(); return st.panel === 'add' && m && m.kind === 'add' ? m.body : pnw; }
     function renderPanel0() {
+      var m0 = V.modalOpen(); if (st.panel !== 'add' && m0 && m0.kind === 'add') V.closeModal(true);
       if (!st.panel) { pnw.innerHTML = ''; return; }
       if (st.panel === 'add') {
-        pnw.innerHTML = '<div class="vnb-pn"><div class="vnb-pt">Thêm từ</div><input data-vnb-in="word" placeholder="Từ hoặc cụm từ, ví dụ: renewable" autocomplete="off" autocapitalize="none" aria-label="Từ cần thêm">' +
-          '<input data-vnb-in="meaning" placeholder="Nghĩa tiếng Việt (có thể để trống)" aria-label="Nghĩa tiếng Việt"><div class="vnb-hint" data-vnb-hint></div><div class="vnb-err" data-vnb-err></div>' +
-          '<div class="vnb-pa"><button type="button" class="vnb-btn" data-vnb="close">Hủy</button><button type="button" class="vnb-btn pri" data-vnb="save-add">Lưu từ</button></div></div>';
-        var i = pnw.querySelector('[data-vnb-in="word"]'); if (i) i.focus();
+        pnw.innerHTML = '';
+        if (m0 && m0.kind === 'add') return;
+        var m = V.modal('<div class="vnb vm-fl"><div class="vm-hd"><div class="vnb-pt">Thêm từ</div></div><div class="vm-sc"><div class="vnb-pn"><input data-vnb-in="word" placeholder="Từ hoặc cụm từ, ví dụ: renewable" autocomplete="off" autocapitalize="none" aria-label="Từ cần thêm">' +
+          '<input data-vnb-in="meaning" placeholder="Nghĩa tiếng Việt (có thể để trống)" aria-label="Nghĩa tiếng Việt"><div class="vnb-hint" data-vnb-hint></div></div></div>' +
+          '<div class="vm-ft"><div class="vnb-err" data-vnb-err></div><div class="vnb-pa"><button type="button" class="vnb-btn" data-vnb="close">Hủy</button><button type="button" class="vnb-btn pri" data-vnb="save-add">Lưu từ</button></div></div></div>',
+          { form: true, onClick: onClick, onKey: onKey, onInput: onInput, onClose: function () { st.panel = null; renderBar(); } });
+        m.kind = 'add';
+        var i = m.body.querySelector('[data-vnb-in="word"]'); if (i) i.focus();
       } else {
         pnw.innerHTML = '<div class="vnb-pn"><div class="vnb-pt">Nhập danh sách từ</div><textarea data-vnb-in="list" placeholder="Mỗi dòng một từ, hoặc từ - nghĩa&#10;renewable - có thể tái tạo&#10;mitigate" aria-label="Danh sách từ"></textarea>' +
           '<div class="vnb-hint" data-vnb-hint>Từ đã có trong sổ sẽ được gộp, không tạo dòng mới.</div><div class="vnb-err" data-vnb-err></div>' +
@@ -259,12 +266,12 @@
     }
     function reload(after) { return api.list().then(function (d) { st.items = d || []; after && after(); renderBar(); renderPanel(); renderList(); }); }
     function byId(id) { return (st.items || []).filter(function (x) { return x.id === Number(id); })[0]; }
-    function setHint(t) { var h = pnw.querySelector('[data-vnb-hint]'); if (h) h.textContent = t || ''; }
-    function setErr(t) { var h = pnw.querySelector('[data-vnb-err]'); if (h) h.textContent = t || ''; }
+    function setHint(t) { var h = pan().querySelector('[data-vnb-hint]'); if (h) h.textContent = t || ''; }
+    function setErr(t) { var h = pan().querySelector('[data-vnb-err]'); if (h) h.textContent = t || ''; }
 
     function saveAdd() {
       if (st.busy) return;
-      var wi = pnw.querySelector('[data-vnb-in="word"]'), mi = pnw.querySelector('[data-vnb-in="meaning"]');
+      var wi = pan().querySelector('[data-vnb-in="word"]'), mi = pan().querySelector('[data-vnb-in="meaning"]');
       var word = V.norm(wi && wi.value), meaning = V.norm(mi && mi.value);
       if (!word) { setErr('Nhập một từ hoặc cụm từ trước đã.'); return; }
       if (word.length > 80) { setErr('Từ hoặc cụm từ tối đa 80 ký tự.'); return; }
@@ -346,7 +353,8 @@
       var k = e.target.getAttribute && e.target.getAttribute('data-vnb-sel'); if (!k) return;
       st[k] = e.target.value; renderBar(); renderList();
     });
-    root.addEventListener('input', function (e) {
+    root.addEventListener('input', onInput);
+    function onInput(e) {
       if (e.target.matches('[data-vnb-q]')) { st.q = e.target.value; renderList(); return; }
       if (e.target.matches('[data-vnb-in="word"]')) {
         clearTimeout(hintTimer); var val = e.target.value; setErr('');
@@ -358,7 +366,7 @@
           }).catch(function () { setHint(''); });
         }, 400);
       }
-    });
+    }
     function onKey(e) {
       if (e.target.matches('.ve.tap') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); var t = byId(e.target.dataset.id); if (t) openPop(t); return; }
       if (e.key !== 'Enter') return;

@@ -24,6 +24,7 @@
     '.td-row.on .td-ed .field{background:#fff}' +
     '.td-b{display:inline-block;padding:2px 9px;border-radius:999px;background:#f1f5f9;color:#475569;font-size:.75rem;font-weight:700;white-space:nowrap}' +
     '.td-ed{padding:12px 0 8px;display:flex;flex-direction:column;gap:12px}.td-new{border:1px solid #E4E6EA;border-radius:16px;padding:4px 14px 8px;margin-bottom:10px}' +
+    '.td-ed-form{flex:1;min-height:0;display:flex;flex-direction:column;padding:0;gap:0}.td-ed-f{display:flex;flex-direction:column;gap:12px}.td-ed-form .vm-ft .td-err:empty{display:none}' +
     '.td-ed label,.td-f{display:flex;flex-direction:column;gap:4px;font-size:.75rem;font-weight:700;color:#64748b}' +
     '.td-ed textarea.td-ta{min-height:84px;padding:10px 12px;line-height:1.5;resize:vertical;font-family:inherit}' +
     '.td-ed .field{min-height:44px;font-size:16px;font-weight:400;color:var(--t-ink,#1B1D22);background:#fff}.td-acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}' +
@@ -102,7 +103,7 @@
     if (!fo.has('pos', S.pos)) S.pos = '';
     if (!fo.has('topic', S.topic)) S.topic = '';
     chips.innerHTML = V.select('data-td-sel="pos" aria-label="Lọc theo từ loại"', 'Từ loại', fo.pos, S.pos) + V.select('data-td-sel="topic" aria-label="Lọc theo chủ đề"', 'Chủ đề', fo.topic, S.topic) + chipHtml;
-    addBox.innerHTML = S.adding ? '<div class="td-new">' + editor(null) + '</div>' : '';
+    addBox.innerHTML = '';
     var L = view();
     var half = Math.ceil(L.length / 2);
     list.className = 'td-list' + (L.length ? ' ve-2c' : '');
@@ -127,7 +128,7 @@
   }
   /* Pop up: xem đầy đủ, bấm Sửa để chuyển sang khung sửa */
   function popHtml(b) {
-    if (S.editing) return '<div class="td"><div class="vm-w" style="padding-right:48px">' + esc(b.word) + '</div>' + editor(b) + '</div>';
+    if (S.editing) return '<div class="td vm-fl"><div class="vm-hd"><div class="vm-w">' + esc(b.word) + '</div></div>' + editor(b, true) + '</div>';
     var sg = suggested(b);
     return '<div class="td">' + V.fullHtml({ word: b.word, pos: b.pos, ipa: b.ipa, topic: b.topic, au: 'data-td="say" data-id="' + b.id + '"',
       mean: sg ? esc(sg) : V.pill('chưa có nghĩa', 'warn'), def: b.definition_en, ex: b.example,
@@ -136,10 +137,16 @@
       meta: b.level ? 'Cấp độ ' + esc(b.level) : '', edit: 'data-td="edit" data-id="' + b.id + '" aria-label="Sửa từ" title="Sửa"' }) + ownHtml(b) + '</div>';
   }
   function syncPop() {
-    var m = V.modalOpen(), b = S.open && S.bank.filter(function (x) { return x.id === S.open; })[0];
+    var m = V.modalOpen();
+    if (S.adding) { /* Thêm từ: khung nhập trong pop up, không vẽ lại khi đang gõ */
+      if (m && m.kind === 'add') return;
+      m = V.modal('<div class="td vm-fl"><div class="vm-hd"><div class="td-new-t">Thêm từ</div></div>' + editor(null, true) + '</div>', { form: true, onClick: onClick, onKey: onKey, onClose: function () { S.adding = false; S.open = null; S.editing = false; draw(); } });
+      m.kind = 'add'; return;
+    }
+    var b = S.open && S.bank.filter(function (x) { return x.id === S.open; })[0];
     if (!b) { S.open = null; S.editing = false; if (m) V.closeModal(true); return; }
-    if (m) m.set(popHtml(b));
-    else V.modal(popHtml(b), { onClick: onClick, onKey: onKey, onClose: function () { S.open = null; S.editing = false; draw(); } });
+    if (m) { m.kind = 'view'; m.set(popHtml(b), S.editing); }
+    else V.modal(popHtml(b), { form: S.editing, onClick: onClick, onKey: onKey, onClose: function () { S.open = null; S.editing = false; draw(); } });
   }
 
   function field(name, label, val, ph, list) {
@@ -155,16 +162,17 @@
       return '<button type="button" data-td="pos" data-p="' + esc(p) + '" class="' + (p === c ? 'on' : '') + '" aria-pressed="' + (p === c) + '">' + esc(p) + '</button>';
     }).join('') + '</div></div>';
   }
-  function editor(b) {
+  /* form = true: dạng pop up, các ô nằm trong vùng cuộn, lỗi và nút nằm ở hàng cố định bên dưới */
+  function editor(b, form) {
     var isNew = !b; b = b || {};
-    var h = '<div class="td-ed" data-ed="' + (isNew ? 'new' : b.id) + '"><datalist id="td-tp">' + topicCounts().list.map(function (t) { return '<option value="' + esc(t) + '">'; }).join('') + '</datalist>' +
-      (isNew ? field('word', 'Từ', '', 'Ví dụ: thrive') : '') + posPicker(b.pos) + field('ipa', 'Phiên âm', b.ipa, '/θraɪv/') +
+    var dl = '<datalist id="td-tp">' + topicCounts().list.map(function (t) { return '<option value="' + esc(t) + '">'; }).join('') + '</datalist>';
+    var F = (isNew ? field('word', 'Từ', '', 'Ví dụ: thrive') : '') + posPicker(b.pos) + field('ipa', 'Phiên âm', b.ipa, '/θraɪv/') +
       field('meaning', 'Nghĩa đề xuất', suggested(b), 'Nghĩa tiếng Việt') + field('def', 'Định nghĩa tiếng Anh', b.definition_en, '') +
-      field('ex', 'Ví dụ', b.example, '') + area('forms', 'Word form (mỗi dòng một dạng)', b.word_forms, 'thriving (adj) - thịnh vượng&#10;thrivingly (adv) - một cách thịnh vượng') + field('topic', 'Chủ đề', b.topic, 'Ví dụ: Environment', 'td-tp') + '<div class="td-err" data-err></div>' +
-      '<div class="td-acts">' + (isNew ? '<button type="button" class="td-btn" data-td="add-cancel">Huỷ</button><button type="button" class="td-btn pri" data-td="create">Thêm vào từ điển</button>'
+      field('ex', 'Ví dụ', b.example, '') + area('forms', 'Word form (mỗi dòng một dạng)', b.word_forms, 'thriving (adj) - thịnh vượng&#10;thrivingly (adv) - một cách thịnh vượng') + field('topic', 'Chủ đề', b.topic, 'Ví dụ: Environment', 'td-tp');
+    var A = '<div class="td-err" data-err></div><div class="td-acts">' + (isNew ? '<button type="button" class="td-btn" data-td="add-cancel">Huỷ</button><button type="button" class="td-btn pri" data-td="create">Thêm vào từ điển</button>'
         : '<button type="button" class="td-btn" data-td="close">Huỷ</button><button type="button" class="td-btn pri" data-td="save" data-id="' + b.id + '">Lưu</button>') + '</div>';
-    if (!isNew) h += ownHtml(b);
-    return h + '</div>';
+    var own = isNew ? '' : ownHtml(b), tag = '<div class="td-ed' + (form ? ' td-ed-form' : '') + '" data-ed="' + (isNew ? 'new' : b.id) + '">' + dl;
+    return form ? tag + '<div class="vm-sc"><div class="td-ed-f">' + F + '</div>' + own + '</div><div class="vm-ft">' + A + '</div></div>' : tag + F + A + own + '</div>';
   }
 
   function vals(ed) {
@@ -201,7 +209,7 @@
       ed.querySelectorAll('[data-td="pos"]').forEach(function (x) { var o = x.dataset.p === pv.value; x.classList.toggle('on', o); x.setAttribute('aria-pressed', o); });
     }
     else if (a === 'reload') { load(); }
-    else if (a === 'add') { S.adding = !S.adding; draw(); if (S.adding) { var wi = S.root.querySelector('[data-ed="new"] [data-in="word"]'); if (wi) wi.focus(); } }
+    else if (a === 'add') { S.adding = true; S.open = null; S.editing = false; draw(); var wi = document.querySelector('.vm [data-ed="new"] [data-in="word"]'); if (wi) wi.focus(); }
     else if (a === 'add-cancel') { S.adding = false; draw(); }
     else if (a === 'open') { S.open = id; S.editing = false; draw(); }
     else if (a === 'edit') { S.editing = true; draw(); var fi = document.querySelector('.vm [data-in="ipa"]'); if (fi) fi.focus(); }
