@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://unpkg.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="lms.css?v=3">
-  <script src="lms.js?v=4"></script><script src="lms-tiles.js?v=2"></script>
+  <script src="lms.js?v=5"></script><script src="lms-tiles.js?v=2"></script>
   <style>
     .edlg{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(22,24,29,.35)}
     .edlg[hidden]{display:none}
@@ -319,8 +319,8 @@
         $('editor-title').textContent = 'Thêm học viên';
         $('code-row').classList.add('hidden'); setMsg('');
       }
-      function openEditor() { $('editor').hidden = false; setTimeout(() => $('student-name').focus(), 30); }
-      function closeEditor() { resetForm(); $('editor').hidden = true; }
+      function openEditor() { $('editor').hidden = false; LMS.modal($('editor'), { onClose: () => { resetForm(); $('editor').hidden = true; } }); setTimeout(() => $('student-name').focus(), 30); }
+      function closeEditor() { const m = $('editor')._lmsModal; if (m) m.close(); else { resetForm(); $('editor').hidden = true; } }
 
       function edit(id) {
         const s = find(id); if (!s) return;
@@ -519,7 +519,6 @@
         $('btn-add').addEventListener('click', () => { resetForm(); openEditor(); });
         $('btn-cancel').addEventListener('click', closeEditor);
         $('editor').addEventListener('mousedown', e => { if (e.target === $('editor')) closeEditor(); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('editor').hidden) closeEditor(); });
         $('student-form').addEventListener('submit', onSubmit);
         $('tg-save').addEventListener('click', saveTargets); $('tg-madd').addEventListener('click', addManual); $('tg-close').addEventListener('click', () => { $('targets').hidden = true; });
         $('targets').addEventListener('mousedown', e => { if (e.target === $('targets')) $('targets').hidden = true; });
