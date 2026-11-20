@@ -715,7 +715,7 @@ body.student-dashboard-view .student-history-row>.tag{justify-self:end!important
 .student-shell-inner-tabs .student-main-section{flex:1 1 auto;display:flex;flex-direction:column}
 .student-shell-inner-tabs .student-main-section>.card{flex:1 1 auto}
 }
-/* ==== m-prof-fix ==== */
+/* ==== m-profile: thanh hồ sơ và nhãn tuần trên mobile (gom m-prof-fix 1-7, m-hide-wk; giữ nguyên thứ tự) ==== */
 @media(max-width:780px){
 body.student-dashboard-view .m-av{width:40px!important;height:40px!important;border-radius:12px!important;background:#F4F5F7!important;background-image:none!important;border:0!important;color:#1B1D22!important}
 body.student-dashboard-view .m-av svg{width:20px!important;height:20px!important;stroke-width:1.8}
@@ -726,38 +726,20 @@ body.student-dashboard-view .m-profile .overview-week-label{min-width:0!importan
 body.student-dashboard-view .m-profile .overview-week-label .week-name{display:inline!important}
 body.student-dashboard-view .m-profile .icon-btn{width:28px!important;height:32px!important}
 body.student-dashboard-view .m-profile .t-thisweek{height:32px;padding:0 6px;font-size:.75rem}
-}
-/* ==== m-prof-fix2 ==== */
-@media(max-width:780px){
 body.student-dashboard-view .student-workspace .m-profile{padding:0!important;gap:10px!important;overflow:hidden;align-items:stretch!important}
 body.student-dashboard-view .student-workspace .m-profile .m-av{width:52px!important;height:auto!important;min-height:52px;align-self:stretch;border-radius:13px 0 0 13px!important}
 body.student-dashboard-view .student-workspace .m-profile .m-pi{padding:9px 0;justify-content:center}
 body.student-dashboard-view .m-profile>.m-week{padding-right:8px!important;align-self:center}
-}
-/* ==== m-prof-fix3 ==== */
-@media(max-width:780px){
 body.student-dashboard-view .m-profile .m-week .icon-btn,body.student-dashboard-view .m-profile .m-week .t-thisweek{display:none!important}
 body.student-dashboard-view .m-profile .overview-week-label{text-align:right}
 body.student-dashboard-view .m-profile .overview-week-label .week-dates{display:block!important}
 body.student-dashboard-view .m-profile .overview-week-label .week-name{padding:0}
-}
-/* ==== m-prof-fix5 ==== */
-@media(max-width:780px){
 body.student-dashboard-view .m-profile .overview-week-label{flex-direction:column!important;align-items:flex-end!important;white-space:nowrap}
 body.student-dashboard-view .m-profile .overview-week-label .week-dates{white-space:nowrap!important}
-}
-/* ==== m-prof-fix6 ==== */
-@media(max-width:780px){
 body.student-dashboard-view .m-profile .overview-week-label{gap:2px!important;line-height:1.15!important;font-family:inherit}
 body.student-dashboard-view .m-profile .overview-week-label .week-name{font-size:.9375rem!important;font-weight:800!important;line-height:1.15!important;color:#1B1D22!important}
 body.student-dashboard-view .m-profile .overview-week-label .week-dates{font-size:.75rem!important;font-weight:400!important;line-height:1.15!important;color:#64748b!important}
-}
-/* ==== m-prof-fix7 ==== */
-@media(max-width:780px){
 body.student-dashboard-view .student-workspace>.m-stick{padding-bottom:12px!important}
-}
-/* ==== m-hide-wk ==== */
-@media(max-width:780px){
 body.student-dashboard-view .student-week-only-date{display:none!important}
 }
 /* ==== att-css ==== */
@@ -774,16 +756,13 @@ body.student-dashboard-view .student-week-only-date{display:none!important}
 /* ==== flat-rows ==== */
 .student-main .space-y-2>.row:last-child,.student-main .student-library-list>.row:last-child{border-bottom:0!important}
 .student-main .student-library-week>h3,.student-main .student-week-only-head>h2,.student-main .student-week-preview-head>h2{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;margin:0 0 8px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.8125rem;font-weight:700;line-height:1}
-/* ==== sub-pill ==== */
+/* ==== pills: nhãn tiêu đề dạng viên thuốc (gom sub-pill 1-3, no-card-hl; giữ nguyên thứ tự) ==== */
 .student-main .student-library-week>h3 span{font-weight:500;color:#6B7280;margin-left:4px}
 .student-main .student-week-only-head>h2 svg,.student-main .student-week-preview-head>h2 svg{width:15px;height:15px}
 body .student-overview-highlight .g-week-sched,body .student-overview-highlight .g-prog,body .student-overview-highlight .g-tuition,body .student-overview-top .card,body .student-overview-view .card{border-top:1px solid #E4E6EA!important;border-left:1px solid #E4E6EA!important}
-/* ==== no-card-hl ==== */
 .student-main .g-asg>h2,.student-main .g-mat>h2{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;margin:0 0 10px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.8125rem;font-weight:700;line-height:1}
-/* ==== sub-pill2 ==== */
 .student-main .g-asg>h2 svg,.student-main .g-mat>h2 svg{width:15px;height:15px}
 .student-main .g-hist>h2,.student-main .g-tuition-history>h2{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;margin:0 0 10px;border-radius:999px;background:#F4F5F7;color:#1B1D22;font-size:.8125rem;font-weight:700;line-height:1}
-/* ==== sub-pill3 ==== */
 .student-main .g-hist>h2 svg,.student-main .g-tuition-history>h2 svg{width:15px;height:15px}
 .student-overview-highlight>.card{display:flex!important;flex-direction:column;padding:18px 20px!important}
 /* ==== hl-sync ==== */
@@ -801,12 +780,11 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
 .student-main .g-asg>h2,.student-main .g-mat>h2,.student-main .g-hist>h2,.student-main .g-tuition-history>h2,.student-main .student-library-week>h3,.student-main .student-week-only-head>h2,.student-main .student-week-preview-head>h2{align-self:flex-start!important;justify-self:start!important;width:fit-content!important;max-width:100%!important;flex:0 0 auto!important}
 /* ==== pill-fit ==== */
 .student-overview-top .g-info .stat{padding:0!important;gap:16px!important;overflow:hidden;align-items:stretch!important;border-radius:17px!important}
-/* ==== stat-like-avatar ==== */
+/* ==== stat-avatar: icon thống kê (gom stat-like-avatar, stat-compact; giữ nguyên thứ tự) ==== */
 .student-overview-top .g-info .stat>svg{height:auto!important;min-height:78px;align-self:stretch;box-sizing:border-box;border-radius:0!important;background:#F4F5F7!important;color:#1B1D22!important}
 .student-overview-top .g-info .stat>div{align-self:center;padding:10px 12px 10px 0;min-width:0}
 .student-overview-top .g-info .stat.s0>svg,.student-overview-top .g-info .stat.s1>svg,.student-overview-top .g-info .stat.s2>svg,.student-overview-top .g-info .stat.s3>svg{background:#F4F5F7!important;color:#1B1D22!important}
 .student-overview-top .g-info .stat>svg{flex:0 0 76px!important;width:76px!important;padding:0 24px!important;stroke-width:1.9!important}
-/* ==== stat-compact ==== */
 .student-overview-top .g-info .stat.s0>svg{background:#E6F6EC!important;color:#157347!important}
 .student-overview-top .g-info .stat.s1>svg{background:#FDECEF!important;color:#be123c!important}
 .student-overview-top .g-info .stat.s2>svg{background:#FFF1DC!important;color:#9A5B00!important}
