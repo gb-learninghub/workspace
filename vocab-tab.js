@@ -3,9 +3,13 @@
   'use strict';
   var V = w.GBVocab, esc = V.esc, ST = {};
   var CSS = '.vnb{color:var(--t-ink,#1B1D22)}.vnb button{font:inherit;cursor:pointer}.vnb svg{width:18px;height:18px;flex:none}' +
-    '.vnb-tb{display:flex;align-items:center;gap:6px;margin:4px 0 10px}.vnb-search{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border:1px solid var(--t-border,#E4E6EA);border-radius:22px;background:#fff}' +
-    '.vnb-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:16px}.vnb-ib{width:44px;height:44px;border-radius:22px;border:1px solid var(--t-border,#E4E6EA);background:#fff;color:#1B1D22;display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0}' +
-    '.vnb-ib.on{background:#16181D;border-color:#16181D;color:#fff}.vnb-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:4px}.vnb .vf{margin-bottom:4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.vnb .vf::-webkit-scrollbar{display:none}.vnb .vf>*{flex:none}.vnb-chips .vnb-chip{min-height:44px;white-space:nowrap;font-variant-numeric:tabular-nums}' +
+    '.vnb-tb{display:flex;align-items:center;gap:6px;margin:0 0 8px}.vnb-search{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:38px;box-sizing:border-box;padding:0 12px;border:1px solid var(--t-border,#E4E6EA);border-radius:19px;background:#fff}.vnb-search svg{width:16px;height:16px}' +
+    '.vnb-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:16px;min-height:0;height:36px}.vnb-ib{width:38px;height:38px;min-width:0;min-height:0;box-sizing:border-box;border-radius:19px;border:1px solid var(--t-border,#E4E6EA);background:#fff;color:#1B1D22;display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0}.vnb .vnb-ib svg{width:16px;height:16px}' +
+    '.vnb-ib.on{background:#16181D;border-color:#16181D;color:#fff}.vnb-chips{display:flex;gap:6px;align-items:center;margin-bottom:10px}.vnb .vf{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.vnb .vf::-webkit-scrollbar{display:none}.vnb .vf>*{flex:1 0 auto}' +
+    '.vnb .vsel{height:38px;box-sizing:border-box;padding:0 2px 0 12px;font-size:.8125rem}.vnb .vsel-b{font-size:.8125rem}' +
+    '.vnb-chips .vnb-chip{height:38px;min-height:0;min-width:0;box-sizing:border-box;padding:0 12px;font-size:.8125rem;white-space:nowrap;font-variant-numeric:tabular-nums}' +
+    '.vnb-search input,.vnb-search input:focus{box-shadow:none!important;border:0!important;outline:0!important;border-radius:0;padding:0;-webkit-appearance:none;appearance:none}.vnb-search:focus-within{border-color:#16181D}' +
+    '@media (min-width:641px){.vnb-search input{font-size:.875rem!important}}' +
     '.vnb-chip{border:1px solid var(--t-border,#E4E6EA);background:#fff;border-radius:20px;min-height:40px;padding:0 14px;font-size:.875rem;font-weight:600;color:#596579}.vnb-chip.on{background:#16181D;border-color:#16181D;color:#fff}' +
     '.vnb-scroll{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.vnb-scroll .vnb-pg{padding-bottom:12px}.vnb-scroll .vnb-pno{display:none}.vnb-nav{margin:8px 0 0!important}' +
     '.vnb-st{font-size:.8125rem;color:var(--t-muted,#818999);margin:2px 0 4px}.vnb-grp{font-size:.8125rem;font-weight:700;color:var(--t-muted,#818999);padding:14px 0 6px}' +
@@ -91,7 +95,7 @@
         '<button type="button" class="vnb-ib' + (st.panel === 'import' ? ' on' : '') + '" data-vnb="import" aria-label="Nhập danh sách từ"><i data-lucide="clipboard-paste"></i></button>' +
         '<button type="button" class="vnb-ib" data-vnb="export" aria-label="Sao chép sổ"><i data-lucide="download"></i></button>' +
         '<button type="button" class="vnb-ib on" data-vnb="add" aria-label="Thêm từ"><i data-lucide="plus"></i></button></div>' +
-        '<div class="vf vnb-chips">' + drops + chips + '</div><div class="vnb-st">' + statText() + '</div>';
+        '<div class="vf vnb-chips">' + drops + chips + '</div>';
       icons();
       if (focus) { var i = bar.querySelector('[data-vnb-q]'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
     }
@@ -306,9 +310,9 @@
       var b = e.target.closest('[data-vnb]'); if (!b) return;
       var a = b.getAttribute('data-vnb'), x = b.dataset.id ? byId(b.dataset.id) : null;
       if (a === 'chip') { st.f = b.dataset.f; renderBar(); renderList(); }
-      else if (a === 'hide') { st.hide = st.hide === 'off' ? 'meaning' : st.hide === 'meaning' ? 'word' : 'off'; st.reveal = {}; renderBar(); renderList(); }
-      else if (a === 'sort') { st.sort = st.sort === 'new' ? 'az' : st.sort === 'az' ? 'seen' : st.sort === 'seen' ? 'lv' : 'new'; renderBar(); renderList(); }
-      else if (a === 'group') { st.group = st.group === 'week' ? 'topic' : st.group === 'topic' ? 'none' : 'week'; renderBar(); renderList(); }
+      else if (a === 'hide') { st.hide = st.hide === 'off' ? 'meaning' : st.hide === 'meaning' ? 'word' : 'off'; st.reveal = {}; renderBar(); renderList(); toast(st.hide === 'meaning' ? 'Đang ẩn nghĩa' : st.hide === 'word' ? 'Đang ẩn từ' : 'Hiện cả từ và nghĩa'); }
+      else if (a === 'sort') { st.sort = st.sort === 'new' ? 'az' : st.sort === 'az' ? 'seen' : st.sort === 'seen' ? 'lv' : 'new'; renderBar(); renderList(); toast('Sắp xếp: ' + (st.sort === 'az' ? 'A đến Z' : st.sort === 'seen' ? 'gặp lại nhiều nhất' : st.sort === 'lv' ? 'cấp độ dễ đến khó' : 'mới nhất')); }
+      else if (a === 'group') { st.group = st.group === 'week' ? 'topic' : st.group === 'topic' ? 'none' : 'week'; renderBar(); renderList(); toast(st.group === 'week' ? 'Nhóm theo tuần' : st.group === 'topic' ? 'Nhóm theo chủ đề' : 'Không nhóm'); }
       else if (a === 'add' || a === 'import') { st.panel = st.panel === a ? null : a; renderBar(); renderPanel(); }
       else if (a === 'close') { st.panel = null; renderBar(); renderPanel(); }
       else if (a === 'save-add') saveAdd();

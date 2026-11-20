@@ -126,7 +126,11 @@
     '.ve-2c{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ve-2c>.ve-col:first-child{padding-right:16px;border-right:1px solid #E4E6EA}.ve-2c>.ve-col:last-child{padding-left:16px}' +
     '@media (max-width:700px){.ve-2c{grid-template-columns:minmax(0,1fr)}.ve-2c>.ve-col:first-child{padding-right:0;border-right:0}.ve-2c>.ve-col:last-child{padding-left:0}}' +
     '.vf{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.vsel{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 4px 0 14px;border:1px solid #E4E6EA;border-radius:999px;background:#fff;font-size:.875rem;font-weight:700;color:#64748b}' +
-    '.vsel:focus-within{border-color:#16181D}.vsel select{-webkit-appearance:none;appearance:none;border:0!important;box-shadow:none!important;outline:0;border-radius:0;min-height:0;font:inherit;font-size:16px!important;color:#1B1D22;height:38px;max-width:190px;cursor:pointer;padding:0 28px 0 0;margin:0;' +
+    '.vsel:focus-within{border-color:#16181D}.vsel select{display:none}.vsel-b{flex:1;min-width:0;height:100%;border:0;background:transparent;font:inherit;font-size:.875rem;font-weight:700;color:#1B1D22;cursor:pointer;text-align:left;padding:0 28px 0 2px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:none!important;outline:0;' +
+    'background:transparent url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2716%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2364748b%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27m7 10 5 5 5-5%27/%3E%3C/svg%3E") no-repeat right 8px center/16px 16px}.vsel.open{border-color:#16181D}' +
+    '.vsel-menu{position:fixed;z-index:95;box-sizing:border-box;background:#fff;border:1px solid #E4E6EA;border-radius:14px;box-shadow:0 14px 36px rgba(22,24,29,.16);padding:6px;max-height:min(60vh,360px);overflow-y:auto;overscroll-behavior:contain}' +
+    '.vsel-menu button{display:flex;align-items:center;gap:10px;width:100%;min-height:38px;padding:0 10px 0 6px;border:0;border-radius:10px;background:none;font:inherit;font-size:.875rem;color:#1B1D22;text-align:left;cursor:pointer;white-space:nowrap}.vsel-menu button:hover,.vsel-menu button:focus-visible{background:#F2F4F7;outline:0}' +
+    '.vsel-menu button.on{font-weight:700;background:#EEF3FB}.vsel-menu .n{min-width:2.2em;flex:none;text-align:right;color:#818999;font-weight:600;font-variant-numeric:tabular-nums}.vsel-menu .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}' +
     'background:transparent url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2716%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2364748b%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27m7 10 5 5 5-5%27/%3E%3C/svg%3E") no-repeat right 8px center/16px 16px}' +
     '.vm-back{position:fixed;inset:0;z-index:80;background:rgba(22,24,29,.45);display:flex;align-items:center;justify-content:center;padding:16px;animation:vmf .15s ease-out}@keyframes vmf{from{opacity:0}}' +
     '.vm{position:relative;box-sizing:border-box;width:100%;max-width:520px;max-height:min(86vh,760px);overflow:auto;overscroll-behavior:contain;background:#fff;border-radius:20px;padding:20px 20px 18px;box-shadow:0 24px 64px rgba(0,0,0,.25);color:#1B1D22}' +
@@ -191,17 +195,63 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && M) closeModal(); });
 
   /* dropdown lọc: opts = [[value, text], ...] */
+  /* Dropdown tự vẽ (menu luôn mở ngay bên dưới ô, không đè lên ô như menu mặc định của Safari).
+     Vẫn giữ một <select> ẩn mang thuộc tính attr: chọn xong sẽ phát sự kiện change từ select đó như cũ. */
   function select(attr, label, opts, cur) {
-    return '<label class="vsel">' + label + '<select ' + attr + '>' + opts.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === cur ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>';
+    var curText = (opts.filter(function (o) { return o[0] === cur; })[0] || opts[0] || ['', ''])[1];
+    return '<div class="vsel"><span>' + label + '</span><button type="button" class="vsel-b" aria-haspopup="listbox" aria-expanded="false">' + esc(curText) + '</button><select ' + attr + ' tabindex="-1" aria-hidden="true">' +
+      opts.map(function (o) { return '<option value="' + esc(o[0]) + '" data-n="' + (o[2] == null ? '' : o[2]) + '"' + (o[0] === cur ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></div>';
   }
+  var MENU = null;
+  function closeMenu() { if (!MENU) return; MENU.menu.remove(); MENU.box.classList.remove('open'); MENU.btn.setAttribute('aria-expanded', 'false'); MENU = null; }
+  function openMenu(btn) {
+    closeMenu();
+    var box = btn.closest('.vsel'), sel = box && box.querySelector('select'); if (!sel) return;
+    var menu = document.createElement('div'); menu.className = 'vsel-menu'; menu.setAttribute('role', 'listbox');
+    menu.innerHTML = Array.prototype.map.call(sel.options, function (o, i) {
+      var on = o.value === sel.value;
+      return '<button type="button" role="option" aria-selected="' + on + '" data-i="' + i + '" class="' + (on ? 'on' : '') + '" title="' + esc(o.text) + '"><span class="n">' + esc(o.getAttribute('data-n') || '') + '</span><span class="t">' + esc(o.text) + '</span></button>';
+    }).join('');
+    document.body.appendChild(menu);
+    var r = box.getBoundingClientRect(), mh = menu.offsetHeight, below = w.innerHeight - r.bottom - 8;
+    menu.style.width = r.width + 'px';
+    menu.style.left = Math.max(8, Math.min(r.left, w.innerWidth - r.width - 8)) + 'px';
+    menu.style.top = (below >= mh || below >= r.top ? r.bottom + 6 : Math.max(8, r.top - mh - 6)) + 'px';
+    box.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+    MENU = { menu: menu, box: box, btn: btn, sel: sel };
+    var on = menu.querySelector('.on') || menu.querySelector('button'); if (on) { on.focus({ preventScroll: true }); on.scrollIntoView({ block: 'nearest' }); }
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (MENU && MENU.menu.contains(t)) {
+      var it = t.closest('button[data-i]'); if (!it) return;
+      var m = MENU, opt = m.sel.options[Number(it.dataset.i)]; closeMenu();
+      if (opt && m.sel.value !== opt.value) { m.sel.value = opt.value; m.sel.dispatchEvent(new Event('change', { bubbles: true })); }
+      return;
+    }
+    var bx = t.closest && t.closest('.vsel'), b = bx && bx.querySelector('.vsel-b');
+    if (b) { if (MENU && MENU.btn === b) closeMenu(); else openMenu(b); return; }
+    closeMenu();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!MENU) return;
+    if (e.key === 'Escape') { var b = MENU.btn; closeMenu(); b.focus(); e.stopPropagation(); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      var its = Array.prototype.slice.call(MENU.menu.querySelectorAll('button')), k = its.indexOf(document.activeElement);
+      k = e.key === 'ArrowDown' ? Math.min(its.length - 1, k + 1) : Math.max(0, k - 1); if (its[k]) its[k].focus(); e.preventDefault();
+    }
+  }, true);
+  w.addEventListener('resize', closeMenu);
+  document.addEventListener('scroll', function (e) { if (MENU && !MENU.menu.contains(e.target)) closeMenu(); }, true);
+
   /* các lựa chọn cho dropdown Từ loại và Chủ đề, tính từ danh sách từ */
   function filterOpts(items, posOf, topicOf) {
     var pc = {}, tc = {}, noT = 0;
     items.forEach(function (x) { var p = posShort(posOf(x)) || '-'; pc[p] = (pc[p] || 0) + 1; var t = norm(topicOf(x)); if (t) tc[t] = (tc[t] || 0) + 1; else noT++; });
     var ps = Object.keys(pc).sort(function (a, b) { var i = POS_LIST.indexOf(a), j = POS_LIST.indexOf(b); return (i < 0 ? 99 : i) - (j < 0 ? 99 : j) || (a < b ? -1 : 1); });
     return {
-      pos: [['', 'Tất cả']].concat(ps.map(function (p) { return [p, (p === '-' ? 'Chưa có' : p) + ' (' + pc[p] + ')']; })),
-      topic: [['', 'Tất cả']].concat(Object.keys(tc).sort(function (a, b) { return key(a) < key(b) ? -1 : 1; }).map(function (t) { return [t, t + ' (' + tc[t] + ')']; }), noT ? [['-', 'Chưa có chủ đề (' + noT + ')']] : []),
+      pos: [['', 'Tất cả', items.length]].concat(ps.map(function (p) { return [p, p === '-' ? 'Chưa có' : p, pc[p]]; })),
+      topic: [['', 'Tất cả', items.length]].concat(Object.keys(tc).sort(function (a, b) { return key(a) < key(b) ? -1 : 1; }).map(function (t) { return [t, t, tc[t]]; }), noT ? [['-', 'Chưa có chủ đề', noT]] : []),
       has: function (kind, v) { return !v || (kind === 'pos' ? !!pc[v] : v === '-' ? noT > 0 : !!tc[v]); }
     };
   }
