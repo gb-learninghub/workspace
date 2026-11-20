@@ -130,7 +130,7 @@
 .qbox{padding:14px 0;border-bottom:1px solid var(--t-border)}
 .qbox:last-child{border-bottom:0}
 .student-workspace-overview{grid-template-columns:minmax(0,1fr)}
-.overview-week-label .week-dates{font-size:.75rem;font-weight:500;color:#718096}
+.overview-week-label .week-dates{font-size:.75rem;font-weight:500;color:#75849b}
 .student-overview-content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start}
 .student-main-section{scroll-margin-top:84px;min-width:0}
 .student-main-section+.student-main-section{margin-top:24px}
