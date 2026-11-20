@@ -6,7 +6,7 @@
 @media(min-width:760px) and (max-width:1199px){
 .student-materials{grid-template-columns:1fr}
 }
-@media(max-width:600px){
+@media(max-width:640px){
 .student-materials{grid-template-columns:1fr}
 }
 .profile-card{display:flex;align-items:center;gap:16px;min-height:126px}
@@ -33,7 +33,7 @@
 .prog-pill{display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;color:var(--t-muted);padding:6px 14px;border-radius:9999px;background:#fff;border:1px solid var(--t-border);white-space:nowrap}
 .prog-pill b{color:var(--t-ink)}
 .prog-body{display:grid;grid-template-columns:1fr;gap:14px}
-@media(min-width:900px){
+@media(min-width:1024px){
 .g-prog .prog-body.two{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)}
 }
 .goal{border-radius:18px;padding:14px 16px;background:#e9f8ee;border:1px solid #c6ecd3}
@@ -91,7 +91,7 @@
 .hrow{display:grid;grid-template-columns:5.25rem 3.25rem 6.5rem 5.5rem 1fr;align-items:center;gap:6px 10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--t-border)}
 .student-history-row{grid-template-columns:5rem 3rem minmax(0,1fr) auto}
 .hrow .tag{display:block;text-align:center}
-@media(max-width:600px){
+@media(max-width:640px){
 .hrow{grid-template-columns:5rem 3rem 1fr auto}
 }
 .card.hero-card{background:linear-gradient(135deg,var(--t-primary) 0%,var(--t-primary-2) 100%);border-color:transparent;color:#fff}
@@ -156,7 +156,7 @@
 .tuition-amts b{text-align:right;font-variant-numeric:tabular-nums;color:#1B1D22}
 .tuition-amts b.neg,.th-amt.neg{color:#be123c!important}
 .tuition-amts b.pos,.th-amt.pos{color:#047857!important}
-@media(max-width:700px){
+@media(max-width:640px){
 .tuition-history-row{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 .tuition-history-row>div{grid-column:1/-1}
 .tuition-history-row>.tag{grid-column:1/-1;justify-self:start}
@@ -216,7 +216,7 @@
 .student-overview-highlight .g-info .stat svg{width:38px;height:38px}
 .student-overview-highlight .g-info .stat b{font-size:1.25rem}
 .student-overview-highlight .g-info .stat span{font-size:.8125rem}
-@media(max-width:900px){
+@media(max-width:1023px){
 .student-overview-highlight .g-info .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:780px){
@@ -258,7 +258,7 @@
 .student-rail .g-info .stat span{font-size:.75rem}
 .student-rail .g-hist{padding:14px!important}
 .student-rail .g-hist>summary{min-height:36px}
-@media(max-width:600px){
+@media(max-width:640px){
 .student-main .student-history-row{grid-template-columns:minmax(0,1fr) auto;gap:6px 10px}
 .student-main .student-history-row .c-day{grid-column:1;grid-row:1}
 .student-main .student-history-row .c-date{grid-column:2;grid-row:1}
@@ -285,7 +285,7 @@
 .student-main.student-overview-view{padding:20px 44px 26px}
 .student-overview-top .g-info .stat-grid{grid-column:2;grid-row:1}
 .student-overview-top .g-info .stat{box-sizing:border-box}
-@media(max-width:1100px) and (min-width:781px){
+@media(max-width:1050px) and (min-width:781px){
 .student-overview-top{gap:12px}
 .student-overview-top .profile-card{min-height:84px}
 .student-overview-top .g-info .stat-grid{grid-column:1;grid-row:auto;grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -315,7 +315,7 @@
 .student-overview-top .g-info .stat-grid{grid-area:metrics;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:12px;height:100%;min-width:0}
 .student-overview-top .g-info .stat{height:100%;min-height:0}
 .student-overview-top .g-hero{grid-area:next;grid-column:auto;grid-row:auto;width:100%;height:100%;min-height:202px;box-sizing:border-box;align-self:stretch}
-@media(max-width:1100px) and (min-width:781px){
+@media(max-width:1050px) and (min-width:781px){
 .student-overview-top{grid-template-columns:minmax(0,1fr) minmax(260px,.8fr);grid-template-areas:"profile profile" "metrics next"}
 .student-overview-top .g-profile{min-height:116px!important;height:116px}
 .student-overview-top .g-profile .profile-avatar{min-height:116px}
@@ -330,7 +330,7 @@
 .student-overview-top .g-hero{height:auto;min-height:176px}
 }
 .student-overview-highlight .g-tuition,.student-overview-highlight .g-week-sched{grid-area:auto;grid-column:auto;grid-row:auto;height:100%;min-height:204px;box-sizing:border-box}
-@media(max-width:900px){
+@media(max-width:1023px){
 .student-overview-highlight{grid-template-columns:minmax(0,1fr);grid-template-areas:"tuition" "week"}
 .student-overview-highlight .g-tuition,.student-overview-highlight .g-week-sched{min-height:0;height:auto}
 }
@@ -366,7 +366,7 @@
 .student-overview-highlight .g-week-sched .month-session{min-height:34px}
 .student-overview-highlight .g-week-sched .month-session+.month-session{margin-top:0}
 .student-overview-highlight .g-week-sched .month-session-top>span{max-width:40ch}
-@media(max-width:900px){
+@media(max-width:1023px){
 .student-overview-highlight .g-week-sched{height:300px!important;min-height:300px!important;max-height:300px!important}
 }
 @media(max-width:780px){
@@ -411,7 +411,7 @@
 .student-overview-view .student-materials>.card{display:flex;flex-direction:column;max-height:210px;box-sizing:border-box;padding:17px;overflow:hidden}
 .student-overview-view .student-materials>.card h2{flex:0 0 auto}
 .student-overview-view .student-materials>.card>div:last-child{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain}
-@media(max-width:1100px) and (min-width:781px){
+@media(max-width:1050px) and (min-width:781px){
 .student-overview-top .g-profile .profile-avatar{flex-basis:38%;width:38%}
 }
 @media(max-width:780px){
@@ -770,7 +770,7 @@ body.student-dashboard-view .student-week-only-date{display:none!important}
 .att-strip b.neg{color:#be123c}
 .att-strip span{font-size:.75rem;color:#6B7280}
 .hr-tags{display:flex;align-items:center;justify-content:flex-end;gap:6px}
-@media(max-width:600px){
+@media(max-width:640px){
 .student-main .student-history-row>.hr-tags{grid-column:2;grid-row:2;justify-self:end}
 }
 /* ==== flat-rows ==== */
