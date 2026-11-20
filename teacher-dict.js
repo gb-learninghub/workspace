@@ -9,34 +9,34 @@
   var norm = function (s) { return String(s == null ? '' : s).replace(/\s+/g, ' ').trim(); };
   var key = function (s) { return norm(s).toLowerCase(); };
   var toast = function (m) { if (w.LMS && LMS.toast) LMS.toast(m); };
-  var POS = ['n', 'v', 'adj', 'adv', 'noun', 'verb', 'adjective', 'adverb', 'preposition', 'conjunction', 'pronoun', 'phrase'];
+  var V = w.GBVocab;
+  var COLS = 'id,word,pos,kind,ipa,meaning_vi,meaning_status,definition_en,example,topic,level,updated_at';
 
   var CSS = '.td{color:var(--t-ink,#1B1D22)}.td *{box-sizing:border-box}.td button{font:inherit;cursor:pointer}' +
     '.td-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.td-head h2{margin:0!important}' +
     '.td-tb{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.td-tb .field{flex:1 1 220px;min-height:44px}' +
     '.td-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.td-chip{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid #E4E6EA;background:#fff;color:#475569;font-weight:700;font-size:.875rem}.td-chip.on{background:#16181D;border-color:#16181D;color:#fff}' +
-    '.td-list{border-top:1px solid #E4E6EA}.td-row{border-bottom:1px solid #E4E6EA}' +
-    '.td-rh{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.6fr) auto;gap:10px;align-items:center;width:100%;min-height:52px;padding:8px 4px;border:0;background:none;text-align:left;color:inherit}' +
-    '.td-rh:hover{background:rgba(22,24,29,.03)}.td-w{font-weight:800}.td-m{color:#64748b;font-size:.8125rem;margin-left:6px;font-weight:600}' +
-    '.td-mean{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.td-empty{display:inline-block;padding:2px 10px;border-radius:999px;background:#fef3c7;color:#92400e;font-size:.75rem;font-weight:700}' +
-    '.td-meta{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.td-b{display:inline-block;padding:2px 9px;border-radius:999px;background:#f1f5f9;color:#475569;font-size:.75rem;font-weight:700;white-space:nowrap}.td-b.hot{background:#e0f2fe;color:#075985}' +
-    '.td-ed{padding:4px 4px 16px;display:grid;gap:10px}.td-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.td-ed label{display:grid;gap:4px;font-size:.75rem;font-weight:700;color:#64748b}' +
-    '.td-ed .field{min-height:44px;font-size:16px;font-weight:400;color:var(--t-ink,#1B1D22)}.td-acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}' +
+    '.td-row.open{background:#fff}' +
+    '.td-b{display:inline-block;padding:2px 9px;border-radius:999px;background:#f1f5f9;color:#475569;font-size:.75rem;font-weight:700;white-space:nowrap}' +
+    '.td-ed{padding:12px 0 8px;display:flex;flex-direction:column;gap:12px}.td-new{border:1px solid #E4E6EA;border-radius:16px;padding:4px 14px 8px;margin-bottom:10px}' +
+    '.td-ed label,.td-f{display:flex;flex-direction:column;gap:4px;font-size:.75rem;font-weight:700;color:#64748b}' +
+    '.td-ed .field{min-height:44px;font-size:16px;font-weight:400;color:var(--t-ink,#1B1D22);background:#fff}.td-acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}' +
+    '.td-pp{display:flex;flex-wrap:wrap;gap:6px}.td-pp button{min-height:36px;padding:0 12px;border-radius:999px;border:0;background:#fff;color:#475569;font-weight:700;font-size:.8125rem;box-shadow:inset 0 0 0 1px #DADDE3}' +
+    '.td-pp button.on{background:#16181D;color:#fff;box-shadow:none}' +
     '.td-btn{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid #E4E6EA;background:#fff;color:#1B1D22;font-weight:700}.td-btn.pri{background:#16181D;border-color:#16181D;color:#fff}.td-btn.sm{min-height:36px;padding:0 12px;font-size:.8125rem}.td-btn.del{color:#be123c}.td-btn:disabled{opacity:.5;cursor:default}' +
-    '.td-sm{margin-top:4px}.td-sm h3{font-size:.8125rem;font-weight:800;margin:0 0 6px}.td-sr{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:8px 10px;border:1px solid #E4E6EA;border-radius:14px;margin-bottom:6px}' +
-    '.td-sr .q{font-weight:700}.td-sr .who{color:#64748b;font-size:.8125rem;margin-top:2px}.td-none{color:#64748b;font-size:.875rem;padding:14px 4px}.td-err{color:#be123c;font-size:.875rem;min-height:1em}' +
-    '@media (max-width:640px){.td-rh{grid-template-columns:minmax(0,1fr) auto}.td-rh .td-mean{grid-column:1 / -1;grid-row:2;white-space:normal}.td-g{grid-template-columns:1fr}}';
+    '.td-sm{margin-top:4px}.td-sm h3{font-size:.8125rem;font-weight:800;margin:0 0 6px}.td-sr{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:#F6F7F9;border-radius:14px;margin-bottom:6px}.td-sr .td-acts{justify-content:flex-start}' +
+    '.td-sr .q{font-weight:700}.td-sr .who{color:#64748b;font-size:.8125rem;margin-top:2px}.td-none{color:#64748b;font-size:.875rem;padding:14px 4px}.td-err{color:#be123c;font-size:.875rem;min-height:1em}';
 
-  var S = { c: null, root: null, loaded: false, loading: false, err: '', bank: [], links: {}, stu: {}, q: '', f: 'all', open: null, adding: false };
+  var S = { c: null, root: null, loaded: false, loading: false, err: '', bank: [], links: {}, stu: {}, q: '', f: 'all', pos: '', topic: '', open: null, adding: false };
 
-  function css() { if (document.getElementById('td-css')) return; var st = document.createElement('style'); st.id = 'td-css'; st.textContent = CSS; document.head.appendChild(st); }
+  function css() { V.uiCss(); if (document.getElementById('td-css')) return; var st = document.createElement('style'); st.id = 'td-css'; st.textContent = CSS; document.head.appendChild(st); }
   function icons() { if (w.lucide) w.lucide.createIcons(); }
 
   function load() {
     S.loading = true; S.err = ''; draw();
     var c = S.c;
     return Promise.all([
-      c.from('vocab_bank').select('id,word,pos,kind,ipa,meaning_vi,meaning_status,definition_en,example,updated_at').order('word').limit(5000),
+      c.from('vocab_bank').select(COLS).order('word').limit(5000),
       c.from('vocab_student').select('id,bank_id,student_id,own_meaning').limit(20000),
       c.from('students').select('id,student_name,class_id').limit(5000),
       c.from('classes').select('id,class_code,class_name').limit(500)
@@ -66,17 +66,21 @@
     return S.bank.filter(function (b) {
       if (S.f === 'empty' && suggested(b)) return false;
       if (S.f === 'own' && !groups(b).length) return false;
-      return !q || key(b.word).indexOf(q) > -1 || key(b.meaning_vi).indexOf(q) > -1 || groups(b).some(function (g) { return key(g.text).indexOf(q) > -1; });
+      if (!V.match(b, S.pos, S.topic, posOf, topicOf)) return false;
+      return !q || key(b.word).indexOf(q) > -1 || key(b.meaning_vi).indexOf(q) > -1 || key(b.topic).indexOf(q) > -1 || groups(b).some(function (g) { return key(g.text).indexOf(q) > -1; });
     });
   }
 
+  function posOf(b) { return b.pos; }
+  function topicOf(b) { return b.topic; }
+  function topicCounts() { var tc = {}, no = 0; S.bank.forEach(function (b) { var t = norm(b.topic); if (t) tc[t] = (tc[t] || 0) + 1; else no++; }); return { tc: tc, no: no, list: Object.keys(tc).sort(function (a, b) { return key(a) < key(b) ? -1 : 1; }) }; }
   function draw() {
     var r = S.root; if (!r) return;
     if (!r.querySelector('.td-head')) {
       r.innerHTML = '<div class="td"><div class="td-head"><h2><i data-lucide="book-a"></i>Từ điển chung</h2><span class="td-b" data-td-count></span></div>' +
         '<div class="td-tb"><input class="field" type="search" placeholder="Tìm từ hoặc nghĩa" aria-label="Tìm từ hoặc nghĩa" data-td-q autocomplete="off" spellcheck="false">' +
         '<button type="button" class="td-btn" data-td="add"><span>+ Thêm từ</span></button><button type="button" class="td-btn" data-td="reload" aria-label="Tải lại">Tải lại</button></div>' +
-        '<div data-td-add></div><div class="td-chips" data-td-chips></div><div class="td-list" data-td-list></div></div>';
+        '<div data-td-add></div><div data-td-drops></div><div class="td-chips" data-td-chips></div><div class="td-list ve-cols" data-td-list></div></div>';
       r.querySelector('[data-td-q]').value = S.q;
       icons();
     }
@@ -88,34 +92,45 @@
     chips.innerHTML = [['all', 'Tất cả'], ['empty', 'Chưa có nghĩa (' + nEmpty + ')'], ['own', 'Có nghĩa học viên ghi (' + nOwn + ')']].map(function (x) {
       return '<button type="button" class="td-chip' + (S.f === x[0] ? ' on' : '') + '" data-td="filter" data-f="' + x[0] + '" aria-pressed="' + (S.f === x[0]) + '">' + x[1] + '</button>';
     }).join('');
-    addBox.innerHTML = S.adding ? editor(null) : '';
+    var fo = V.filterOpts(S.bank, posOf, topicOf);
+    if (!fo.has('pos', S.pos)) S.pos = '';
+    if (!fo.has('topic', S.topic)) S.topic = '';
+    r.querySelector('[data-td-drops]').innerHTML = '<div class="vf">' + V.select('data-td-sel="pos" aria-label="Lọc theo từ loại"', 'Từ loại', fo.pos, S.pos) + V.select('data-td-sel="topic" aria-label="Lọc theo chủ đề"', 'Chủ đề', fo.topic, S.topic) + '</div>';
+    addBox.innerHTML = S.adding ? '<div class="td-new">' + editor(null) + '</div>' : '';
     var L = view();
     list.innerHTML = L.length ? L.map(rowHtml).join('') : '<div class="td-none">Không có từ nào.</div>';
+    icons();
   }
 
   function rowHtml(b) {
-    var sg = suggested(b), g = groups(b), n = (S.links[b.id] || []).length, on = S.open === b.id;
-    return '<div class="td-row" data-id="' + b.id + '"><button type="button" class="td-rh" data-td="open" data-id="' + b.id + '" aria-expanded="' + on + '">' +
-      '<span><span class="td-w">' + esc(b.word) + '</span>' + (b.pos ? '<span class="td-m">' + esc(b.pos) + '</span>' : '') + (b.ipa ? '<span class="td-m">' + esc(b.ipa) + '</span>' : '') + '</span>' +
-      '<span class="td-mean">' + (sg ? esc(sg) : '<span class="td-empty">chưa có nghĩa</span>') + '</span>' +
-      '<span class="td-meta"><span class="td-b">' + n + ' học viên</span>' + (g.length ? '<span class="td-b hot">' + g.length + ' nghĩa học viên ghi</span>' : '') + '</span></button>' +
+    var sg = suggested(b), g = groups(b), on = S.open === b.id;
+    return '<div class="td-row ve' + (on ? ' open' : '') + '" data-id="' + b.id + '">' +
+      V.entryTop({ word: b.word, pos: b.pos, ipa: b.ipa, topic: norm(b.topic), extra: g.length ? V.pill(g.length + ' nghĩa HV ghi', 'info') : '', btn: 'data-td="open" data-id="' + b.id + '" aria-expanded="' + on + '"', au: 'data-td="say" data-id="' + b.id + '"' }) +
+      V.entryRow2(sg ? esc(sg) : V.pill('chưa có nghĩa', 'warn'), b.example) +
       (on ? editor(b) : '') + '</div>';
   }
 
   function field(name, label, val, ph, list) {
-    return '<label>' + label + '<input class="field" data-in="' + name + '" value="' + esc(val || '') + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + (list ? ' list="td-pos"' : '') + ' autocomplete="off" spellcheck="false"></label>';
+    return '<label>' + label + '<input class="field" data-in="' + name + '" value="' + esc(val || '') + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + (list ? ' list="' + list + '"' : '') + ' autocomplete="off" spellcheck="false"></label>';
+  }
+  /* chọn loại từ bằng pill; giá trị nằm trong ô ẩn data-in="pos" */
+  function posPicker(cur) {
+    var c = V.posShort(cur), opts = V.POS_LIST.slice(); if (c && opts.indexOf(c) < 0) opts.push(c);
+    return '<div class="td-f">Loại từ<input type="hidden" data-in="pos" value="' + esc(c) + '"><div class="td-pp" role="group" aria-label="Loại từ">' + opts.map(function (p) {
+      return '<button type="button" data-td="pos" data-p="' + esc(p) + '" class="' + (p === c ? 'on' : '') + '" aria-pressed="' + (p === c) + '">' + esc(p) + '</button>';
+    }).join('') + '</div></div>';
   }
   function editor(b) {
     var isNew = !b; b = b || {};
-    var h = '<div class="td-ed" data-ed="' + (isNew ? 'new' : b.id) + '"><datalist id="td-pos">' + POS.map(function (p) { return '<option value="' + p + '">'; }).join('') + '</datalist>' +
-      '<div class="td-g">' + (isNew ? field('word', 'Từ', '', 'Ví dụ: thrive') : '') + field('pos', 'Loại từ', b.pos, 'n, v, adj...', true) + field('ipa', 'Phiên âm', b.ipa, '/θraɪv/') + '</div>' +
-      '<div class="td-g">' + field('meaning', 'Nghĩa đề xuất', suggested(b), 'Nghĩa tiếng Việt') + field('def', 'Định nghĩa tiếng Anh', b.definition_en, '') + '</div>' +
-      field('ex', 'Ví dụ', b.example, '') + '<div class="td-err" data-err></div>' +
+    var h = '<div class="td-ed" data-ed="' + (isNew ? 'new' : b.id) + '"><datalist id="td-tp">' + topicCounts().list.map(function (t) { return '<option value="' + esc(t) + '">'; }).join('') + '</datalist>' +
+      (isNew ? field('word', 'Từ', '', 'Ví dụ: thrive') : '') + posPicker(b.pos) + field('ipa', 'Phiên âm', b.ipa, '/θraɪv/') +
+      field('meaning', 'Nghĩa đề xuất', suggested(b), 'Nghĩa tiếng Việt') + field('def', 'Định nghĩa tiếng Anh', b.definition_en, '') +
+      field('ex', 'Ví dụ', b.example, '') + field('topic', 'Chủ đề', b.topic, 'Ví dụ: Environment', 'td-tp') + '<div class="td-err" data-err></div>' +
       '<div class="td-acts">' + (isNew ? '<button type="button" class="td-btn" data-td="add-cancel">Huỷ</button><button type="button" class="td-btn pri" data-td="create">Thêm vào từ điển</button>'
         : '<button type="button" class="td-btn" data-td="close">Đóng</button><button type="button" class="td-btn pri" data-td="save" data-id="' + b.id + '">Lưu</button>') + '</div>';
     if (!isNew) {
-      var g = groups(b);
-      h += '<div class="td-sm"><h3>Nghĩa học viên ghi</h3>' + (g.length ? g.map(function (x, i) {
+      var g = groups(b), nst = (S.links[b.id] || []).length;
+      h += '<div class="td-sm"><h3>Nghĩa học viên ghi <span class="td-b">' + nst + ' học viên có từ này</span></h3>' + (g.length ? g.map(function (x, i) {
         return '<div class="td-sr"><div><div class="q">' + esc(x.text) + '</div><div class="who">' + x.who.map(function (s) { return esc(s.name) + (s.cls ? ' (' + esc(s.cls) + ')' : ''); }).join(', ') + '</div></div>' +
           '<div class="td-acts"><button type="button" class="td-btn sm" data-td="use" data-id="' + b.id + '" data-g="' + i + '">Dùng làm nghĩa đề xuất</button><button type="button" class="td-btn sm del" data-td="clear" data-id="' + b.id + '" data-g="' + i + '">Xoá nghĩa này</button></div></div>';
       }).join('') : '<div class="td-none" style="padding:4px 0">Chưa có học viên nào tự ghi nghĩa khác.</div>') + '</div>';
@@ -132,11 +147,11 @@
     return (w.LMS && LMS.friendlyError) ? LMS.friendlyError(e) : m;
   }
   function patchOf(v) {
-    return { pos: v.pos.toLowerCase().slice(0, 20), ipa: v.ipa || null, meaning_vi: v.meaning || null, meaning_status: v.meaning ? 'approved' : 'empty', definition_en: v.def || null, example: v.ex || null };
+    return { pos: V.posShort(v.pos).slice(0, 20), topic: v.topic ? v.topic.slice(0, 60) : null, ipa: v.ipa || null, meaning_vi: v.meaning || null, meaning_status: v.meaning ? 'approved' : 'empty', definition_en: v.def || null, example: v.ex || null };
   }
   function busy(btn, on, txt) { if (!btn) return; btn.disabled = on; if (on) { btn.dataset.t0 = btn.textContent; btn.textContent = txt || 'Đang lưu...'; } else if (btn.dataset.t0) btn.textContent = btn.dataset.t0; }
   function updateBank(id, patch) {
-    return S.c.from('vocab_bank').update(patch).eq('id', id).select('id,word,pos,kind,ipa,meaning_vi,meaning_status,definition_en,example,updated_at').single().then(function (r) {
+    return S.c.from('vocab_bank').update(patch).eq('id', id).select(COLS).single().then(function (r) {
       if (r.error) throw r.error;
       S.bank = S.bank.map(function (b) { return b.id === id ? r.data : b; });
     });
@@ -146,6 +161,12 @@
     var b = e.target.closest('[data-td]'); if (!b || !S.root.contains(b)) return;
     var a = b.dataset.td, id = Number(b.dataset.id), ed = b.closest('.td-ed');
     if (a === 'filter') { S.f = b.dataset.f; S.open = null; draw(); }
+    else if (a === 'say') { var sb = S.bank.filter(function (x) { return x.id === id; })[0]; if (sb) V.speak(sb.word); }
+    else if (a === 'pos') {
+      var pv = ed && ed.querySelector('[data-in="pos"]'); if (!pv) return;
+      pv.value = pv.value === b.dataset.p ? '' : b.dataset.p;
+      ed.querySelectorAll('[data-td="pos"]').forEach(function (x) { var o = x.dataset.p === pv.value; x.classList.toggle('on', o); x.setAttribute('aria-pressed', o); });
+    }
     else if (a === 'reload') { load(); }
     else if (a === 'add') { S.adding = !S.adding; draw(); if (S.adding) { var wi = S.root.querySelector('[data-ed="new"] [data-in="word"]'); if (wi) wi.focus(); } }
     else if (a === 'add-cancel') { S.adding = false; draw(); }
@@ -159,9 +180,9 @@
     else if (a === 'create') {
       var nv = vals(ed); if (!nv.word) { setErr(ed, 'Nhập từ trước.'); return; }
       if (nv.word.length > 80) { setErr(ed, 'Từ quá dài.'); return; }
-      var row = patchOf(nv); row.word = nv.word; row.kind = /\s/.test(nv.word) ? 'phrase' : 'word';
+      var row = patchOf(nv); row.word = nv.word; row.kind = /\s/.test(nv.word) || /phr|phrase|idiom/.test(row.pos) ? (row.pos === 'idiom' ? 'idiom' : 'phrase') : 'word';
       busy(b, true, 'Đang thêm...');
-      S.c.from('vocab_bank').insert(row).select('id,word,pos,kind,ipa,meaning_vi,meaning_status,definition_en,example,updated_at').single().then(function (r) {
+      S.c.from('vocab_bank').insert(row).select(COLS).single().then(function (r) {
         if (r.error) throw r.error;
         S.bank.push(r.data); S.bank.sort(function (x, y) { return key(x.word) < key(y.word) ? -1 : key(x.word) > key(y.word) ? 1 : 0; });
         S.adding = false; S.open = r.data.id; S.q = ''; var qi = S.root.querySelector('[data-td-q]'); if (qi) qi.value = '';
@@ -194,6 +215,10 @@
   function onInput(e) {
     if (e.target.matches && e.target.matches('[data-td-q]')) { S.q = e.target.value; S.open = null; draw(); }
   }
+  function onChange(e) {
+    var k = e.target.getAttribute && e.target.getAttribute('data-td-sel'); if (!k) return;
+    S[k] = e.target.value; S.open = null; draw();
+  }
   function onKey(e) {
     if (e.key !== 'Enter' || !e.target.matches || !e.target.matches('.td-ed [data-in]')) return;
     var ed = e.target.closest('.td-ed'), btn = ed && ed.querySelector('[data-td="save"],[data-td="create"]'); if (btn) { e.preventDefault(); btn.click(); }
@@ -205,7 +230,7 @@
       css(); S.c = client;
       if (S.root !== root) {
         S.root = root;
-        root.addEventListener('click', onClick); root.addEventListener('input', onInput); root.addEventListener('keydown', onKey);
+        root.addEventListener('click', onClick); root.addEventListener('input', onInput); root.addEventListener('change', onChange); root.addEventListener('keydown', onKey);
       }
       draw();
       if (!S.loaded && !S.loading) load();
