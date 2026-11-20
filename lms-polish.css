@@ -944,6 +944,9 @@ body.tuition-page #m-weekbar{display:flex!important;align-items:center!important
 body.tuition-page #m-weekbar input[type=month]{flex:1 1 0!important;min-width:0!important;text-align:center;height:40px!important;border-radius:0!important}
 body.tuition-page #m-weekbar #prev,body.tuition-page #m-weekbar #next{flex:0 0 44px;height:40px!important;display:inline-flex;align-items:center;justify-content:center}
 body.tuition-page #m-weekbar #thismonth{position:static!important;transform:none!important;flex:0 0 auto!important;height:40px!important;margin:0 0 0 10px!important;padding:0 16px!important;display:inline-flex;align-items:center;justify-content:center}
+body.tuition-page #m-weekbar .month-wrap{flex:1 1 0;min-width:0;display:flex}
+body.tuition-page #m-weekbar .month-wrap input[type=month]{flex:1 1 auto!important;width:100%!important}
+body.tuition-page #m-weekbar .month-text{left:0;right:0;text-align:center}
 }
 @media(min-width:1024px){
 html[data-lms-view="overview"] body>main{padding-top:20px!important;padding-bottom:16px!important;padding-left:clamp(18px,3vw,44px)!important;padding-right:clamp(18px,3vw,44px)!important}
