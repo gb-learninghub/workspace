@@ -943,5 +943,5 @@ var all=el("button","wall","Thêm tất cả vào sổ");all.disabled=!code;all.
 var b=el("div","wb");P.appendChild(b);
 Object.keys(FAM).forEach(function(g){b.appendChild(el("div","wg",g));FAM[g].forEach(function(v){var k=v[0]+"|"+v[1],r=el("div","wr"),t=el("div","wt");var bb=el("b","",v[0]);t.appendChild(bb);t.appendChild(document.createTextNode(" "));t.appendChild(el("i","",v[1]));t.appendChild(document.createElement("br"));t.appendChild(document.createTextNode(v[2]));r.appendChild(t);var a=el("button","wa"+(done[k]?" on":""),done[k]?"✓":"+");a.disabled=!code||!!done[k];a.setAttribute("aria-label","Thêm "+v[0]+" vào sổ");a.onclick=function(){a.disabled=true;add(v[0],v[1],v[2]).then(function(){done[k]=1;draw();}).catch(function(){a.disabled=false;a.textContent="!";});};r.appendChild(a);b.appendChild(r);});});}
 document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){P=el("div");P.id="wp";P.hidden=true;T=el("button","","Từ vựng");T.id="wt";T.onclick=function(){P.hidden=!P.hidden;if(!P.hidden)draw();};document.body.appendChild(P);document.body.appendChild(T);},120);});
-})();</script><script src="../../student-notes.js?v=1"></script><script src="../../back-to-portal.js"></script>
+})();</script><script src="../../student-notes.js?v=2"></script><script src="../../back-to-portal.js"></script>
 </body></html>
