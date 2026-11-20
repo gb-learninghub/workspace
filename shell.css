@@ -287,7 +287,7 @@ body.student-dashboard-view .student-welcome-right{grid-area:right;justify-self:
 body.student-dashboard-view .student-welcome .overview-week-controls,body.student-dashboard-view .student-welcome .overview-week-label b{color:#ffd45e}
 body.student-dashboard-view .student-shell:not(.student-shell-inner-tabs) .student-welcome-right{justify-self:stretch;justify-content:space-between}
 body.student-dashboard-view .student-shell:not(.student-shell-inner-tabs) .student-welcome-actions{flex:1;justify-content:center}
-body.student-dashboard-view .student-nav{display:grid!important;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);overflow:visible}
+body.student-dashboard-view .student-nav{display:grid!important;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(60px,1fr);overflow-x:auto;overflow-y:hidden}
 body.student-dashboard-view .student-nav button{flex-direction:column;justify-content:center;gap:3px;min-height:52px;padding:6px 0;font-size:.75rem;letter-spacing:-.01em;border-radius:12px;text-align:center;white-space:nowrap}
 body.student-dashboard-view .student-nav button svg{width:20px;height:20px}
 body.student-dashboard-view,body.student-dashboard-view #app{background:#f5f6f8!important}
