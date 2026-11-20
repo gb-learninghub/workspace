@@ -63,7 +63,7 @@
       var L = (st.items || []).filter(function (x) {
         if (st.f === 'no' && x.learned) return false;
         if (st.f === 'yes' && !x.learned) return false;
-        if (st.f === 'wait' && x.status === 'approved') return false;
+        if (st.f === 'wait' && x.bank_meaning) return false; /* chờ nghĩa = giáo viên chưa có nghĩa đề xuất (nghĩa em tự gõ không tính) */
         if (!V.match(x, st.pos, st.topic, posOf, topicOf)) return false;
         return !q || V.key(x.word).indexOf(q) > -1 || V.key(x.meaning || '').indexOf(q) > -1 || V.key(x.topic || '').indexOf(q) > -1;
       });
@@ -80,7 +80,7 @@
 
     function renderBar() {
       var it = st.items || [], n = function (fn) { return it.filter(fn).length; };
-      var cnt = { all: it.length, no: n(function (x) { return !x.learned; }), yes: n(function (x) { return x.learned; }), wait: n(function (x) { return x.status !== 'approved'; }) };
+      var cnt = { all: it.length, no: n(function (x) { return !x.learned; }), yes: n(function (x) { return x.learned; }), wait: n(function (x) { return !x.bank_meaning; }) };
       var chips = [['all', 'Tất cả'], ['no', 'Chưa thuộc'], ['yes', 'Đã thuộc'], ['wait', 'Chờ nghĩa']].map(function (a) { return '<button type="button" class="vnb-chip' + (st.f === a[0] ? ' on' : '') + '" data-vnb="chip" data-f="' + a[0] + '">' + a[1] + ' ' + cnt[a[0]] + '</button>'; }).join('');
       var fo = V.filterOpts(it, posOf, topicOf);
       if (!fo.has('pos', st.pos)) st.pos = '';
@@ -260,19 +260,20 @@
     }
 
     function load() {
-      if (st.items !== null) return;
-      api.list().then(function (d) { st.items = d || []; st.msg = ''; renderBar(); renderList(); })
-        .catch(function (e) { st.msg = err(e); renderList(); });
+      /* luôn tải lại khi mở tab, để thấy ngay nghĩa giáo viên vừa cập nhật (vẫn hiện danh sách cũ trong lúc chờ) */
+      api.list().then(function (d) { st.items = d || []; st.msg = ''; renderBar(); renderList(); refreshPop(); })
+        .catch(function (e) { if (st.items === null) { st.msg = err(e); renderList(); } });
     }
     function reload(after) { return api.list().then(function (d) { st.items = d || []; after && after(); renderBar(); renderPanel(); renderList(); }); }
     function byId(id) { return (st.items || []).filter(function (x) { return x.id === Number(id); })[0]; }
+    function wiVal() { var i = pan().querySelector('[data-vnb-in="word"]'); return i ? i.value : ''; }
     function setHint(t) { var h = pan().querySelector('[data-vnb-hint]'); if (h) h.textContent = t || ''; }
     function setErr(t) { var h = pan().querySelector('[data-vnb-err]'); if (h) h.textContent = t || ''; }
 
     function saveAdd() {
       if (st.busy) return;
       var wi = pan().querySelector('[data-vnb-in="word"]'), mi = pan().querySelector('[data-vnb-in="meaning"]');
-      var word = V.norm(wi && wi.value), meaning = V.norm(mi && mi.value);
+      var word = V.lower(wi && wi.value), meaning = V.norm(mi && mi.value);
       if (!word) { setErr('Nhập một từ hoặc cụm từ trước đã.'); return; }
       if (word.length > 80) { setErr('Từ hoặc cụm từ tối đa 80 ký tự.'); return; }
       st.busy = true; setErr(''); setHint('Đang lưu...');
@@ -294,7 +295,7 @@
         if (idx >= rows.length) return Promise.resolve();
         var r = rows[idx++];
         return V.dict(r.word).then(function (d) {
-          return api.add({ word: r.word, pos: r.pos || (d ? d.pos : ''), ipa: d ? d.ipa : '', definition: d ? d.definition : '', meaning: r.meaning });
+          return api.add({ word: V.lower(r.word), pos: r.pos || (d ? d.pos : ''), ipa: d ? d.ipa : '', definition: d ? d.definition : '', meaning: r.meaning });
         }).then(function (x) { done++; if (x.merged) merged++; }).catch(function () { failed++; })
           .then(function () { setHint('Đang nhập ' + (done + failed) + '/' + rows.length + '...'); return next(); });
       }
@@ -361,7 +362,14 @@
         hintTimer = setTimeout(function () {
           if (!V.norm(val)) { setHint(''); return; }
           api.lookup(val).then(function (r) {
-            if (!r || !r.length) { setHint(''); return; }
+            if (!r || !r.length) {
+              setHint('');
+              V.spell(val, (st.items || []).map(function (y) { return y.word; })).then(function (sp) {
+                if (sp.ok || V.key(val) !== V.key(wiVal())) return;
+                setHint('Chưa thấy từ này trong từ điển, em kiểm tra lại chính tả nhé' + (sp.sug ? '. Có phải "' + sp.sug + '"?' : '.'));
+              });
+              return;
+            }
             setHint('Trong kho: ' + r.map(function (y) { return y.word + (y.pos ? ' (' + y.pos + ')' : '') + ' · ' + (y.meaning || ''); }).join(' | '));
           }).catch(function () { setHint(''); });
         }, 400);

@@ -10,7 +10,7 @@
   var key = function (s) { return norm(s).toLowerCase(); };
   var toast = function (m) { if (w.LMS && LMS.toast) LMS.toast(m); };
   var V = w.GBVocab;
-  var COLS = 'id,word,pos,kind,ipa,meaning_vi,meaning_status,definition_en,example,word_forms,topic,level,updated_at';
+  var COLS = 'id,word,pos,kind,ipa,meaning_vi,meaning_status,definition_en,example,note,word_forms,topic,level,updated_at';
 
   var CSS = '.td{color:var(--t-ink,#1B1D22)}.td *{box-sizing:border-box}.td button{font:inherit;cursor:pointer}' +
     '.td-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.td-head h2{margin:0!important}' +
@@ -31,7 +31,7 @@
     '.td-pp{display:flex;flex-wrap:wrap;gap:6px}.td-pp button{min-height:36px;padding:0 12px;border-radius:999px;border:0;background:#fff;color:#475569;font-weight:700;font-size:.8125rem;box-shadow:inset 0 0 0 1px #DADDE3}' +
     '.td-pp button.on{background:#16181D;color:#fff;box-shadow:none}' +
     '.td-btn{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid #E4E6EA;background:#fff;color:#1B1D22;font-weight:700}.td-btn.pri{background:#16181D;border-color:#16181D;color:#fff}.td-btn.sm{min-height:36px;padding:0 12px;font-size:.8125rem}.td-btn.del{color:#be123c}.td-btn:disabled{opacity:.5;cursor:default}' +
-    '.td-sm{margin-top:4px}.td-sm h3{font-size:.8125rem;font-weight:800;margin:0 0 6px}.td-sr{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:#F6F7F9;border-radius:14px;margin-bottom:6px}.td-sr .td-acts{justify-content:flex-start}' +
+    '.td-ck{flex-direction:row!important;align-items:center;gap:8px!important;font-weight:600!important}.td-ck input{width:18px;height:18px}.td-hint{color:#92400E;font-size:.8125rem;min-height:0}.td-hint:empty{display:none}.td-sm{margin-top:4px}.td-sm h3{font-size:.8125rem;font-weight:800;margin:0 0 6px}.td-sr{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:#F6F7F9;border-radius:14px;margin-bottom:6px}.td-sr .td-acts{justify-content:flex-start}' +
     '.td-sr .q{font-weight:700}.td-sr .who{color:#64748b;font-size:.8125rem;margin-top:2px}.td-none{color:#64748b;font-size:.875rem;padding:14px 4px}.td-err{color:#be123c;font-size:.875rem;min-height:1em}';
 
   var S = { c: null, root: null, loaded: false, loading: false, err: '', bank: [], links: {}, stu: {}, q: '', f: 'all', pos: '', topic: '', open: null, editing: false, adding: false };
@@ -134,19 +134,19 @@
       mean: sg ? esc(sg) : V.pill('chưa có nghĩa', 'warn'), def: b.definition_en, ex: b.example,
       forms: V.formsHtml(b.word_forms, function (f) { var y = V.findForm(S.bank, f, function (z) { return z.word; }, function (z) { return z.pos; }); return y && y.id !== b.id ? { attr: 'data-td="open" data-id="' + y.id + '"', meaning: suggested(y) } : null; },
         V.wordFamily(b, S.bank, function (z) { return z.word; }, function (z) { return z.pos; }).map(function (y) { return { w: y.word, p: V.posShort(y.pos), m: suggested(y), attr: 'data-td="open" data-id="' + y.id + '"' }; })),
-      meta: b.level ? 'Cấp độ ' + esc(b.level) : '', edit: 'data-td="edit" data-id="' + b.id + '" aria-label="Sửa từ" title="Sửa"' }) + ownHtml(b) + '</div>';
+      note: b.note, meta: b.level ? 'Cấp độ ' + esc(b.level) : '', actions: '<button type="button" class="del" data-td="del" data-id="' + b.id + '"><i data-lucide="trash-2"></i>Xóa từ</button>', edit: 'data-td="edit" data-id="' + b.id + '" aria-label="Sửa từ" title="Sửa"' }) + ownHtml(b) + '</div>';
   }
   function syncPop() {
     var m = V.modalOpen();
     if (S.adding) { /* Thêm từ: khung nhập trong pop up, không vẽ lại khi đang gõ */
       if (m && m.kind === 'add') return;
-      m = V.modal('<div class="td vm-fl"><div class="vm-hd"><div class="td-new-t">Thêm từ</div></div>' + editor(null, true) + '</div>', { form: true, onClick: onClick, onKey: onKey, onClose: function () { S.adding = false; S.open = null; S.editing = false; draw(); } });
+      m = V.modal('<div class="td vm-fl"><div class="vm-hd"><div class="td-new-t">Thêm từ</div></div>' + editor(null, true) + '</div>', { form: true, onClick: onClick, onKey: onKey, onInput: onInput, onClose: function () { S.adding = false; S.open = null; S.editing = false; draw(); } });
       m.kind = 'add'; return;
     }
     var b = S.open && S.bank.filter(function (x) { return x.id === S.open; })[0];
     if (!b) { S.open = null; S.editing = false; if (m) V.closeModal(true); return; }
     if (m) { m.kind = 'view'; m.set(popHtml(b), S.editing); }
-    else V.modal(popHtml(b), { form: S.editing, onClick: onClick, onKey: onKey, onClose: function () { S.open = null; S.editing = false; draw(); } });
+    else V.modal(popHtml(b), { form: S.editing, onClick: onClick, onKey: onKey, onInput: onInput, onClose: function () { S.open = null; S.editing = false; draw(); } });
   }
 
   function field(name, label, val, ph, list) {
@@ -166,9 +166,9 @@
   function editor(b, form) {
     var isNew = !b; b = b || {};
     var dl = '<datalist id="td-tp">' + topicCounts().list.map(function (t) { return '<option value="' + esc(t) + '">'; }).join('') + '</datalist>';
-    var F = (isNew ? field('word', 'Từ', '', 'Ví dụ: thrive') : '') + posPicker(b.pos) + field('ipa', 'Phiên âm', b.ipa, '/θraɪv/') +
+    var F = field('word', 'Từ (tự viết thường)', b.word, 'Ví dụ: thrive') + '<label class="td-ck"><input type="checkbox" data-in="proper"' + (b.word && b.word !== b.word.toLowerCase() ? ' checked' : '') + '> Là tên riêng (giữ chữ hoa)</label><div class="td-hint" data-hint></div>' + posPicker(b.pos) + field('ipa', 'Phiên âm', b.ipa, '/θraɪv/') +
       field('meaning', 'Nghĩa đề xuất', suggested(b), 'Nghĩa tiếng Việt') + field('def', 'Định nghĩa tiếng Anh', b.definition_en, '') +
-      field('ex', 'Ví dụ', b.example, '') + area('forms', 'Word form (mỗi dòng một dạng)', b.word_forms, 'thriving (adj) - thịnh vượng&#10;thrivingly (adv) - một cách thịnh vượng') + field('topic', 'Chủ đề', b.topic, 'Ví dụ: Environment', 'td-tp');
+      field('ex', 'Ví dụ', b.example, '') + field('note', 'Cấu trúc / ghi chú', b.note, 'Ví dụ: be expected to do sth') + area('forms', 'Word form (mỗi dòng một dạng)', b.word_forms, 'thriving (adj) - thịnh vượng&#10;thrivingly (adv) - một cách thịnh vượng') + field('topic', 'Chủ đề', b.topic, 'Ví dụ: Environment', 'td-tp');
     var A = '<div class="td-err" data-err></div><div class="td-acts">' + (isNew ? '<button type="button" class="td-btn" data-td="add-cancel">Huỷ</button><button type="button" class="td-btn pri" data-td="create">Thêm vào từ điển</button>'
         : '<button type="button" class="td-btn" data-td="close">Huỷ</button><button type="button" class="td-btn pri" data-td="save" data-id="' + b.id + '">Lưu</button>') + '</div>';
     var own = isNew ? '' : ownHtml(b), tag = '<div class="td-ed' + (form ? ' td-ed-form' : '') + '" data-ed="' + (isNew ? 'new' : b.id) + '">' + dl;
@@ -177,7 +177,7 @@
 
   function vals(ed) {
     var o = {};
-    ed.querySelectorAll('[data-in]').forEach(function (i) { o[i.dataset.in] = i.tagName === 'TEXTAREA' ? String(i.value || '').split(/\r?\n/).map(norm).filter(Boolean).join('\n') : norm(i.value); });
+    ed.querySelectorAll('[data-in]').forEach(function (i) { if (i.type === 'checkbox') { o[i.dataset.in] = i.checked; return; } o[i.dataset.in] = i.tagName === 'TEXTAREA' ? String(i.value || '').split(/\r?\n/).map(norm).filter(Boolean).join('\n') : norm(i.value); });
     return o;
   }
   function setErr(ed, m) { var e = ed && ed.querySelector('[data-err]'); if (e) e.textContent = m || ''; }
@@ -188,7 +188,8 @@
     return (w.LMS && LMS.friendlyError) ? LMS.friendlyError(e) : m;
   }
   function patchOf(v) {
-    return { pos: V.posShort(v.pos).slice(0, 20), topic: v.topic ? v.topic.slice(0, 60) : null, ipa: v.ipa || null, meaning_vi: v.meaning || null, meaning_status: v.meaning ? 'approved' : 'empty', definition_en: v.def || null, example: v.ex || null, word_forms: v.forms ? v.forms.slice(0, 400) : null };
+    var wd = V.lower(v.word, v.proper);
+    return { word: wd, pos: V.posShort(v.pos).slice(0, 20), topic: v.topic ? v.topic.slice(0, 60) : null, ipa: v.ipa || null, meaning_vi: v.meaning || null, meaning_status: v.meaning ? 'approved' : 'empty', definition_en: v.def || null, example: v.ex || null, note: v.note ? v.note.slice(0, 400) : null, word_forms: v.forms ? v.forms.slice(0, 400) : null };
   }
   function busy(btn, on, txt) { if (!btn) return; btn.disabled = on; if (on) { btn.dataset.t0 = btn.textContent; btn.textContent = txt || 'Đang lưu...'; } else if (btn.dataset.t0) btn.textContent = btn.dataset.t0; }
   function updateBank(id, patch) {
@@ -215,14 +216,16 @@
     else if (a === 'edit') { S.editing = true; draw(); var fi = document.querySelector('.vm [data-in="ipa"]'); if (fi) fi.focus(); }
     else if (a === 'close') { S.editing = false; draw(); }
     else if (a === 'save') {
-      var v = vals(ed); busy(b, true);
-      updateBank(id, patchOf(v)).then(function () { S.editing = false; toast(v.meaning ? 'Đã lưu. Nghĩa đề xuất hiện ở sổ của học viên.' : 'Đã lưu.'); draw(); })
+      var v = vals(ed); if (!v.word) { setErr(ed, 'Từ không được để trống.'); return; } if (v.word.length > 80) { setErr(ed, 'Từ quá dài.'); return; }
+      busy(b, true);
+      var pt = patchOf(v); pt.kind = /\s/.test(pt.word) ? (pt.pos === 'idiom' ? 'idiom' : 'phrase') : 'word';
+      updateBank(id, pt).then(function () { S.editing = false; toast(v.meaning ? 'Đã lưu. Nghĩa đề xuất hiện ở sổ của học viên.' : 'Đã lưu.'); draw(); })
         .catch(function (er) { busy(b, false); setErr(ed, errMsg(er)); });
     }
     else if (a === 'create') {
       var nv = vals(ed); if (!nv.word) { setErr(ed, 'Nhập từ trước.'); return; }
       if (nv.word.length > 80) { setErr(ed, 'Từ quá dài.'); return; }
-      var row = patchOf(nv); row.word = nv.word; row.kind = /\s/.test(nv.word) || /phr|phrase|idiom/.test(row.pos) ? (row.pos === 'idiom' ? 'idiom' : 'phrase') : 'word';
+      var row = patchOf(nv); row.kind = /\s/.test(nv.word) || /phr|phrase|idiom/.test(row.pos) ? (row.pos === 'idiom' ? 'idiom' : 'phrase') : 'word';
       busy(b, true, 'Đang thêm...');
       S.c.from('vocab_bank').insert(row).select(COLS).single().then(function (r) {
         if (r.error) throw r.error;
@@ -231,6 +234,19 @@
         toast('Đã thêm "' + r.data.word + '" vào từ điển.'); draw();
         var row2 = S.root.querySelector('.td-row[data-id="' + r.data.id + '"]'); if (row2) row2.scrollIntoView({ block: 'center' });
       }).catch(function (er) { busy(b, false); setErr(ed, errMsg(er)); });
+    }
+    else if (a === 'del') {
+      var db = S.bank.filter(function (x) { return x.id === id; })[0]; if (!db) return;
+      var nst = (S.links[id] || []).length;
+      var msg = 'Xóa từ "' + db.word + '" khỏi từ điển?\n' + (nst ? 'Từ này đang nằm trong sổ của ' + nst + ' học viên, sẽ bị xóa khỏi sổ của các em. ' : '') + 'Không hoàn tác được.';
+      var ask2 = (w.LMS && LMS.confirm) ? LMS.confirm(msg, { ok: 'Xóa từ', danger: true }) : Promise.resolve(w.confirm(msg));
+      ask2.then(function (ok) {
+        if (!ok) return;
+        return S.c.from('vocab_bank').delete().eq('id', id).then(function (r) {
+          if (r.error) throw r.error;
+          S.bank = S.bank.filter(function (x) { return x.id !== id; }); delete S.links[id]; S.open = null; S.editing = false; toast('Đã xóa "' + db.word + '".'); draw();
+        });
+      }).catch(function (er) { toast(errMsg(er)); });
     }
     else if (a === 'use' || a === 'clear') {
       var bk = S.bank.filter(function (x) { return x.id === id; })[0]; if (!bk) return;
@@ -254,7 +270,19 @@
       }
     }
   }
+  var spT = null;
   function onInput(e) {
+    if (e.target.matches && e.target.matches('.td-ed [data-in="word"]')) {
+      var inp = e.target, hint = inp.closest('.td-ed').querySelector('[data-hint]'), val = inp.value; clearTimeout(spT);
+      spT = setTimeout(function () {
+        if (!hint) return; if (!norm(val)) { hint.textContent = ''; return; }
+        V.spell(val, S.bank.map(function (x) { return x.word; })).then(function (sp) {
+          if (inp.value !== val) return;
+          hint.textContent = sp.ok ? '' : 'Chưa thấy từ này trong từ điển, kiểm tra lại chính tả' + (sp.sug ? '. Có phải "' + sp.sug + '"?' : '.');
+        });
+      }, 450);
+      return;
+    }
     if (e.target.matches && e.target.matches('[data-td-q]')) { S.q = e.target.value; S.open = null; draw(); }
   }
   function onChange(e) {

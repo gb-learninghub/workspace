@@ -39,6 +39,27 @@
       .catch(function () { clearTimeout(t); return null; });
   }
 
+  /* Chữ thường mặc định; chỉ giữ chữ hoa khi là tên riêng (proper = true) */
+  function lower(word, proper) { var n = norm(word); return proper ? n : n.toLowerCase(); }
+  function dist(a, b) {
+    var p = [], i, j; for (j = 0; j <= b.length; j++) p[j] = j;
+    for (i = 1; i <= a.length; i++) { var c = [i]; for (j = 1; j <= b.length; j++) c[j] = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); p = c; }
+    return p[b.length];
+  }
+  /* Dò chính tả một từ đơn: có trong kho (bank) hoặc từ điển thì đúng; không thì gợi ý từ gần giống trong kho (nếu có). → { ok, sug } */
+  function spell(word, bank) {
+    var k = key(word);
+    if (!k || !/^[a-z][a-z'-]*$/.test(k) || k.length < 3) return Promise.resolve({ ok: true });
+    var words = (bank || []).map(key);
+    if (words.indexOf(k) > -1) return Promise.resolve({ ok: true });
+    return dict(k).then(function (d) {
+      if (d) return { ok: true };
+      var best = null, bd = 3;
+      words.forEach(function (x) { if (/\s/.test(x) || Math.abs(x.length - k.length) > 2) return; var d2 = dist(k, x); if (d2 < bd) { bd = d2; best = x; } });
+      return { ok: false, sug: best };
+    });
+  }
+
   /* Phát âm: ưu tiên file thu sẵn nếu đã có, không thì dùng giọng đọc của thiết bị. */
   function speak(word, url) {
     var k = key(word), c = cache[k];
@@ -318,7 +339,7 @@
     return true;
   }
 
-  w.GBVocab = { norm: norm, key: key, esc: esc, dict: dict, speak: speak, api: api, parseList: parseList, rpcClient: rpcClient, POS: POS,
+  w.GBVocab = { lower: lower, spell: spell, norm: norm, key: key, esc: esc, dict: dict, speak: speak, api: api, parseList: parseList, rpcClient: rpcClient, POS: POS,
     posShort: posShort, posPill: posPill, pill: pill, POS_LIST: POS_LIST, uiCss: uiCss,
     entryTop: entryTop, entryRow2: entryRow2, topicPill: topicPill, fullHtml: fullHtml, parseForms: parseForms, formsHtml: formsHtml, findForm: findForm, wordFamily: wordFamily, modal: modal, closeModal: closeModal, modalOpen: function () { return M; }, select: select, filterOpts: filterOpts, match: match };
 })(window);
