@@ -105,6 +105,40 @@
       ok.focus();
     });
   }
+  /* ---------- Hộp thoại dùng chung: bẫy Tab, Esc đóng hộp trên cùng, trả focus ---------- */
+  var modalStack = [];
+  function modal(el, opt) {
+    if (!el) return null;
+    if (el._lmsModal) return el._lmsModal;
+    var h = { el: el, prev: document.activeElement, onClose: opt && opt.onClose };
+    h.close = function () {
+      var i = modalStack.indexOf(h);
+      if (i < 0) return;
+      modalStack.splice(i, 1); el._lmsModal = null;
+      if (h.onClose) h.onClose();
+      if (h.prev && h.prev.focus && document.contains(h.prev)) { try { h.prev.focus(); } catch (e) {} }
+    };
+    el._lmsModal = h; modalStack.push(h);
+    return h;
+  }
+  function modalFocusables(el) {
+    return Array.prototype.filter.call(el.querySelectorAll('a[href],button,input,select,textarea,[tabindex]'), function (n) {
+      return !n.disabled && n.tabIndex >= 0 && n.type !== 'hidden' && n.offsetParent !== null;
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (!modalStack.length || document.getElementById('lms-cf')) return;
+    var top = modalStack[modalStack.length - 1];
+    if (e.key === 'Escape') { e.preventDefault(); top.close(); return; }
+    if (e.key !== 'Tab') return;
+    var f = modalFocusables(top.el);
+    if (!f.length) { e.preventDefault(); return; }
+    var first = f[0], last = f[f.length - 1], a = document.activeElement;
+    if (!top.el.contains(a)) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && a === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+  });
+
   function confirmBox(msg, opt) { return ask(msg, opt); }
   function alertBox(msg) { return ask(msg, { alertOnly: true, ok: 'Đã hiểu' }); }
   function friendlyError(e) {
@@ -486,7 +520,7 @@
     score: { KINDS: KINDS, KIND_LABEL: KIND_LABEL, KIND_SHORT: KIND_SHORT, convert: convert, fmt: fmtScore, targets: targets, progress: progress, contentProgress: contentProgress, programOf: programOf },
     isTeacherNow: isTeacherNow, siteBase: SITE_BASE, slug: slug, withStudent: withStudent, studentGate: studentGate,
     client: client, requireTeacher: requireTeacher, signOut: signOut,
-    esc: esc, toast: toast, friendlyError: friendlyError, confirm: confirmBox, alert: alertBox,
+    esc: esc, toast: toast, friendlyError: friendlyError, confirm: confirmBox, alert: alertBox, modal: modal,
     theme: { apply: applyTheme, get: getTheme, DEF: DEF }
   };
 })();
