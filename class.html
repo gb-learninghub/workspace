@@ -67,7 +67,7 @@
 .dat-b.on-p{background:#7dc943;border-color:#7dc943;color:#fff}.dat-b.on-l{background:#f5b942;border-color:#f5b942;color:#fff}.dat-b.on-a{background:#f44858;border-color:#f44858;color:#fff}
 .srow-att,.h-acts{display:none}.h-mat{width:34px;height:34px;border:0;background:transparent;color:#1B1D22;display:inline-flex;align-items:center;justify-content:center}.h-acts{align-items:center;gap:4px}
 .att-opt{min-height:56px;border-radius:14px;border:1.5px solid var(--t-line,#cbd5e1);background:#fff;color:var(--t-ink,#1B1D22);font-weight:800;font-size:1rem;cursor:pointer}
-#da-present[aria-pressed="true"]{background:#e0f2fe;border-color:#7dd3fc;color:#1B1D22}
+#da-present[aria-pressed="true"]{background:#dcfce7;border-color:#86efac;color:#166534}
 #da-late[aria-pressed="true"]{background:#fef3c7;border-color:#fcd34d;color:#92400e}
 #da-absent[aria-pressed="true"]{background:#ffe4e6;border-color:#fda4af;color:#9f1239}
 .hrow{display:grid;grid-template-columns:64px 56px 150px 130px 110px minmax(0,1fr);align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #F4F5F7}
@@ -125,7 +125,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
   <main class="flex-1 w-full max-w-none mx-auto px-3 sm:px-5 lg:px-7 py-4 sm:py-6 space-y-6">
     <div class="panel-overview rounded-2xl p-5 sm:p-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2 mb-4">
-        <div><h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-sky-600"></i><span>Thời khóa biểu và tình trạng buổi học</span></h3></div>
+        <div><h3 class="font-bold text-slate-900 text-base flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-sky-600"></i><span>Thời khóa biểu và tình trạng buổi học</span></h3></div>
         <div class="flex items-center gap-2 text-xs">
           <div class="px-3 py-1 bg-amber-50 text-amber-700 font-semibold rounded-lg border border-amber-200 flex items-center gap-1.5"><i data-lucide="alert-circle" class="w-3.5 h-3.5"></i><span>Nợ (Hủy): <strong id="stat-debt">0</strong></span></div>
           <div class="px-3 py-1 bg-sky-50 text-sky-700 font-semibold rounded-lg border border-sky-200 flex items-center gap-1.5"><i data-lucide="check-check" class="w-3.5 h-3.5"></i><span>Đã bù: <strong id="stat-makeup">0</strong></span></div>
@@ -135,7 +135,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
-      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-3"><i data-lucide="book-open" class="w-4 h-4 text-sky-600"></i><span>Học liệu và bài tập trong tuần</span></h3>
+      <h3 class="font-bold text-slate-900 text-base flex items-center gap-2 mb-3"><i data-lucide="book-open" class="w-4 h-4 text-sky-600"></i><span>Học liệu và bài tập trong tuần</span></h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="p-3.5 rounded-xl panel-soft space-y-3">
           <div class="flex items-center justify-between gap-2">
@@ -165,7 +165,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
 
     <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-3 mb-4">
-        <div><h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-sky-600"></i><span>Danh sách học sinh</span></h3></div>
+        <div><h3 class="font-bold text-slate-900 text-base flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-sky-600"></i><span>Danh sách học sinh</span></h3></div>
         <div class="teacher-feature hidden flex items-center gap-2" style="flex-direction:row">
           <button type="button" id="btn-obj" class="tb-ic px-3 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg flex items-center gap-1" style="min-height:44px" title="Mục tiêu nội dung" aria-label="Mục tiêu nội dung"><i data-lucide="target" class="w-3.5 h-3.5"></i><span class="t-full">Mục tiêu nội dung</span><span class="t-short">Mục tiêu</span></button>
           <button type="button" id="btn-addstu" class="tb-ic px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1" style="min-height:44px" title="Thêm học viên vào lớp" aria-label="Thêm học viên vào lớp"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i><span>Thêm</span></button>
@@ -188,7 +188,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
     <section class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 mt-5" id="session-history-section">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 mb-3">
         <div>
-          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-sky-600"></i><span>Lịch sử buổi học</span></h3>
+          <h3 class="font-bold text-slate-900 text-base flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-sky-600"></i><span>Lịch sử buổi học</span></h3>
           <p class="text-xs text-slate-500 mt-1">Xem lại các buổi học, trạng thái, bài học và bài tập của những tuần trước.</p>
         </div>
         <span id="history-week-count" class="text-[11px] text-slate-400"></span>
