@@ -46,7 +46,7 @@
   function mount(root, o) {
     if (!root) return;
     injectCss();
-    var st = ST[o.code] || (ST[o.code] = { items: null, q: '', f: 'all', pos: '', topic: '', sort: 'new', group: 'week', hide: 'off', reveal: {}, open: {}, edit: null, panel: null, busy: false, msg: '' });
+    var st = ST[o.code] || (ST[o.code] = { items: null, q: '', f: 'all', pos: '', topic: '', sort: 'new', group: 'week', hide: 'off', reveal: {}, pop: null, edit: null, panel: null, busy: false, msg: '' });
     var api = V.api(o.c, o.code), hintTimer = null, flipping = false;
 
     root.innerHTML = '<div class="vnb"><div class="vnb-bar"></div><div class="vnb-pn-wrap"></div><div class="vnb-list"></div></div>';
@@ -98,23 +98,34 @@
 
     function rowHtml(x) {
       var hiddenMean = st.hide === 'meaning' && !st.reveal[x.id] && x.meaning, hiddenWord = st.hide === 'word' && !st.reveal[x.id];
-      var au = 'data-vnb="say" data-id="' + x.id + '"';
+      var au = 'data-vnb="say" data-id="' + x.id + '"', tap = !hiddenMean && !hiddenWord;
       var mean = !x.meaning ? V.pill('chờ nghĩa', 'warn')
         : hiddenMean ? '<button type="button" class="vnb-hid" data-vnb="reveal" data-id="' + x.id + '">Chạm để hiện nghĩa</button>'
           : meanHtml(x);
       var top = hiddenWord ? '<div class="ve-top"><button type="button" class="vnb-hid" data-vnb="reveal" data-id="' + x.id + '">Chạm để hiện từ</button><button type="button" class="ve-au" ' + au + ' aria-label="Phát âm"><i data-lucide="volume-2"></i></button></div>'
-        : V.entryTop({ word: x.word, pos: x.pos, ipa: x.ipa, topic: x.topic, btn: 'data-vnb="open" data-id="' + x.id + '" aria-expanded="' + (st.open[x.id] ? 'true' : 'false') + '"', au: au });
-      var det = '';
-      if (st.open[x.id] && !hiddenWord) {
-        var ed = st.edit && st.edit.id === x.id;
-        det = '<div class="ve-det">' + (x.definition ? '<div><span class="ve-lb">Định nghĩa</span>' + esc(x.definition) + '</div>' : '') + (x.note ? '<div><span class="ve-lb">Ghi chú</span>' + esc(x.note) + '</div>' : '') +
-          '<div class="meta">' + (x.level ? 'Cấp độ ' + esc(x.level) + ' · ' : '') + (x.source === 'lesson' ? 'Từ bài học' : 'Em tự thêm') + ' · gặp ' + x.seen + ' lần</div>' +
-          (ed ? '<div class="vnb-edit"><input data-vnb-edit value="' + esc(x.status === 'typed' ? x.meaning : '') + '" placeholder="Nghĩa tiếng Việt của em" aria-label="Nghĩa tiếng Việt"><button type="button" class="vnb-btn pri" data-vnb="edit-save" data-id="' + x.id + '">Lưu</button><button type="button" class="vnb-btn" data-vnb="edit-cancel">Hủy</button></div>'
-            : '<div class="vnb-act"><button type="button" class="vnb-sm" data-vnb="edit" data-id="' + x.id + '" aria-label="Sửa nghĩa"><i data-lucide="pencil"></i></button>' + (x.source === 'self' ? '<button type="button" class="vnb-sm" data-vnb="del" data-id="' + x.id + '" aria-label="Xóa từ"><i data-lucide="trash-2"></i></button>' : '') + '</div>') + '</div>';
-      }
-      return '<div class="vnb-row ve' + (st.open[x.id] && !hiddenWord ? ' on' : '') + '"><button type="button" class="vnb-ck' + (x.learned ? ' on' : '') + '" data-vnb="learn" data-id="' + x.id + '" aria-label="' + (x.learned ? 'Bỏ đánh dấu đã thuộc' : 'Đánh dấu đã thuộc') + '" aria-pressed="' + (x.learned ? 'true' : 'false') + '"><i data-lucide="check"></i></button>' +
-        '<div class="vnb-body">' + top + V.entryRow2(mean, hiddenWord ? '' : x.example) + det + '</div></div>';
+        : V.entryTop({ word: x.word, pos: x.pos, ipa: x.ipa, au: au });
+      return '<div class="vnb-row ve' + (tap ? ' tap' : '') + (st.pop === x.id ? ' on' : '') + '"' + (tap ? ' data-vnb="open" data-id="' + x.id + '" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Xem đầy đủ từ ' + esc(x.word) + '"' : '') + '>' +
+        '<button type="button" class="vnb-ck' + (x.learned ? ' on' : '') + '" data-vnb="learn" data-id="' + x.id + '" aria-label="' + (x.learned ? 'Bỏ đánh dấu đã thuộc' : 'Đánh dấu đã thuộc') + '" aria-pressed="' + (x.learned ? 'true' : 'false') + '"><i data-lucide="check"></i></button>' +
+        '<div class="vnb-body">' + top + V.entryRow2(mean, x.topic) + '</div></div>';
     }
+    /* Pop up bản đầy đủ của từ: ví dụ, định nghĩa, ghi chú, sửa nghĩa, đánh dấu thuộc, xóa */
+    function popHtml(x) {
+      var ed = st.edit && st.edit.id === x.id;
+      var actions = ed ? '' : '<button type="button" class="' + (x.learned ? '' : 'pri') + '" data-vnb="learn" data-id="' + x.id + '"><i data-lucide="check"></i>' + (x.learned ? 'Bỏ đánh dấu thuộc' : 'Đã thuộc') + '</button>' +
+        (x.source === 'self' ? '<button type="button" class="del" data-vnb="del" data-id="' + x.id + '"><i data-lucide="trash-2"></i>Xóa từ</button>' : '');
+      var edit = ed ? '<div class="vnb-edit" style="margin-top:18px"><input data-vnb-edit value="' + esc(x.status === 'typed' ? x.meaning : '') + '" placeholder="Nghĩa tiếng Việt của em" aria-label="Nghĩa tiếng Việt"><button type="button" class="vnb-btn pri" data-vnb="edit-save" data-id="' + x.id + '">Lưu</button><button type="button" class="vnb-btn" data-vnb="edit-cancel">Hủy</button></div>' : '';
+      return '<div class="vnb">' + V.fullHtml({ word: x.word, pos: x.pos, ipa: x.ipa, topic: x.topic, au: 'data-vnb="say" data-id="' + x.id + '"',
+        mean: x.meaning ? meanHtml(x) : V.pill('chờ nghĩa', 'warn'), def: x.definition, ex: x.example, note: x.note,
+        meta: (x.level ? 'Cấp độ ' + esc(x.level) + ' · ' : '') + (x.source === 'lesson' ? 'Từ bài học' : 'Em tự thêm') + ' · gặp ' + x.seen + ' lần',
+        edit: ed ? '' : 'data-vnb="edit" data-id="' + x.id + '" aria-label="Sửa nghĩa" title="Sửa nghĩa"', extra: edit, actions: actions }) + '</div>';
+    }
+    function openPop(x) {
+      st.pop = x.id; st.edit = null;
+      V.modal(popHtml(x), { onClick: onClick, onKey: onKey, onClose: function () { st.pop = null; st.edit = null; renderList(); } });
+      renderList();
+    }
+    function refreshPop() { var m = V.modalOpen(), x = st.pop && byId(st.pop); if (m && x) m.set(popHtml(x)); else if (m && st.pop) V.closeModal(); }
+    function popInput() { return document.querySelector('.vm [data-vnb-edit]'); }
 
     function spread() { return root.clientWidth >= 820; }
     function perPage() { return spread() ? 10 : 8; }
@@ -255,7 +266,7 @@
       V.dict(word).then(function (d) {
         return api.add({ word: word, pos: d ? d.pos : '', ipa: d ? d.ipa : '', definition: d ? d.definition : '', meaning: meaning });
       }).then(function (r) {
-        return reload(function () { st.busy = false; st.panel = null; st.f = 'all'; st.q = ''; st.open[r.id] = true; toast(r.merged ? 'Từ này đã có trong sổ, đã gộp lại' : 'Đã thêm vào sổ'); });
+        return reload(function () { st.busy = false; st.panel = null; st.f = 'all'; st.q = ''; toast(r.merged ? 'Từ này đã có trong sổ, đã gộp lại' : 'Đã thêm vào sổ'); });
       }).catch(function (e) { st.busy = false; setHint(''); setErr(err(e)); });
     }
 
@@ -291,7 +302,7 @@
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(function () { toast('Đã sao chép ' + L.length + ' từ'); }, fallback); else fallback();
     }
 
-    root.addEventListener('click', function (e) {
+    function onClick(e) {
       var b = e.target.closest('[data-vnb]'); if (!b) return;
       var a = b.getAttribute('data-vnb'), x = b.dataset.id ? byId(b.dataset.id) : null;
       if (a === 'chip') { st.f = b.dataset.f; renderBar(); renderList(); }
@@ -304,25 +315,26 @@
       else if (a === 'save-import') saveImport();
       else if (a === 'export') exportList();
       else if (a === 'reveal' && x) { st.reveal[x.id] = true; renderList(); }
-      else if (a === 'open' && x) { st.open[x.id] = !st.open[x.id]; if (!st.open[x.id] && st.edit && st.edit.id === x.id) st.edit = null; renderList(); }
+      else if (a === 'open' && x) openPop(x);
       else if (a === 'say' && x) say(x, b);
       else if (a === 'learn' && x) {
-        var prev = x.learned; x.learned = !prev; renderBar(); renderList();
-        api.set(x.id, { learned: x.learned }).catch(function (er) { x.learned = prev; renderBar(); renderList(); toast(err(er)); });
+        var prev = x.learned; x.learned = !prev; renderBar(); renderList(); refreshPop();
+        api.set(x.id, { learned: x.learned }).catch(function (er) { x.learned = prev; renderBar(); renderList(); refreshPop(); toast(err(er)); });
       }
-      else if (a === 'edit' && x) { st.edit = { id: x.id }; renderList(); var i = list.querySelector('[data-vnb-edit]'); if (i) i.focus(); }
-      else if (a === 'edit-cancel') { st.edit = null; renderList(); }
+      else if (a === 'edit' && x) { st.edit = { id: x.id }; refreshPop(); var i = popInput(); if (i) i.focus(); }
+      else if (a === 'edit-cancel') { st.edit = null; refreshPop(); }
       else if (a === 'edit-save' && x) {
-        var inp = list.querySelector('[data-vnb-edit]'), v = V.norm(inp && inp.value);
+        var inp = popInput(), v = V.norm(inp && inp.value);
         api.set(x.id, v ? { meaning: v } : { clearMeaning: true }).then(function (r) {
-          var k = st.items.indexOf(x); if (k > -1) st.items[k] = r; st.edit = null; renderBar(); renderList(); toast('Đã lưu nghĩa');
+          var k = st.items.indexOf(x); if (k > -1) st.items[k] = r; st.edit = null; renderBar(); renderList(); refreshPop(); toast('Đã lưu nghĩa');
         }).catch(function (er) { toast(err(er)); });
       }
       else if (a === 'del' && x) {
-        var go = function () { api.remove(x.id).then(function () { st.items = st.items.filter(function (y) { return y !== x; }); renderBar(); renderList(); toast('Đã xóa từ'); }).catch(function (er) { toast(err(er)); }); };
+        var go = function () { api.remove(x.id).then(function () { st.items = st.items.filter(function (y) { return y !== x; }); if (st.pop === x.id) V.closeModal(); renderBar(); renderList(); toast('Đã xóa từ'); }).catch(function (er) { toast(err(er)); }); };
         if (w.confirm('Xóa từ "' + x.word + '" khỏi sổ?')) go();
       }
-    });
+    }
+    root.addEventListener('click', onClick);
 
     root.addEventListener('change', function (e) {
       var k = e.target.getAttribute && e.target.getAttribute('data-vnb-sel'); if (!k) return;
@@ -341,11 +353,13 @@
         }, 400);
       }
     });
-    root.addEventListener('keydown', function (e) {
+    function onKey(e) {
+      if (e.target.matches('.ve.tap') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); var t = byId(e.target.dataset.id); if (t) openPop(t); return; }
       if (e.key !== 'Enter') return;
       if (e.target.matches('[data-vnb-in="word"],[data-vnb-in="meaning"]')) { e.preventDefault(); saveAdd(); }
-      else if (e.target.matches('[data-vnb-edit]')) { e.preventDefault(); var b = list.querySelector('[data-vnb="edit-save"]'); if (b) b.click(); }
-    });
+      else if (e.target.matches('[data-vnb-edit]')) { e.preventDefault(); var b = document.querySelector('.vm [data-vnb="edit-save"]'); if (b) b.click(); }
+    }
+    root.addEventListener('keydown', onKey);
 
     renderBar(); renderPanel(); renderList();
     load();

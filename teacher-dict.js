@@ -27,7 +27,7 @@
     '.td-sm{margin-top:4px}.td-sm h3{font-size:.8125rem;font-weight:800;margin:0 0 6px}.td-sr{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:#F6F7F9;border-radius:14px;margin-bottom:6px}.td-sr .td-acts{justify-content:flex-start}' +
     '.td-sr .q{font-weight:700}.td-sr .who{color:#64748b;font-size:.8125rem;margin-top:2px}.td-none{color:#64748b;font-size:.875rem;padding:14px 4px}.td-err{color:#be123c;font-size:.875rem;min-height:1em}';
 
-  var S = { c: null, root: null, loaded: false, loading: false, err: '', bank: [], links: {}, stu: {}, q: '', f: 'all', pos: '', topic: '', open: null, adding: false };
+  var S = { c: null, root: null, loaded: false, loading: false, err: '', bank: [], links: {}, stu: {}, q: '', f: 'all', pos: '', topic: '', open: null, editing: false, adding: false };
 
   function css() { V.uiCss(); if (document.getElementById('td-css')) return; var st = document.createElement('style'); st.id = 'td-css'; st.textContent = CSS; document.head.appendChild(st); }
   function icons() { if (w.lucide) w.lucide.createIcons(); }
@@ -100,16 +100,38 @@
     var L = view();
     var half = Math.ceil(L.length / 2);
     list.className = 'td-list' + (L.length ? ' ve-2c' : '');
+    syncPop();
     list.innerHTML = L.length ? '<div class="ve-col">' + L.slice(0, half).map(rowHtml).join('') + '</div><div class="ve-col">' + L.slice(half).map(rowHtml).join('') + '</div>' : '<div class="td-none">Không có từ nào.</div>';
     icons();
   }
 
   function rowHtml(b) {
     var sg = suggested(b), g = groups(b), on = S.open === b.id;
-    return '<div class="td-row ve' + (on ? ' on' : '') + '" data-id="' + b.id + '">' +
-      V.entryTop({ word: b.word, pos: b.pos, ipa: b.ipa, topic: norm(b.topic), btn: 'data-td="open" data-id="' + b.id + '" aria-expanded="' + on + '"', au: 'data-td="say" data-id="' + b.id + '"' }) +
-      V.entryRow2((sg ? esc(sg) : V.pill('chưa có nghĩa', 'warn')) + (g.length ? ' ' + V.pill(g.length + ' nghĩa HV ghi', 'info') : ''), b.example) +
-      (on ? editor(b) : '') + '</div>';
+    return '<div class="td-row ve tap' + (on ? ' on' : '') + '" data-td="open" data-id="' + b.id + '" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Xem đầy đủ từ ' + esc(b.word) + '">' +
+      V.entryTop({ word: b.word, pos: b.pos, ipa: b.ipa, au: 'data-td="say" data-id="' + b.id + '"' }) +
+      V.entryRow2((sg ? esc(sg) : V.pill('chưa có nghĩa', 'warn')) + (g.length ? ' ' + V.pill(g.length + ' nghĩa HV ghi', 'info') : ''), b.topic) + '</div>';
+  }
+  /* nghĩa học viên tự ghi, có nút dùng làm nghĩa đề xuất hoặc xoá */
+  function ownHtml(b) {
+    var g = groups(b), nst = (S.links[b.id] || []).length;
+    return '<div class="td-sm" style="margin-top:18px"><h3>Nghĩa học viên ghi <span class="td-b">' + nst + ' học viên có từ này</span></h3>' + (g.length ? g.map(function (x, i) {
+      return '<div class="td-sr"><div><div class="q">' + esc(x.text) + '</div><div class="who">' + x.who.map(function (s) { return esc(s.name) + (s.cls ? ' (' + esc(s.cls) + ')' : ''); }).join(', ') + '</div></div>' +
+        '<div class="td-acts"><button type="button" class="td-btn sm" data-td="use" data-id="' + b.id + '" data-g="' + i + '">Dùng làm nghĩa đề xuất</button><button type="button" class="td-btn sm del" data-td="clear" data-id="' + b.id + '" data-g="' + i + '">Xoá nghĩa này</button></div></div>';
+    }).join('') : '<div class="td-none" style="padding:4px 0">Chưa có học viên nào tự ghi nghĩa khác.</div>') + '</div>';
+  }
+  /* Pop up: xem đầy đủ, bấm Sửa để chuyển sang khung sửa */
+  function popHtml(b) {
+    if (S.editing) return '<div class="td"><div class="vm-w" style="padding-right:48px">' + esc(b.word) + '</div>' + editor(b) + '</div>';
+    var sg = suggested(b);
+    return '<div class="td">' + V.fullHtml({ word: b.word, pos: b.pos, ipa: b.ipa, topic: b.topic, au: 'data-td="say" data-id="' + b.id + '"',
+      mean: sg ? esc(sg) : V.pill('chưa có nghĩa', 'warn'), def: b.definition_en, ex: b.example,
+      meta: b.level ? 'Cấp độ ' + esc(b.level) : '', edit: 'data-td="edit" data-id="' + b.id + '" aria-label="Sửa từ" title="Sửa"' }) + ownHtml(b) + '</div>';
+  }
+  function syncPop() {
+    var m = V.modalOpen(), b = S.open && S.bank.filter(function (x) { return x.id === S.open; })[0];
+    if (!b) { S.open = null; S.editing = false; if (m) V.closeModal(true); return; }
+    if (m) m.set(popHtml(b));
+    else V.modal(popHtml(b), { onClick: onClick, onKey: onKey, onClose: function () { S.open = null; S.editing = false; draw(); } });
   }
 
   function field(name, label, val, ph, list) {
@@ -129,14 +151,8 @@
       field('meaning', 'Nghĩa đề xuất', suggested(b), 'Nghĩa tiếng Việt') + field('def', 'Định nghĩa tiếng Anh', b.definition_en, '') +
       field('ex', 'Ví dụ', b.example, '') + field('topic', 'Chủ đề', b.topic, 'Ví dụ: Environment', 'td-tp') + '<div class="td-err" data-err></div>' +
       '<div class="td-acts">' + (isNew ? '<button type="button" class="td-btn" data-td="add-cancel">Huỷ</button><button type="button" class="td-btn pri" data-td="create">Thêm vào từ điển</button>'
-        : '<button type="button" class="td-btn" data-td="close">Đóng</button><button type="button" class="td-btn pri" data-td="save" data-id="' + b.id + '">Lưu</button>') + '</div>';
-    if (!isNew) {
-      var g = groups(b), nst = (S.links[b.id] || []).length;
-      h += '<div class="td-sm"><h3>Nghĩa học viên ghi <span class="td-b">' + nst + ' học viên có từ này</span></h3>' + (g.length ? g.map(function (x, i) {
-        return '<div class="td-sr"><div><div class="q">' + esc(x.text) + '</div><div class="who">' + x.who.map(function (s) { return esc(s.name) + (s.cls ? ' (' + esc(s.cls) + ')' : ''); }).join(', ') + '</div></div>' +
-          '<div class="td-acts"><button type="button" class="td-btn sm" data-td="use" data-id="' + b.id + '" data-g="' + i + '">Dùng làm nghĩa đề xuất</button><button type="button" class="td-btn sm del" data-td="clear" data-id="' + b.id + '" data-g="' + i + '">Xoá nghĩa này</button></div></div>';
-      }).join('') : '<div class="td-none" style="padding:4px 0">Chưa có học viên nào tự ghi nghĩa khác.</div>') + '</div>';
-    }
+        : '<button type="button" class="td-btn" data-td="close">Huỷ</button><button type="button" class="td-btn pri" data-td="save" data-id="' + b.id + '">Lưu</button>') + '</div>';
+    if (!isNew) h += ownHtml(b);
     return h + '</div>';
   }
 
@@ -160,7 +176,7 @@
   }
 
   function onClick(e) {
-    var b = e.target.closest('[data-td]'); if (!b || !S.root.contains(b)) return;
+    var m = V.modalOpen(), b = e.target.closest('[data-td]'); if (!b || !(S.root.contains(b) || (m && m.el.contains(b)))) return;
     var a = b.dataset.td, id = Number(b.dataset.id), ed = b.closest('.td-ed');
     if (a === 'filter') { S.f = b.dataset.f; S.open = null; draw(); }
     else if (a === 'say') { var sb = S.bank.filter(function (x) { return x.id === id; })[0]; if (sb) V.speak(sb.word); }
@@ -172,11 +188,12 @@
     else if (a === 'reload') { load(); }
     else if (a === 'add') { S.adding = !S.adding; draw(); if (S.adding) { var wi = S.root.querySelector('[data-ed="new"] [data-in="word"]'); if (wi) wi.focus(); } }
     else if (a === 'add-cancel') { S.adding = false; draw(); }
-    else if (a === 'open') { S.open = S.open === id ? null : id; draw(); }
-    else if (a === 'close') { S.open = null; draw(); }
+    else if (a === 'open') { S.open = id; S.editing = false; draw(); }
+    else if (a === 'edit') { S.editing = true; draw(); var fi = document.querySelector('.vm [data-in="ipa"]'); if (fi) fi.focus(); }
+    else if (a === 'close') { S.editing = false; draw(); }
     else if (a === 'save') {
       var v = vals(ed); busy(b, true);
-      updateBank(id, patchOf(v)).then(function () { toast(v.meaning ? 'Đã lưu. Nghĩa đề xuất hiện ở sổ của học viên.' : 'Đã lưu.'); draw(); })
+      updateBank(id, patchOf(v)).then(function () { S.editing = false; toast(v.meaning ? 'Đã lưu. Nghĩa đề xuất hiện ở sổ của học viên.' : 'Đã lưu.'); draw(); })
         .catch(function (er) { busy(b, false); setErr(ed, errMsg(er)); });
     }
     else if (a === 'create') {
@@ -187,7 +204,7 @@
       S.c.from('vocab_bank').insert(row).select(COLS).single().then(function (r) {
         if (r.error) throw r.error;
         S.bank.push(r.data); S.bank.sort(function (x, y) { return key(x.word) < key(y.word) ? -1 : key(x.word) > key(y.word) ? 1 : 0; });
-        S.adding = false; S.open = r.data.id; S.q = ''; var qi = S.root.querySelector('[data-td-q]'); if (qi) qi.value = '';
+        S.adding = false; S.open = r.data.id; S.editing = false; S.q = ''; var qi = S.root.querySelector('[data-td-q]'); if (qi) qi.value = '';
         toast('Đã thêm "' + r.data.word + '" vào từ điển.'); draw();
         var row2 = S.root.querySelector('.td-row[data-id="' + r.data.id + '"]'); if (row2) row2.scrollIntoView({ block: 'center' });
       }).catch(function (er) { busy(b, false); setErr(ed, errMsg(er)); });
@@ -222,6 +239,7 @@
     S[k] = e.target.value; S.open = null; draw();
   }
   function onKey(e) {
+    if (e.target.matches && e.target.matches('.td-row.tap') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); S.open = Number(e.target.dataset.id); S.editing = false; draw(); return; }
     if (e.key !== 'Enter' || !e.target.matches || !e.target.matches('.td-ed [data-in]')) return;
     var ed = e.target.closest('.td-ed'), btn = ed && ed.querySelector('[data-td="save"],[data-td="create"]'); if (btn) { e.preventDefault(); btn.click(); }
   }
