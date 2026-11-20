@@ -2,7 +2,6 @@
 
 /* ==== mobile-fix ==== */
 @media(max-width:780px){
-body.student-dashboard-view .overview-week-label>span:not(.week-name){display:none!important}
 .t-row-head{grid-template-columns:minmax(0,1fr)!important;gap:8px;padding:6px 0}
 .t-sum{flex-wrap:wrap!important;justify-content:flex-start!important}
 .t-slot-head{flex-wrap:wrap}
@@ -24,7 +23,6 @@ body.student-dashboard-view .t-sr-cls small{display:none}
 @media(min-width:781px){
 .t-content{scrollbar-width:none;scrollbar-gutter:auto;padding-right:0!important}
 .t-content::-webkit-scrollbar{display:none}
-.student-shell-inner-tabs .student-main-content:not(.t-content){flex:1 1 auto;display:flex;flex-direction:column;padding-bottom:0!important}
 }
 .t-rail-m{display:none}
 @media(max-width:780px){
@@ -198,10 +196,6 @@ body.student-dashboard-view .t-slot.mode-up .t-sum .t-mode{display:none!importan
 body.student-dashboard-view .t-slot.mode-up .t-mode-head{display:inline-flex;align-items:center;box-sizing:border-box;height:24px;padding:0 9px;border-radius:9999px;background:#F4F5F7;color:#475569;font-size:.75rem;font-weight:700;white-space:nowrap}
 body.student-dashboard-view .t-row-head{grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:8px!important}
 body.student-dashboard-view .t-row-head .t-sum{flex-wrap:nowrap!important;justify-content:flex-end!important}
-}
-/* ==== rail-compact ==== */
-@media(min-width:781px){
-.student-rail .card h2,.student-rail .week-calendar-head{margin-bottom:5px!important}
 }
 /* ==== rail-tuition-grid ==== */
 .gr-body{display:grid;gap:12px}

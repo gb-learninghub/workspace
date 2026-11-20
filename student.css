@@ -688,7 +688,6 @@ body.student-dashboard-view .student-overview-top>*,body.student-dashboard-view 
 body.student-dashboard-view .student-overview-highlight .g-tuition #tuition-status-text{max-height:none!important;overflow:visible!important}
 body.student-dashboard-view .student-main-section,body.student-dashboard-view .student-week-materials,body.student-dashboard-view .student-materials,body.student-dashboard-view .student-materials>*{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;box-sizing:border-box}
 body.student-dashboard-view .student-week-preview-list{grid-template-columns:minmax(0,1fr)!important}
-body.student-dashboard-view .overview-week-label>span:not(.week-name){display:none!important}
 body.student-dashboard-view .overview-week-label>.week-name{display:inline!important;font-size:.8125rem!important;white-space:nowrap}
 body.student-dashboard-view .m-pi b{color:#1B1D22}
 body.student-dashboard-view .m-pi i{color:#64748b}
@@ -713,7 +712,6 @@ body.student-dashboard-view .student-history-row>.tag{justify-self:end!important
 /* ==== teacher-css ==== */
 @media(min-width:781px){
 .student-workspace>.m-stick{display:none!important}
-.student-shell-inner-tabs .student-main-content:not(.t-content){flex:1 1 auto;display:flex;flex-direction:column;padding-bottom:0!important}
 .student-shell-inner-tabs .student-main-section{flex:1 1 auto;display:flex;flex-direction:column}
 .student-shell-inner-tabs .student-main-section>.card{flex:1 1 auto}
 }
@@ -816,7 +814,6 @@ body .student-overview-highlight .g-week-sched,body .student-overview-highlight 
 /* ==== rail-compact ==== */
 @media(min-width:781px){
 .student-shell-inner-tabs .student-rail .g-week-sched,.student-shell-inner-tabs .student-rail .g-sched,.student-shell-inner-tabs .student-rail .g-tuition,.student-shell-inner-tabs .student-rail .g-info,.student-shell-inner-tabs .student-rail .g-hero,.student-shell-inner-tabs .student-rail .g-hist{padding:9px 11px!important}
-.student-rail .card h2,.student-rail .week-calendar-head{margin-bottom:5px!important}
 .student-rail .stat{min-height:0!important;padding:6px 8px!important}
 .student-rail .stat-grid{gap:5px!important}
 .student-rail .hero-btn{min-height:30px!important}

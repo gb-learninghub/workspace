@@ -408,3 +408,12 @@ html.lms-leaving::before{content:"";position:fixed;left:0;top:0;height:3px;width
 /* vùng bấm rộng hơn cho nút icon nhỏ, không đổi hình dạng */
 .overview-week-controls .icon-btn,.student-welcome-tools .icon-btn,#btn-theme{position:relative}
 .overview-week-controls .icon-btn::after,.student-welcome-tools .icon-btn::after,#btn-theme::after{content:"";position:absolute;inset:-8px -4px}
+
+/* ==== gom từ student.css và teacher.css (hai file có cùng quy tắc) ==== */
+@media(max-width:780px){
+body.student-dashboard-view .overview-week-label>span:not(.week-name){display:none!important}
+}
+@media(min-width:781px){
+.student-shell-inner-tabs .student-main-content:not(.t-content){flex:1 1 auto;display:flex;flex-direction:column;padding-bottom:0!important}
+.student-rail .card h2,.student-rail .week-calendar-head{margin-bottom:5px!important}
+}
