@@ -16,7 +16,7 @@
     '.td-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.td-head h2{margin:0!important}' +
     '.td-tb{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.td-tb .field{flex:1 1 220px;min-height:44px}' +
     '.td-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.td-chip{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid #E4E6EA;background:#fff;color:#475569;font-weight:700;font-size:.875rem}.td-chip.on{background:#16181D;border-color:#16181D;color:#fff}' +
-    '.td-row.open{background:#fff}' +
+    '.td-row.on .td-ed .field{background:#fff}' +
     '.td-b{display:inline-block;padding:2px 9px;border-radius:999px;background:#f1f5f9;color:#475569;font-size:.75rem;font-weight:700;white-space:nowrap}' +
     '.td-ed{padding:12px 0 8px;display:flex;flex-direction:column;gap:12px}.td-new{border:1px solid #E4E6EA;border-radius:16px;padding:4px 14px 8px;margin-bottom:10px}' +
     '.td-ed label,.td-f{display:flex;flex-direction:column;gap:4px;font-size:.75rem;font-weight:700;color:#64748b}' +
@@ -80,7 +80,7 @@
       r.innerHTML = '<div class="td"><div class="td-head"><h2><i data-lucide="book-a"></i>Từ điển chung</h2><span class="td-b" data-td-count></span></div>' +
         '<div class="td-tb"><input class="field" type="search" placeholder="Tìm từ hoặc nghĩa" aria-label="Tìm từ hoặc nghĩa" data-td-q autocomplete="off" spellcheck="false">' +
         '<button type="button" class="td-btn" data-td="add"><span>+ Thêm từ</span></button><button type="button" class="td-btn" data-td="reload" aria-label="Tải lại">Tải lại</button></div>' +
-        '<div data-td-add></div><div data-td-drops></div><div class="td-chips" data-td-chips></div><div class="td-list ve-cols" data-td-list></div></div>';
+        '<div data-td-add></div><div data-td-drops></div><div class="td-chips" data-td-chips></div><div class="td-list" data-td-list></div></div>';
       r.querySelector('[data-td-q]').value = S.q;
       icons();
     }
@@ -98,15 +98,17 @@
     r.querySelector('[data-td-drops]').innerHTML = '<div class="vf">' + V.select('data-td-sel="pos" aria-label="Lọc theo từ loại"', 'Từ loại', fo.pos, S.pos) + V.select('data-td-sel="topic" aria-label="Lọc theo chủ đề"', 'Chủ đề', fo.topic, S.topic) + '</div>';
     addBox.innerHTML = S.adding ? '<div class="td-new">' + editor(null) + '</div>' : '';
     var L = view();
-    list.innerHTML = L.length ? L.map(rowHtml).join('') : '<div class="td-none">Không có từ nào.</div>';
+    var half = Math.ceil(L.length / 2);
+    list.className = 'td-list' + (L.length ? ' ve-2c' : '');
+    list.innerHTML = L.length ? '<div class="ve-col">' + L.slice(0, half).map(rowHtml).join('') + '</div><div class="ve-col">' + L.slice(half).map(rowHtml).join('') + '</div>' : '<div class="td-none">Không có từ nào.</div>';
     icons();
   }
 
   function rowHtml(b) {
     var sg = suggested(b), g = groups(b), on = S.open === b.id;
-    return '<div class="td-row ve' + (on ? ' open' : '') + '" data-id="' + b.id + '">' +
-      V.entryTop({ word: b.word, pos: b.pos, ipa: b.ipa, topic: norm(b.topic), extra: g.length ? V.pill(g.length + ' nghĩa HV ghi', 'info') : '', btn: 'data-td="open" data-id="' + b.id + '" aria-expanded="' + on + '"', au: 'data-td="say" data-id="' + b.id + '"' }) +
-      V.entryRow2(sg ? esc(sg) : V.pill('chưa có nghĩa', 'warn'), b.example) +
+    return '<div class="td-row ve' + (on ? ' on' : '') + '" data-id="' + b.id + '">' +
+      V.entryTop({ word: b.word, pos: b.pos, ipa: b.ipa, topic: norm(b.topic), btn: 'data-td="open" data-id="' + b.id + '" aria-expanded="' + on + '"', au: 'data-td="say" data-id="' + b.id + '"' }) +
+      V.entryRow2((sg ? esc(sg) : V.pill('chưa có nghĩa', 'warn')) + (g.length ? ' ' + V.pill(g.length + ' nghĩa HV ghi', 'info') : ''), b.example) +
       (on ? editor(b) : '') + '</div>';
   }
 

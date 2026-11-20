@@ -5,15 +5,16 @@
   var CSS = '.vnb{color:var(--t-ink,#1B1D22)}.vnb button{font:inherit;cursor:pointer}.vnb svg{width:18px;height:18px;flex:none}' +
     '.vnb-tb{display:flex;align-items:center;gap:6px;margin:4px 0 10px}.vnb-search{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border:1px solid var(--t-border,#E4E6EA);border-radius:22px;background:#fff}' +
     '.vnb-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:16px}.vnb-ib{width:44px;height:44px;border-radius:22px;border:1px solid var(--t-border,#E4E6EA);background:#fff;color:#1B1D22;display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0}' +
-    '.vnb-ib.on{background:#16181D;border-color:#16181D;color:#fff}.vnb-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}' +
+    '.vnb-ib.on{background:#16181D;border-color:#16181D;color:#fff}.vnb-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:4px}.vnb .vf{margin-bottom:4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.vnb .vf::-webkit-scrollbar{display:none}.vnb .vf>*{flex:none}.vnb-chips .vnb-chip{min-height:44px;white-space:nowrap;font-variant-numeric:tabular-nums}' +
     '.vnb-chip{border:1px solid var(--t-border,#E4E6EA);background:#fff;border-radius:20px;min-height:40px;padding:0 14px;font-size:.875rem;font-weight:600;color:#596579}.vnb-chip.on{background:#16181D;border-color:#16181D;color:#fff}' +
+    '.vnb-scroll{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.vnb-scroll .vnb-pg{padding-bottom:12px}.vnb-scroll .vnb-pno{display:none}.vnb-nav{margin:8px 0 0!important}' +
     '.vnb-st{font-size:.8125rem;color:var(--t-muted,#818999);margin:2px 0 4px}.vnb-grp{font-size:.8125rem;font-weight:700;color:var(--t-muted,#818999);padding:14px 0 6px}' +
-    '.vnb-row{display:flex;gap:10px;align-items:flex-start}.vnb-ck{width:28px;height:28px;margin-top:6px;border-radius:50%;border:1.5px solid #B9BDC6;background:#fff;color:transparent;display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0}' +
+    '.vnb-row{display:flex;gap:10px;align-items:flex-start}.vnb-ck{width:26px;height:26px;margin-top:5px;border-radius:50%;border:1.5px solid #B9BDC6;background:#fff;color:transparent;display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0}' +
     '.vnb-ck.on{background:#16181D;border-color:#16181D;color:#fff}.vnb-body{flex:1;min-width:0}.vnb-head{display:block;width:100%;border:0;background:transparent;padding:0;text-align:left;color:inherit;min-height:30px}' +
     '.vnb-hid{color:var(--t-muted,#818999);border:0;background:transparent;padding:0;text-align:left;min-height:30px}' +
     '.vnb-det .meta{color:var(--t-muted,#818999);font-size:.8125rem}.vnb-act{display:flex;gap:6px}' +
     '.vnb-sm{width:44px;height:44px;border-radius:22px;border:1px solid var(--t-border,#E4E6EA);background:#fff;color:#454B57;display:inline-flex;align-items:center;justify-content:center;padding:0;flex:none}' +
-    '.vnb-edit{display:flex;gap:6px;flex-wrap:wrap}.vnb-edit input{flex:1 1 200px}.vnb-edit input,.vnb-pn input,.vnb-pn textarea{width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--t-border,#D5D8DE);border-radius:12px;font-size:16px;background:#fff;outline:0}' +
+    '.vnb-edit{display:flex;gap:6px;flex-wrap:nowrap;align-items:center}.vnb-edit .vnb-btn{padding:0 14px;flex:none}.vnb-edit input{flex:1 1 auto;min-width:0;width:auto!important;box-sizing:border-box;height:44px;min-height:0!important}.vnb-edit .vnb-btn{height:44px;min-height:0}.vnb-edit input,.vnb-pn input,.vnb-pn textarea{width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--t-border,#D5D8DE);border-radius:12px;font-size:16px;background:#fff;outline:0}' +
     '.vnb-pn{border:1px solid var(--t-border,#E4E6EA);border-radius:14px;padding:12px;margin:0 0 10px;display:flex;flex-direction:column;gap:8px}.vnb-pt{font-weight:700;font-size:.9375rem}.vnb-pn textarea{min-height:150px;resize:vertical;line-height:1.5}' +
     '.vnb-pa{display:flex;gap:8px;justify-content:flex-end;align-items:center}.vnb-btn{min-height:44px;padding:0 18px;border-radius:22px;border:1px solid var(--t-border,#D5D8DE);background:#fff;font-weight:600;color:#1B1D22}.vnb-btn.pri{background:#16181D;border-color:#16181D;color:#fff}' +
     '.vnb-hint{font-size:.875rem;color:#454B57}.vnb-err{font-size:.875rem;color:#B42318}.vnb-empty{padding:28px 4px;text-align:center;color:var(--t-muted,#818999);font-size:.9375rem;line-height:1.6}';
@@ -80,7 +81,7 @@
       var fo = V.filterOpts(it, posOf, topicOf);
       if (!fo.has('pos', st.pos)) st.pos = '';
       if (!fo.has('topic', st.topic)) st.topic = '';
-      var drops = '<div class="vf">' + V.select('data-vnb-sel="pos" aria-label="Lọc theo từ loại"', 'Từ loại', fo.pos, st.pos) + V.select('data-vnb-sel="topic" aria-label="Lọc theo chủ đề"', 'Chủ đề', fo.topic, st.topic) + '</div>';
+      var drops = V.select('data-vnb-sel="pos" aria-label="Lọc theo từ loại"', 'Từ loại', fo.pos, st.pos) + V.select('data-vnb-sel="topic" aria-label="Lọc theo chủ đề"', 'Chủ đề', fo.topic, st.topic);
       var hideIcon = st.hide === 'off' ? 'eye' : st.hide === 'meaning' ? 'eye-off' : 'languages';
       var focus = document.activeElement && document.activeElement.matches && document.activeElement.matches('[data-vnb-q]');
       bar.innerHTML = '<div class="vnb-tb"><label class="vnb-search"><i data-lucide="search"></i><input type="search" data-vnb-q placeholder="Tìm từ hoặc nghĩa" value="' + esc(st.q) + '" aria-label="Tìm từ"></label>' +
@@ -90,7 +91,7 @@
         '<button type="button" class="vnb-ib' + (st.panel === 'import' ? ' on' : '') + '" data-vnb="import" aria-label="Nhập danh sách từ"><i data-lucide="clipboard-paste"></i></button>' +
         '<button type="button" class="vnb-ib" data-vnb="export" aria-label="Sao chép sổ"><i data-lucide="download"></i></button>' +
         '<button type="button" class="vnb-ib on" data-vnb="add" aria-label="Thêm từ"><i data-lucide="plus"></i></button></div>' +
-        drops + '<div class="vnb-chips">' + chips + '</div><div class="vnb-st">' + statText() + '</div>';
+        '<div class="vf vnb-chips">' + drops + chips + '</div><div class="vnb-st">' + statText() + '</div>';
       icons();
       if (focus) { var i = bar.querySelector('[data-vnb-q]'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
     }
@@ -111,7 +112,7 @@
           (ed ? '<div class="vnb-edit"><input data-vnb-edit value="' + esc(x.status === 'typed' ? x.meaning : '') + '" placeholder="Nghĩa tiếng Việt của em" aria-label="Nghĩa tiếng Việt"><button type="button" class="vnb-btn pri" data-vnb="edit-save" data-id="' + x.id + '">Lưu</button><button type="button" class="vnb-btn" data-vnb="edit-cancel">Hủy</button></div>'
             : '<div class="vnb-act"><button type="button" class="vnb-sm" data-vnb="edit" data-id="' + x.id + '" aria-label="Sửa nghĩa"><i data-lucide="pencil"></i></button>' + (x.source === 'self' ? '<button type="button" class="vnb-sm" data-vnb="del" data-id="' + x.id + '" aria-label="Xóa từ"><i data-lucide="trash-2"></i></button>' : '') + '</div>') + '</div>';
       }
-      return '<div class="vnb-row ve"><button type="button" class="vnb-ck' + (x.learned ? ' on' : '') + '" data-vnb="learn" data-id="' + x.id + '" aria-label="' + (x.learned ? 'Bỏ đánh dấu đã thuộc' : 'Đánh dấu đã thuộc') + '" aria-pressed="' + (x.learned ? 'true' : 'false') + '"><i data-lucide="check"></i></button>' +
+      return '<div class="vnb-row ve' + (st.open[x.id] && !hiddenWord ? ' on' : '') + '"><button type="button" class="vnb-ck' + (x.learned ? ' on' : '') + '" data-vnb="learn" data-id="' + x.id + '" aria-label="' + (x.learned ? 'Bỏ đánh dấu đã thuộc' : 'Đánh dấu đã thuộc') + '" aria-pressed="' + (x.learned ? 'true' : 'false') + '"><i data-lucide="check"></i></button>' +
         '<div class="vnb-body">' + top + V.entryRow2(mean, hiddenWord ? '' : x.example) + det + '</div></div>';
     }
 
@@ -147,7 +148,24 @@
       if (spread()) { body = '<div class="vnb-2">' + pg(2 * t) + pg(2 * t + 1) + '</div>'; label = (2 * t + 2 > P) ? (2 * t + 1) : ((2 * t + 1) + '–' + (2 * t + 2)); }
       else { body = pg(t); label = String(t + 1); }
       var nav = n > 1 ? '<div class="vnb-nav"><button type="button" class="vnb-sm" data-vnb-go="-1" aria-label="Trang trước"' + (t === 0 ? ' disabled' : '') + '><i data-lucide="chevron-left"></i></button><span class="vnb-pi">Trang ' + label + '/' + P + '</span><button type="button" class="vnb-sm" data-vnb-go="1" aria-label="Trang sau"' + (t >= n - 1 ? ' disabled' : '') + '><i data-lucide="chevron-right"></i></button></div>' : '';
-      list.innerHTML = '<div class="vnb-book">' + body + '</div>' + nav; icons();
+      var old = list.querySelector('.vnb-scroll'), keep = old && st._shown === sig + '#' + t ? old.scrollTop : 0;
+      st._shown = sig + '#' + t;
+      list.innerHTML = '<div class="vnb-scroll"><div class="vnb-book">' + body + '</div></div>' + nav; icons();
+      fit(); var sc = list.querySelector('.vnb-scroll'); if (sc) sc.scrollTop = keep;
+    }
+    /* Cố định thanh trên và thanh số trang: chỉ vùng từ vựng cuộn, chiều cao vừa khít màn hình */
+    function scrollParent(el) {
+      for (var p = el.parentElement; p && p !== document.body; p = p.parentElement) { var o = getComputedStyle(p).overflowY; if ((o === 'auto' || o === 'scroll') && p.scrollHeight > p.clientHeight) return p; }
+      return document.scrollingElement || document.documentElement;
+    }
+    function fit() {
+      var sc = list.querySelector('.vnb-scroll'); if (!sc || !document.body.contains(sc)) return;
+      var anc = scrollParent(root), nav = list.querySelector('.vnb-nav');
+      sc.style.height = '';
+      if (anc) anc.scrollTop = 0;
+      var h = Math.max(260, Math.floor(w.innerHeight - sc.getBoundingClientRect().top - (nav ? nav.offsetHeight + 8 : 0) - 16));
+      sc.style.height = h + 'px';
+      if (anc) { var over = anc.scrollHeight - anc.clientHeight; if (over > 0) sc.style.height = Math.max(260, h - over) + 'px'; }
     }
     function go(d) {
       if (flipping || !st.pages) return;
@@ -178,6 +196,9 @@
     var lastW = root.clientWidth, rzT = null;
     if (w._vnbRz) w.removeEventListener('resize', w._vnbRz);
     w._vnbRz = function () { clearTimeout(rzT); rzT = setTimeout(function () { if (!document.body.contains(list) || root.clientWidth === lastW) return; lastW = root.clientWidth; if (st.items && !flipping) renderList(); }, 200); };
+    if (w._vnbFit) w.removeEventListener('resize', w._vnbFit);
+    w._vnbFit = function () { clearTimeout(w._vnbFitT); w._vnbFitT = setTimeout(function () { if (document.body.contains(list)) fit(); }, 120); };
+    w.addEventListener('resize', w._vnbFit);
     w.addEventListener('resize', w._vnbRz);
 
     function say(x, btn) {
@@ -198,6 +219,9 @@
     }
 
     function renderPanel() {
+      renderPanel0(); fit();
+    }
+    function renderPanel0() {
       if (!st.panel) { pnw.innerHTML = ''; return; }
       if (st.panel === 'add') {
         pnw.innerHTML = '<div class="vnb-pn"><div class="vnb-pt">Thêm từ</div><input data-vnb-in="word" placeholder="Từ hoặc cụm từ, ví dụ: renewable" autocomplete="off" autocapitalize="none" aria-label="Từ cần thêm">' +
