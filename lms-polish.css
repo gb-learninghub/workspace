@@ -1048,8 +1048,9 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 #dlg-session.resched .rs-hide{display:none}
 
 /* Văn bản dài canh đều 2 lề trên mọi trang */
-p:not([class*="text-center"]):not(.m-none),.dlg p,.card p,.text-sm.text-slate-500:not([class*="text-center"]),.text-sm.text-slate-600,.text-xs.text-slate-500:not(.m-hide){text-align:justify;text-justify:inter-word;hyphens:auto;overflow-wrap:break-word}
+p:not([class*="text-center"]):not(.m-none),.dlg p,.card p,.text-sm.text-slate-600{text-align:justify;text-justify:inter-word;hyphens:auto;overflow-wrap:break-word}
 textarea.field{text-align:justify}
+p.text-xs,.dlg p.text-xs,.card p.text-xs{text-align:left}
 
 /* Danh sách buổi học trong tuần: dùng cả trên máy tính */
 @media(min-width:641px){
