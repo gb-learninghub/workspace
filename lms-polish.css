@@ -1521,3 +1521,6 @@ body.tuition-page .tuition-row .mh::before{line-height:16px;margin-bottom:4px}
 /* Lịch tuần: vùng bấm lớn hơn cho tên lớp và dòng học viên, bố cục không đổi */
 #grid .cls-link{padding:6px 4px;margin:-6px -4px}
 @media(min-width:641px){#grid .stu-btn{padding-top:7px;padding-bottom:7px;margin-top:-7px;margin-bottom:-7px}}
+
+/* Lịch tuần ở điện thoại: bớt khoảng trống phía trên lưới */
+@media(max-width:640px){.sched-main{margin-top:0!important}}
