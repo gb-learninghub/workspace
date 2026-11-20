@@ -42,13 +42,13 @@ details.card[open] > summary{margin-bottom:8px}
 .opt{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;min-height:48px;padding:10px 14px;border-radius:14px;border:1px solid var(--t-line);background:#fff;color:var(--t-ink);font-size:.9375rem}
 .opt[aria-pressed="true"]{border-color:var(--t-primary);background:var(--t-tint);font-weight:700}
 .btn-primary[disabled]{opacity:.55}
-.hidden{display:none!important}
-body.student-dashboard-view{--t-primary:#16181D;--t-primary-2:#23262D;--t-accent:#4A4E57;--t-tint:#F4F5F7;--t-tint-2:#E4E6EA;--t-soft:#f5f7fa;--t-border:#E4E6EA;--t-line:#c5ceda;--t-muted:#596579;--t-ink:#1B1D22;--page-bg:transparent;background:transparent!important;color:#1B1D22}
-body{background:transparent!important;color:#1B1D22}
+.hidden{display:none}
+body.student-dashboard-view{--t-primary:#16181D;--t-primary-2:#23262D;--t-accent:#4A4E57;--t-tint:#F4F5F7;--t-tint-2:#E4E6EA;--t-soft:#f5f7fa;--t-border:#E4E6EA;--t-line:#c5ceda;--t-muted:#596579;--t-ink:#1B1D22;--page-bg:transparent;background:transparent;color:#1B1D22}
+body{background:transparent;color:#1B1D22}
 .wrap{max-width:1740px;padding:18px 24px calc(30px + env(safe-area-inset-bottom))}
 .student-logo{display:none}
 .student-header-inner>.student-greeting{display:none}
-.student-header-inner{min-height:58px!important;padding:8px 24px!important;justify-content:flex-end!important}
+.student-header-inner{min-height:58px;padding:8px 24px!important;justify-content:flex-end!important}
 body.student-dashboard-view>header{display:none}
 body.student-dashboard-view{height:100dvh;overflow:hidden}
 body.student-dashboard-view #app.wrap{height:100dvh;min-height:0;box-sizing:border-box;margin:0;overflow:hidden}
@@ -96,7 +96,7 @@ body.student-dashboard-view #app.wrap{height:100dvh;min-height:0;box-sizing:bord
 .student-rail>*{flex:0 0 auto;width:100%;min-width:0;box-sizing:border-box}
 .student-rail .week-calendar{gap:2px}
 .student-rail .week-calendar-head{margin-bottom:5px}
-.student-rail .g-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;min-height:0!important;padding:11px!important;border:0!important;border-radius:16px!important;background:#23262D!important;box-shadow:none!important;gap:5px 10px}
+.student-rail .g-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;min-height:0;padding:11px!important;border:0!important;border-radius:16px!important;background:#23262D!important;box-shadow:none;gap:5px 10px}
 @media(max-width:1050px){
 .student-welcome{grid-template-columns:minmax(0,1fr) minmax(180px,1fr) minmax(0,1fr);gap:9px;padding:9px 12px}
 .student-welcome-left{gap:9px}
@@ -171,7 +171,7 @@ body.student-dashboard-view #app.wrap{padding:10px 14px}
 @media(max-width:780px){
 .student-sidebar{gap:12px}
 }
-body.student-dashboard-view #app.wrap{width:100vw;max-width:none;padding:0!important;background:#f5f6f8}
+body.student-dashboard-view #app.wrap{width:100vw;max-width:none;padding:0;background:#f5f6f8}
 .student-shell{grid-template-columns:260px minmax(0,1fr);grid-template-rows:78px minmax(0,1fr);background:#f5f6f8}
 .student-shell>.student-sidebar{grid-column:1;grid-row:1/-1;padding-top:0}
 .student-sidebar{box-sizing:border-box;padding:0 14px 20px;gap:8px;background:#fff}
@@ -193,14 +193,14 @@ body.student-dashboard-view #app.wrap{width:100vw;max-width:none;padding:0!impor
 .overview-week-controls .icon-btn:hover{background:rgba(255,255,255,.1);color:#f0d58e}
 .overview-week-label{min-width:176px;color:#e5c16b;font-size:.875rem;font-weight:700}
 .student-welcome-tools{gap:8px}
-#btn-theme[hidden]{display:none!important}
-#btn-theme,#theme-pop{display:none!important}
+#btn-theme[hidden]{display:none}
+#btn-theme,#theme-pop{display:none}
 .student-welcome-tools .icon-btn,#btn-theme{background:transparent;border:0;color:#e5c16b}
 .student-welcome-tools .icon-btn:hover,#btn-theme:hover{background:rgba(255,255,255,.1);color:#f0d58e}
 .student-workspace{grid-column:2;grid-row:2;background:#f5f6f8}
 .student-main{padding:20px 44px 26px;background:#f5f6f8}
 @media(max-width:1050px) and (min-width:781px){
-body.student-dashboard-view #app.wrap{padding:0!important}
+body.student-dashboard-view #app.wrap{padding:0}
 .student-shell{grid-template-columns:220px minmax(0,1fr)}
 .student-main,.student-main.student-overview-view{padding:18px 24px 24px}
 .student-welcome{padding-left:24px;padding-right:18px}
@@ -241,131 +241,131 @@ body.student-dashboard-view #app.wrap{width:100%;padding:8px 10px calc(8px + env
 .student-shell-inner-tabs .student-rail .week-calendar-day{min-height:40px;gap:4px}
 .student-shell-inner-tabs .student-rail .week-calendar-day b{font-size:.75rem}
 }
-.student-rail .week-calendar-day{width:min(46px,100%);height:auto;min-height:0;aspect-ratio:1/1;padding:2px;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;gap:4px}
-.student-rail .week-calendar-day span{font-size:.8125rem!important;line-height:1;font-weight:800}
+.student-rail .week-calendar-day{width:min(46px,100%);height:auto;min-height:0;aspect-ratio:1/1;padding:2px;border:0;border-radius:50%;background:transparent;box-shadow:none;gap:4px}
+.student-rail .week-calendar-day span{font-size:.8125rem;line-height:1;font-weight:800}
 .student-rail .week-calendar-day b{font-size:.9375rem!important;line-height:1.05;font-weight:800}
-.student-rail .week-calendar-day.has-session{border:0!important;background:transparent!important}
+.student-rail .week-calendar-day.has-session{border:0;background:transparent}
 .student-rail .week-calendar-day.has-session::after{display:block;background:#b38324}
 .student-rail .week-calendar-day.today:not(.selected) b{color:#a8781c;font-weight:850}
 .student-rail .week-calendar-day.today:not(.selected){box-shadow:none!important}
-.student-rail .week-calendar-day.selected{background:#f8f1df!important;border:0!important;border-radius:50%!important;color:#1B1D22;box-shadow:none!important}
+.student-rail .week-calendar-day.selected{background:#f8f1df;border:0;border-radius:50%;color:#1B1D22;box-shadow:none}
 .student-rail .week-calendar-day.selected span{color:#66758b}
 .student-rail .week-calendar-day.selected b{color:#1B1D22}
 .student-rail .week-calendar-day.selected::after{display:none!important}
-.student-rail .week-calendar-day.selected.today{box-shadow:none!important}
+.student-rail .week-calendar-day.selected.today{box-shadow:none}
 .student-welcome .overview-week-controls .icon-btn:disabled{opacity:.3;cursor:default}
 .student-rail .week-calendar-day.selected.has-session::after,.student-overview-highlight .week-calendar-day.selected.has-session::after,.g-week-sched .week-calendar-day.selected.has-session::after{display:block!important;background:#b38324!important}
-.student-rail .week-calendar-day,.g-week-sched .week-calendar-day{aspect-ratio:auto!important;width:min(44px,100%)!important;min-height:60px!important;height:auto!important;border-radius:9999px!important;padding:6px 2px!important;justify-content:center;gap:3px}
+.student-rail .week-calendar-day,.g-week-sched .week-calendar-day{aspect-ratio:auto;width:min(44px,100%);min-height:60px;height:auto;border-radius:9999px;padding:6px 2px;justify-content:center;gap:3px}
 @media(min-width:1051px) and (max-width:1279px){
 body.student-dashboard-view .week-calendar-day.week-calendar-day{width:min(34px,100%)!important;height:54px!important;min-height:54px!important;border-radius:17px!important;gap:3px!important}
 body.student-dashboard-view .week-calendar-day span{font-size:.75rem!important}
 body.student-dashboard-view .week-calendar-day b{font-size:.8125rem!important}
 }
-body.student-dashboard-view .week-calendar-day.week-calendar-day,body.student-dashboard-view .t-rail .week-calendar-day.week-calendar-day,body.student-dashboard-view .m-week .week-calendar-day.week-calendar-day{position:relative;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px!important;width:min(42px,100%)!important;height:64px!important;min-height:64px!important;aspect-ratio:auto!important;padding:0 0 4px!important;margin:0 auto;border:0!important;border-radius:21px!important;background:transparent!important;color:#1B1D22;box-shadow:none!important;opacity:1!important}
-body.student-dashboard-view .week-calendar-day.week-calendar-day.selected,body.student-dashboard-view .t-rail .week-calendar-day.week-calendar-day.selected{background:#f8f1df!important;color:#1B1D22!important;border-radius:21px!important}
-body.student-dashboard-view .week-calendar-day.selected b,body.student-dashboard-view .week-calendar-day.selected span,body.student-dashboard-view .t-rail .week-calendar-day.selected b,body.student-dashboard-view .t-rail .week-calendar-day.selected span{color:#1B1D22!important}
+body.student-dashboard-view .week-calendar-day.week-calendar-day,body.student-dashboard-view .t-rail .week-calendar-day.week-calendar-day,body.student-dashboard-view .m-week .week-calendar-day.week-calendar-day{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px!important;width:min(42px,100%)!important;height:64px!important;min-height:64px!important;aspect-ratio:auto;padding:0 0 4px!important;margin:0 auto;border:0;border-radius:21px!important;background:transparent;color:#1B1D22;box-shadow:none;opacity:1}
+body.student-dashboard-view .week-calendar-day.week-calendar-day.selected,body.student-dashboard-view .t-rail .week-calendar-day.week-calendar-day.selected{background:#f8f1df!important;color:#1B1D22;border-radius:21px}
+body.student-dashboard-view .week-calendar-day.selected b,body.student-dashboard-view .week-calendar-day.selected span,body.student-dashboard-view .t-rail .week-calendar-day.selected b,body.student-dashboard-view .t-rail .week-calendar-day.selected span{color:#1B1D22}
 body.student-dashboard-view .week-calendar-day.today b,body.student-dashboard-view .t-rail .week-calendar-day.today b{color:#a8781c!important;font-weight:850}
 body.student-dashboard-view .week-calendar-day.week-calendar-day::after,body.student-dashboard-view .t-rail .week-calendar-day.week-calendar-day::after,body.student-dashboard-view .week-calendar-day.selected::after{content:""!important;display:block!important;position:static!important;flex:none;width:5px;height:5px;margin:0!important;border-radius:50%;background:transparent!important;transform:none!important}
 body.student-dashboard-view .week-calendar-day.has-session::after,body.student-dashboard-view .t-rail .week-calendar-day.has-session::after,body.student-dashboard-view .week-calendar-day.has-session.selected::after{background:#b38324!important}
 /* ==== mobile-fix ==== */
 @media(max-width:780px){
-body.student-dashboard-view .student-shell{grid-template-columns:minmax(0,1fr)!important}
+body.student-dashboard-view .student-shell{grid-template-columns:minmax(0,1fr)}
 body.student-dashboard-view .student-welcome,body.student-dashboard-view .student-sidebar,body.student-dashboard-view .student-workspace,body.student-dashboard-view .student-main,body.student-dashboard-view .student-main-content{min-width:0;max-width:100%;box-sizing:border-box}
-body.student-dashboard-view .student-shell *,body.student-dashboard-view .student-shell *::before,body.student-dashboard-view .student-shell *::after{box-shadow:none!important;text-shadow:none!important}
-body.student-dashboard-view .student-shell .card,body.student-dashboard-view .student-shell section.card{background-image:none!important;border-top-width:1px!important;border:1px solid #E4E6EA!important;border-radius:14px}
+body.student-dashboard-view .student-shell *,body.student-dashboard-view .student-shell *::before,body.student-dashboard-view .student-shell *::after{box-shadow:none!important;text-shadow:none}
+body.student-dashboard-view .student-shell .card,body.student-dashboard-view .student-shell section.card{background-image:none;border-top-width:1px!important;border:1px solid #E4E6EA!important;border-radius:14px}
 body.student-dashboard-view .student-shell .card::before,body.student-dashboard-view .student-shell .card::after{display:none!important}
-body.student-dashboard-view .student-shell .g-hero{background-image:none!important}
-body.student-dashboard-view .student-shell>.student-sidebar{box-shadow:none!important}
-body.student-dashboard-view .student-shell>.student-welcome,body.student-dashboard-view .student-shell>.student-sidebar{background:#16181D!important}
-body.student-dashboard-view .student-shell .g-hero{background:#16181D!important;border-color:#16181D!important}
+body.student-dashboard-view .student-shell .g-hero{background-image:none}
+body.student-dashboard-view .student-shell>.student-sidebar{box-shadow:none}
+body.student-dashboard-view .student-shell>.student-welcome,body.student-dashboard-view .student-shell>.student-sidebar{background:#16181D}
+body.student-dashboard-view .student-shell .g-hero{background:#16181D!important;border-color:#16181D}
 body.student-dashboard-view .student-shell>.student-welcome{gap:8px 10px!important}
-body.student-dashboard-view .student-welcome-left{display:flex!important;border-radius:10px;align-items:center}
-body.student-dashboard-view .student-welcome-logo{display:block!important;width:auto!important;max-width:none!important;height:20px;max-height:none!important}
-body.student-dashboard-view .student-welcome-title{grid-area:title!important;justify-self:end;text-align:right!important;align-items:flex-end!important}
+body.student-dashboard-view .student-welcome-left{display:flex;border-radius:10px;align-items:center}
+body.student-dashboard-view .student-welcome-logo{display:block;width:auto;max-width:none;height:20px;max-height:none}
+body.student-dashboard-view .student-welcome-title{grid-area:title;justify-self:end;text-align:right;align-items:flex-end}
 body.student-dashboard-view .student-welcome h1{text-align:right}
-body.student-dashboard-view .student-welcome-right{grid-area:right!important;justify-self:end}
-body.student-dashboard-view .student-welcome .overview-week-controls,body.student-dashboard-view .student-welcome .overview-week-label b{color:#ffd45e!important}
+body.student-dashboard-view .student-welcome-right{grid-area:right;justify-self:end}
+body.student-dashboard-view .student-welcome .overview-week-controls,body.student-dashboard-view .student-welcome .overview-week-label b{color:#ffd45e}
 body.student-dashboard-view .student-shell:not(.student-shell-inner-tabs) .student-welcome-right{justify-self:stretch;justify-content:space-between}
 body.student-dashboard-view .student-shell:not(.student-shell-inner-tabs) .student-welcome-actions{flex:1;justify-content:center}
-body.student-dashboard-view .student-nav{display:grid!important;grid-template-columns:none!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);overflow:visible}
-body.student-dashboard-view .student-nav button{flex-direction:column;justify-content:center;gap:3px!important;min-height:52px!important;padding:6px 0!important;font-size:.75rem!important;letter-spacing:-.01em;border-radius:12px!important;text-align:center;white-space:nowrap}
-body.student-dashboard-view .student-nav button svg{width:20px!important;height:20px!important}
+body.student-dashboard-view .student-nav{display:grid!important;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);overflow:visible}
+body.student-dashboard-view .student-nav button{flex-direction:column;justify-content:center;gap:3px;min-height:52px;padding:6px 0;font-size:.75rem;letter-spacing:-.01em;border-radius:12px;text-align:center;white-space:nowrap}
+body.student-dashboard-view .student-nav button svg{width:20px;height:20px}
 body.student-dashboard-view,body.student-dashboard-view #app{background:#f5f6f8!important}
 body.student-dashboard-view .student-shell .row{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center;gap:10px}
 body.student-dashboard-view .student-shell a.row>span:not(.tag){flex:1 1 auto;min-width:0}
 body.student-dashboard-view .student-shell a.row>svg:last-child,body.student-dashboard-view .student-shell .row>a:last-child{flex:none;margin-left:auto}
 body.student-dashboard-view .student-rail[aria-label^="Hồ sơ"]{display:none!important}
-body.student-dashboard-view .student-shell>.student-welcome{box-shadow:none!important;border:0!important;border-radius:14px 14px 0 0!important}
-body.student-dashboard-view .student-shell>.student-sidebar{background:#16181D!important;border:0!important;border-radius:0 0 14px 14px;box-shadow:0 6px 16px rgba(22,24,29,.18);position:relative;z-index:1}
-body.student-dashboard-view .student-nav button{background:transparent!important;color:#b9c4d9!important;box-shadow:none!important}
-body.student-dashboard-view .student-nav button svg{color:inherit!important}
+body.student-dashboard-view .student-shell>.student-welcome{box-shadow:none;border:0;border-radius:14px 14px 0 0}
+body.student-dashboard-view .student-shell>.student-sidebar{background:#16181D;border:0;border-radius:0 0 14px 14px;box-shadow:0 6px 16px rgba(22,24,29,.18);position:relative;z-index:1}
+body.student-dashboard-view .student-nav button{background:transparent;color:#b9c4d9;box-shadow:none}
+body.student-dashboard-view .student-nav button svg{color:inherit}
 body.student-dashboard-view .student-nav button.active{color:#f2c14e!important}
 body.student-dashboard-view .student-nav{display:flex;flex-direction:row;overflow-x:auto;flex-wrap:nowrap;gap:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 body.student-dashboard-view .student-nav::-webkit-scrollbar{display:none}
 body.student-dashboard-view .student-nav button{flex:none}
 body.student-dashboard-view .student-shell .student-workspace{overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}
 body.student-dashboard-view .student-main{overflow:visible;height:auto;min-height:0}
-body.student-dashboard-view .student-main-content{height:auto!important;min-height:0!important;overflow:visible!important}
-body.student-dashboard-view .student-shell{grid-template-rows:auto auto minmax(0,1fr)!important}
+body.student-dashboard-view .student-main-content{height:auto;min-height:0;overflow:visible}
+body.student-dashboard-view .student-shell{grid-template-rows:auto auto minmax(0,1fr)}
 body.student-dashboard-view .student-shell>.student-welcome{row-gap:6px}
 body.student-dashboard-view .student-welcome-left{grid-area:left}
 body.student-dashboard-view .student-welcome-right{grid-area:right;justify-content:flex-end;display:flex;align-items:center;gap:6px;min-width:0}
-body.student-dashboard-view .student-welcome-title{grid-area:title;padding-left:0!important;min-width:0}
+body.student-dashboard-view .student-welcome-title{grid-area:title;padding-left:0;min-width:0}
 body.student-dashboard-view .student-welcome h1{overflow-wrap:anywhere}
 body.student-dashboard-view .student-welcome-actions{display:flex;align-items:center;min-width:0}
-body.student-dashboard-view .overview-week-label{min-width:0!important}
-body.student-dashboard-view .student-rail{display:flex!important;flex-direction:column;gap:12px;width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important;padding:12px!important;box-sizing:border-box;border-left:0}
+body.student-dashboard-view .overview-week-label{min-width:0}
+body.student-dashboard-view .student-rail{display:flex;flex-direction:column;gap:12px;width:100%;min-width:0;max-width:100%;height:auto;max-height:none;overflow:visible;padding:12px;box-sizing:border-box;border-left:0}
 body.student-dashboard-view .student-rail>*{width:100%;box-sizing:border-box}
 body.student-dashboard-view .week-calendar-title{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
 body.student-dashboard-view .week-calendar-title svg{flex:none}
 body.student-dashboard-view .student-rail .week-calendar-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 body.student-dashboard-view .student-welcome-right{flex-wrap:nowrap}
 body.student-dashboard-view .student-welcome-tools{flex:none}
-body.student-dashboard-view .student-shell>.student-welcome{background:#fff!important;border-bottom:1px solid #E4E6EA!important;min-height:0!important}
-body.student-dashboard-view .student-welcome-left{background:transparent!important;padding:0!important}
-body.student-dashboard-view .student-welcome h1{color:#1B1D22!important;white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+body.student-dashboard-view .student-shell>.student-welcome{background:#fff!important;border-bottom:1px solid #E4E6EA!important;min-height:0}
+body.student-dashboard-view .student-welcome-left{background:transparent;padding:0}
+body.student-dashboard-view .student-welcome h1{color:#1B1D22;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 body.student-dashboard-view .student-shell>.student-welcome{box-sizing:border-box}
-body.student-dashboard-view .student-shell>.student-sidebar{padding:8px 10px 10px!important}
+body.student-dashboard-view .student-shell>.student-sidebar{padding:8px 10px 10px}
 body.student-dashboard-view .student-nav button.active{background:rgba(255,255,255,.16)!important}
-body.student-dashboard-view .student-shell>.student-welcome{align-items:center!important;align-content:center!important}
-body.student-dashboard-view .student-shell>.student-welcome>.student-welcome-title,body.student-dashboard-view .student-shell>.student-welcome>.student-welcome-left{height:auto!important;min-height:0!important;align-self:center!important;display:flex!important;align-items:center!important;margin:0!important;padding:0!important}
-body.student-dashboard-view .student-welcome-title p{display:none!important}
-body.student-dashboard-view .student-welcome h1{margin:0!important;line-height:20px!important;height:20px}
-body.student-dashboard-view .student-shell>.student-welcome{height:58px!important;padding:10px 12px!important;align-items:center}
-body.student-dashboard-view .student-welcome h1{font-size:1rem!important}
-body.student-dashboard-view .student-shell .student-main,body.student-dashboard-view .student-shell .student-main.student-overview-view{padding:12px 0 14px!important;background:transparent!important}
-body.student-dashboard-view .student-shell .student-workspace{background:transparent!important;padding:0!important}
-body.student-dashboard-view .student-shell{background:transparent!important}
-body.student-dashboard-view .m-week{margin-bottom:12px!important}
-body.student-dashboard-view .student-shell .student-main,body.student-dashboard-view .student-shell .student-main.student-overview-view{padding-top:12px!important}
-body.student-dashboard-view .m-week{display:flex!important;justify-content:center;background:#fff;border:1px solid #E4E6EA;border-radius:14px;padding:4px}
+body.student-dashboard-view .student-shell>.student-welcome{align-items:center;align-content:center}
+body.student-dashboard-view .student-shell>.student-welcome>.student-welcome-title,body.student-dashboard-view .student-shell>.student-welcome>.student-welcome-left{height:auto;min-height:0;align-self:center;display:flex;align-items:center!important;margin:0;padding:0}
+body.student-dashboard-view .student-welcome-title p{display:none}
+body.student-dashboard-view .student-welcome h1{margin:0;line-height:20px;height:20px}
+body.student-dashboard-view .student-shell>.student-welcome{height:58px;padding:10px 12px;align-items:center}
+body.student-dashboard-view .student-welcome h1{font-size:1rem}
+body.student-dashboard-view .student-shell .student-main,body.student-dashboard-view .student-shell .student-main.student-overview-view{padding:12px 0 14px;background:transparent}
+body.student-dashboard-view .student-shell .student-workspace{background:transparent;padding:0}
+body.student-dashboard-view .student-shell{background:transparent}
+body.student-dashboard-view .m-week{margin-bottom:12px}
+body.student-dashboard-view .student-shell .student-main,body.student-dashboard-view .student-shell .student-main.student-overview-view{padding-top:12px}
+body.student-dashboard-view .m-week{display:flex;justify-content:center;background:#fff;border:1px solid #E4E6EA;border-radius:14px;padding:4px}
 body.student-dashboard-view .m-week .overview-week-controls{color:#1B1D22}
-body.student-dashboard-view .m-week .icon-btn{color:#1B1D22!important}
-body.student-dashboard-view .m-week .t-thisweek{color:#1B1D22!important;font-weight:700;background:transparent!important}
+body.student-dashboard-view .m-week .icon-btn{color:#1B1D22}
+body.student-dashboard-view .m-week .t-thisweek{color:#1B1D22;font-weight:700;background:transparent}
 body.student-dashboard-view .m-week .t-thisweek.on{color:#94a3b8!important}
-body.student-dashboard-view .m-week .overview-week-label,body.student-dashboard-view .m-week .overview-week-label b{color:#1B1D22!important}
+body.student-dashboard-view .m-week .overview-week-label,body.student-dashboard-view .m-week .overview-week-label b{color:#1B1D22}
 }
 /* ==== teacher-css ==== */
 .student-main>.t-daybar,.t-stick>.t-daybar{flex:none;margin-bottom:14px}
 @media(min-width:781px){
-.student-shell-inner-tabs .student-main{padding-bottom:24px!important}
+.student-shell-inner-tabs .student-main{padding-bottom:24px}
 }
-body.student-dashboard-view .m-week{border:0!important;background:transparent!important}
-body.student-dashboard-view .t-rail .week-calendar-day,body.student-dashboard-view .m-week .week-calendar-day{position:relative;border:0!important;box-shadow:none!important;background:transparent!important;color:var(--t-ink);opacity:.38;padding-bottom:8px}
+body.student-dashboard-view .m-week{border:0;background:transparent}
+body.student-dashboard-view .t-rail .week-calendar-day,body.student-dashboard-view .m-week .week-calendar-day{position:relative;border:0;box-shadow:none;background:transparent;color:var(--t-ink);opacity:.38;padding-bottom:8px}
 .t-daybar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px!important}
 .t-daybar h2{margin:0!important}
 .student-main .card.t-daybar{box-sizing:border-box;height:60px;min-height:60px;padding-top:0!important;padding-bottom:0!important}
-.student-main .card.t-daybar{background:var(--t-primary)!important;border-color:var(--t-primary)!important}
+.student-main .card.t-daybar{background:var(--t-primary);border-color:var(--t-primary)}
 .t-daybar h2,.t-daybar h2 svg{color:#fff!important}
-.student-main .card.t-daybar h2 svg{background:rgba(255,255,255,.16)!important}
+.student-main .card.t-daybar h2 svg{background:rgba(255,255,255,.16)}
 .t-daybar .tag{background:rgba(255,255,255,.18)!important;color:#fff!important}
-.t-thisweek{height:36px;padding:0 10px;border:0!important;background:transparent!important;color:#e5c16b!important;font-size:.875rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.t-thisweek{height:36px;padding:0 10px;border:0;background:transparent;color:#e5c16b;font-size:.875rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
 /* ==== m-tools-fix ==== */
 @media(max-width:780px){
-body.student-dashboard-view .student-shell>.student-welcome{grid-template-columns:auto minmax(0,1fr) auto!important;grid-template-areas:"left title right"!important}
-body.student-dashboard-view .student-shell>.student-welcome .student-welcome-right{display:flex!important;grid-area:right;align-items:center;justify-content:flex-end;min-width:0}
-body.student-dashboard-view .student-welcome-right .student-welcome-actions{display:none!important}
-body.student-dashboard-view .student-welcome-tools .icon-btn,body.student-dashboard-view .student-welcome-tools #btn-mode{color:#1B1D22!important;width:36px;height:36px;background:transparent!important;border:0!important}
+body.student-dashboard-view .student-shell>.student-welcome{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"left title right"}
+body.student-dashboard-view .student-shell>.student-welcome .student-welcome-right{display:flex;grid-area:right;align-items:center;justify-content:flex-end;min-width:0}
+body.student-dashboard-view .student-welcome-right .student-welcome-actions{display:none}
+body.student-dashboard-view .student-welcome-tools .icon-btn,body.student-dashboard-view .student-welcome-tools #btn-mode{color:#1B1D22;width:36px;height:36px;background:transparent;border:0}
 }
 /* ==== m-prof-fix7 ==== */
 *{scrollbar-width:thin;scrollbar-color:transparent transparent}
@@ -376,15 +376,15 @@ body.student-dashboard-view .student-welcome-tools .icon-btn,body.student-dashbo
 *::-webkit-scrollbar-thumb{background:transparent;border-radius:8px}
 *:hover::-webkit-scrollbar-thumb{background:#cbd0d8}
 /* ==== att-css ==== */
-.student-main .row,.student-workspace .row{background:transparent!important;border:0!important;border-bottom:1px solid #E4E6EA!important;border-radius:0!important;padding:10px 0!important;box-shadow:none!important}
+.student-main .row,.student-workspace .row{background:transparent;border:0;border-bottom:1px solid #E4E6EA;border-radius:0;padding:10px 0;box-shadow:none}
 /* ==== flat-rows ==== */
 .student-main a.row:hover{background:transparent!important}
 .student-main a.row:hover span{text-decoration:underline;text-underline-offset:4px}
 /* ==== rail-compact ==== */
 @media(min-width:781px){
-.student-rail,.student-shell-inner-tabs .student-rail{overflow:hidden!important;justify-content:flex-start!important;gap:8px!important;padding:12px!important}
-.student-rail>*{flex:0 0 auto!important;margin:0!important}
-.student-rail .g-hero{overflow:visible!important;gap:3px 10px!important}
+.student-rail,.student-shell-inner-tabs .student-rail{overflow:hidden!important;justify-content:flex-start;gap:8px!important;padding:12px}
+.student-rail>*{flex:0 0 auto;margin:0}
+.student-rail .g-hero{overflow:visible;gap:3px 10px}
 }
 /* ==== rail-tuition-grid ==== */
 #gm-modal{position:fixed;inset:0;z-index:90;background:rgba(22,24,29,.5);display:flex;align-items:center;justify-content:center;padding:16px;animation:gmfade .16s ease-out}
@@ -411,9 +411,9 @@ html.lms-leaving::before{content:"";position:fixed;left:0;top:0;height:3px;width
 
 /* ==== gom từ student.css và teacher.css (hai file có cùng quy tắc) ==== */
 @media(max-width:780px){
-body.student-dashboard-view .overview-week-label>span:not(.week-name){display:none!important}
+body.student-dashboard-view .overview-week-label>span:not(.week-name){display:none}
 }
 @media(min-width:781px){
-.student-shell-inner-tabs .student-main-content:not(.t-content){flex:1 1 auto;display:flex;flex-direction:column;padding-bottom:0!important}
-.student-rail .card h2,.student-rail .week-calendar-head{margin-bottom:5px!important}
+.student-shell-inner-tabs .student-main-content:not(.t-content){flex:1 1 auto;display:flex;flex-direction:column;padding-bottom:0}
+.student-rail .card h2,.student-rail .week-calendar-head{margin-bottom:5px}
 }
