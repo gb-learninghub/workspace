@@ -11,7 +11,7 @@
     '.vnb-row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #E4E6EA}.vnb-ck{width:32px;height:32px;margin-top:2px;border-radius:50%;border:1.5px solid #B9BDC6;background:#fff;color:transparent;display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0}' +
     '.vnb-ck.on{background:#16181D;border-color:#16181D;color:#fff}.vnb-body{flex:1;min-width:0}.vnb-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;border:0;background:transparent;padding:0;text-align:left;color:inherit;min-height:30px}' +
     '.vnb-w{font-size:1.0625rem;font-weight:700}.vnb-m{font-size:.875rem;color:var(--t-muted,#818999)}.vnb-mean{font-size:1rem;margin-top:1px;overflow-wrap:anywhere}.vnb-hid{color:var(--t-muted,#818999);border:0;background:transparent;padding:0;text-align:left;min-height:30px}' +
-    '.vnb-tag{display:inline-block;font-size:.75rem;padding:1px 8px;border-radius:10px;border:1px solid #D5D8DE;color:#596579;margin-left:6px}.vnb-tag.first{margin-left:0}' +
+    '.vnb-tag{display:inline-block;font-size:.75rem;padding:1px 8px;border-radius:10px;border:1px solid #D5D8DE;color:#596579;margin-left:6px}.vnb-tag.first{margin-left:0}.vnb-own{font-size:.875rem;color:#596579;margin-top:2px}' +
     '.vnb-det{margin-top:8px;font-size:.9375rem;line-height:1.55;color:#454B57}.vnb-det .meta{color:var(--t-muted,#818999);font-size:.8125rem;margin-top:4px}.vnb-act{display:flex;gap:6px;margin-top:8px}' +
     '.vnb-sm{width:44px;height:44px;border-radius:22px;border:1px solid var(--t-border,#E4E6EA);background:#fff;color:#454B57;display:inline-flex;align-items:center;justify-content:center;padding:0;flex:none}' +
     '.vnb-edit{display:flex;gap:6px;margin-top:8px}.vnb-edit input,.vnb-pn input,.vnb-pn textarea{width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--t-border,#D5D8DE);border-radius:12px;font-size:16px;background:#fff;outline:0}' +
@@ -41,6 +41,13 @@
   function err(e) { return (w.LMS && w.LMS.friendlyError) ? w.LMS.friendlyError(e) : ((e && e.message) || 'Có lỗi xảy ra'); }
   function weekLabel(k) { var m = /^\d{4}-(\d{2})-(\d{2})/.exec(k || ''); return m ? 'Tuần ' + m[2] + '/' + m[1] : 'Khác'; }
 
+  /* nghĩa đề xuất của giáo viên là nghĩa chính; nghĩa em tự ghi (nếu khác) nằm bên dưới */
+  function ownOf(x) { return x.status === 'typed' && x.meaning && (!x.bank_meaning || V.key(x.meaning) !== V.key(x.bank_meaning)) ? x.meaning : ''; }
+  function meanHtml(x) {
+    var bm = x.bank_meaning, om = ownOf(x);
+    if (!bm) return esc(x.meaning) + (x.status === 'typed' ? '<span class="vnb-tag">tự gõ</span>' : '');
+    return esc(bm) + '<span class="vnb-tag">nghĩa đề xuất</span>' + (om ? '<div class="vnb-own">Nghĩa của bạn: ' + esc(om) + '</div>' : '');
+  }
   function mount(root, o) {
     if (!root) return;
     injectCss();
@@ -91,7 +98,7 @@
       var hiddenMean = st.hide === 'meaning' && !st.reveal[x.id] && x.meaning, hiddenWord = st.hide === 'word' && !st.reveal[x.id];
       var mean = !x.meaning ? '<span class="vnb-tag first">chờ nghĩa</span>'
         : hiddenMean ? '<button type="button" class="vnb-hid" data-vnb="reveal" data-id="' + x.id + '">Chạm để hiện nghĩa</button>'
-          : esc(x.meaning) + (x.status === 'typed' ? '<span class="vnb-tag">tự gõ</span>' : '');
+          : meanHtml(x);
       var head = hiddenWord ? '<button type="button" class="vnb-hid" data-vnb="reveal" data-id="' + x.id + '">Chạm để hiện từ</button>'
         : '<button type="button" class="vnb-head" data-vnb="open" data-id="' + x.id + '" aria-expanded="' + (st.open[x.id] ? 'true' : 'false') + '"><span class="vnb-w">' + esc(x.word) + '</span>' + (x.pos ? '<span class="vnb-m">' + esc(x.pos) + '</span>' : '') + (x.ipa ? '<span class="vnb-m">' + esc(x.ipa) + '</span>' : '') + (x.level ? '<span class="vnb-lv">' + esc(x.level) + '</span>' : '') + '</button>';
       var det = '';
@@ -337,7 +344,7 @@
       else if (!d) h = top('') + '<div class="wotd-em">Đang tải...</div>';
       else if (d.empty) h = top('') + '<div class="wotd-em">Sổ của em chưa có từ nào. Từ trong bài học sẽ tự vào sổ khi giáo viên giao bài, hoặc em tự thêm ở tab Sổ từ vựng.</div><div class="wotd-act"><button type="button" class="vnb-btn pri" data-wotd="open">Mở sổ từ vựng</button></div>';
       else {
-        var mean = d.meaning ? (st.show ? esc(d.meaning) : '<button type="button" class="vnb-btn" data-wotd="reveal">Chạm để hiện nghĩa</button>') : '<span class="vnb-tag first">chờ nghĩa</span>';
+        var mean = d.meaning ? (st.show ? meanHtml(d) : '<button type="button" class="vnb-btn" data-wotd="reveal">Chạm để hiện nghĩa</button>') : '<span class="vnb-tag first">chờ nghĩa</span>';
         h = top(d.done + '/' + d.total + ' từ đã thuộc') +
           '<div class="wotd-line"><span class="wotd-w">' + esc(d.word) + '</span>' + (d.pos ? '<span class="wotd-m">' + esc(d.pos) + '</span>' : '') + (d.ipa ? '<span class="wotd-m">' + esc(d.ipa) + '</span>' : '') + '</div>' +
           '<div class="wotd-mean">' + mean + '</div>' + (st.show && d.definition ? '<div class="wotd-def">' + esc(d.definition) + '</div>' : '') + (st.show && d.example ? '<div class="wotd-def"><i>' + esc(d.example) + '</i></div>' : '') +
