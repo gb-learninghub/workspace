@@ -1505,4 +1505,5 @@ body.tuition-page .tuition-row .status-cell .money{grid-column:4;grid-row:2;font
 body.tuition-page .tuition-row .status-cell .money::before{content:'Hoàn thành';display:block;color:var(--t-muted);font-size:.75rem;font-weight:500;margin-bottom:2px}
 body.tuition-page .tuition-row>.tuition-paid-date[data-label]{grid-row:3}
 body.tuition-page .tuition-row .money.mh,body.tuition-page .tuition-row .status-cell .money.mh{display:flex!important;flex-direction:column;align-items:flex-start;justify-content:flex-start;min-height:0}
+body.tuition-page .tuition-row .mh::before{line-height:16px;margin-bottom:4px}
 }
