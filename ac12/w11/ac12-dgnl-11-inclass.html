@@ -182,6 +182,9 @@ mark.evd{background:#ffd9a0;color:inherit;border-radius:3px;padding:0 1px}
 #qs .gap:not(.big){background:none;border-radius:0;border-bottom:1.5px solid #999;padding:2px 4px;margin:0 4px;min-width:60px;max-width:100%}
 #qs .gap:not(.big):focus{background:none;border-bottom-color:#111}
 #qs .gap.icok,#qs .gap.icbad{border-bottom-color:transparent;font-weight:700}#qs .gap.icok{color:#1f6b3f}#qs .gap.icbad{color:#a32626}
+.icc:not(.on){color:#9aa0aa}
+#qs .chip.icr,#qs .opt.icr,#qs .hslot.icr{background:#e3f3e6;border-color:#2e7d4f;color:#1B1D22;font-weight:700}
+#qs .chip.icw,#qs .opt.icw,#qs .hslot.icw{background:#fbe6e6;border-color:#b42b2b;color:#1B1D22;font-weight:700}
 </style><style id="fitfix">
 html,body{max-width:100%;overflow-x:hidden}
 img,svg,video,canvas{max-width:100%}
@@ -1254,6 +1257,22 @@ body.np-open #tiles .tg{padding:3px 2px}
     if (m.g.kind === "multi") return kAns(K).join(", ") + " (any order)";
     return kAns(K).join(" / ");
   }
+  function icPaint(n, m, host, on) {
+    var kind = m.g.kind, root = host.classList.contains("hrow") ? host : host.parentNode;
+    [].forEach.call(root.querySelectorAll(".chip,.opt,.hslot"), function (e) { e.classList.remove("icr", "icw"); });
+    var K = icK(n); if (!on || !K) return;
+    var set = kAns(K).map(icCan);
+    if (kind === "multi") {
+      [].forEach.call(root.querySelectorAll(".opt.sel"), function (e) { var b = e.querySelector("b"), v = (b ? b.textContent : e.textContent).trim(); e.classList.add(set.indexOf(icCan(v)) > -1 ? "icr" : "icw"); });
+    } else if (kind === "tfng" || kind === "para" || kind === "mcq") {
+      [].forEach.call(root.querySelectorAll(".chip,.opt"), function (e) {
+        var b = e.querySelector("b"), v = (b ? b.textContent : e.textContent).trim().split(/\s\s/)[0];
+        if (set.indexOf(icCan(v)) > -1) e.classList.add("icr"); else if (e.classList.contains("sel")) e.classList.add("icw");
+      });
+    } else if (kind === "head") {
+      var sl = root.querySelector(".hslot.fill"); if (sl) { var b2 = sl.querySelector("b"); sl.classList.add(b2 && set.indexOf(icCan(b2.textContent)) > -1 ? "icr" : "icw"); }
+    }
+  }
   function icDecorate() {
     var qs = document.getElementById("qs"); if (!qs || icBusy) return; icBusy = true;
     if (icMo) icMo.disconnect();
@@ -1262,11 +1281,11 @@ body.np-open #tiles .tg{padding:3px 2px}
       var n = parseInt((t.id || "").slice(1), 10); if (!n || !QMAP[n]) return;
       var m = QMAP[n], key = chkKey(n), host = t.closest(".qt,.hrow,.qcell"); if (!host) return;
       var on = !!IC.chk[key], st = on ? icState(n) : "";
-      var gi = host.querySelector("input.gap");
+      var gi = host.querySelector("input.gap"); icPaint(n, m, host, on);
       if (gi) { gi.classList.remove("icok", "icbad"); if (on && icK(n)) gi.classList.add(icEq(icK(n), gi.value) ? "icok" : "icbad"); }
       var tb = ibtn(on && st === "bad" ? "cross" : "tick", on ? (IC.pop === n ? "Hide answer" : "Show answer") : "Check", function () {
         if (!icK(n)) { IC.err = "The answer key is not loaded yet."; renderNotes(); return; }
-        if (!IC.chk[key]) { IC.chk[key] = true; IC.pop = null; icRelease(n); if (m.g.kind !== "multi" && !state.ans[n]) { var fa = kAns(icK(n))[0]; if (fa !== undefined && fa !== "") { state.ans[n] = String(fa); var ps = $("#passage").scrollTop, qs0 = $("#qs").scrollTop; try { renderQuestions(); updateTiles(); } catch (e) { } $("#passage").scrollTop = ps; $("#qs").scrollTop = qs0; } } } else if (IC.pop !== n) IC.pop = n; else IC.pop = null;
+        if (!IC.chk[key]) { IC.chk[key] = true; IC.pop = n; icRelease(n); if (m.g.kind !== "multi" && !state.ans[n]) { var fa = kAns(icK(n))[0]; if (fa !== undefined && fa !== "") { state.ans[n] = String(fa); var ps = $("#passage").scrollTop, qs0 = $("#qs").scrollTop; try { renderQuestions(); updateTiles(); } catch (e) { } $("#passage").scrollTop = ps; $("#qs").scrollTop = qs0; } } } else if (IC.pop !== n) IC.pop = n; else IC.pop = null;
         var ps2 = $("#passage").scrollTop, qs2 = $("#qs").scrollTop; icRefresh(true); $("#passage").scrollTop = ps2; $("#qs").scrollTop = qs2;
       }, "bare icc" + (on ? " on" + (st ? " " + st : "") : "")); tb.setAttribute("data-n", String(n));
       if (gi) { var gw = gi.parentNode; if (!gw.classList.contains("gw")) { gw = h("span", { cls: "gw" }); gi.parentNode.insertBefore(gw, gi); gw.appendChild(gi); } gw.appendChild(tb); } else host.appendChild(tb);
@@ -1298,8 +1317,9 @@ body.np-open #tiles .tg{padding:3px 2px}
     var n = parseInt(el.getAttribute("data-n"), 10), cols = IC.rows.filter(isOn), okc = 0; el.innerHTML = "";
     if (!cols.length) { el.appendChild(h("span", { text: "No student answers yet." })); return; }
     cols.forEach(function (s) {
-      var v = stuAns(s, n), txt = showVal(v), ok = txt ? stuOk(n, v) : null; if (ok === true) okc++;
-      el.appendChild(h("span", { cls: "icvs " + (ok === true ? "ok" : ok === false ? "bad" : "blank"), text: (ok === true ? "✓ " : ok === false ? "✗ " : "– ") + s.student_name + (txt ? ": " + txt : "") }));
+      var v = stuAns(s, n), txt = showVal(v), ok = txt ? stuOk(n, v) : null, part = ""; if (ok === true) okc++;
+      if (txt && QMAP[n].g.kind === "multi" && icK(n)) { var set0 = kAns(icK(n)); part = " (" + v.filter(function (x) { return set0.indexOf(x) > -1; }).length + "/" + set0.length + ")"; }
+      el.appendChild(h("span", { cls: "icvs " + (ok === true ? "ok" : ok === false ? "bad" : "blank"), text: (ok === true ? "✓ " : ok === false ? "✗ " : "– ") + s.student_name + (txt ? ": " + txt + part : "") }));
     });
     el.insertBefore(h("b", { text: okc + "/" + cols.length + " correct" }), el.firstChild);
   }
