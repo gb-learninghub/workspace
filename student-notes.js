@@ -382,8 +382,8 @@
     selb.addEventListener("mousedown", function (e) { e.preventDefault(); });
     bl.addEventListener("click", function () {
       var x = selWord; hideSel(); if (!x) return;
-      /* desktop: hiện nghĩa ngay tại từ, không mở Student's notes */
-      if (window.matchMedia && matchMedia("(min-width: 1024px)").matches && selRect) {
+      /* mọi màn hình: hiện nghĩa ngay tại từ, Student's notes chỉ mở khi học viên bấm */
+      if (selRect) {
         var rc = { left: selRect.left, top: selRect.top, bottom: selRect.bottom };
         delete S.dis[x]; S.fc = { w: x, rect: rc, quick: true };
         fcard.innerHTML = ""; fcard.appendChild(h("div", { cls: "vw", text: x })); fcard.appendChild(h("div", { cls: "npm", text: "Looking up..." })); place(rc);
