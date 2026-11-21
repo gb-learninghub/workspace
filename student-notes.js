@@ -360,6 +360,7 @@
     function hideSel() { selb.setAttribute("hidden", "hidden"); selWord = ""; selHl = null; }
     function inRoots(n) { var R = cfg.selRoots ? cfg.selRoots() : []; return R.some(function (r) { return r && r.contains(n); }); }
     function checkSel() {
+      if (Date.now() < noSel) return;
       var t = "", rect = null, a = document.activeElement, inf = null;
       if (a && a.tagName === "TEXTAREA" && p.contains(a) && a.selectionEnd > a.selectionStart) {
         t = a.value.slice(a.selectionStart, a.selectionEnd); var r = a.getBoundingClientRect(); rect = { left: r.left, top: r.top + 4, bottom: r.top + 4 };
@@ -380,18 +381,51 @@
       if (!fcard.contains(e.target) && !fcard.hasAttribute("hidden")) hideCard();
     });
     selb.addEventListener("mousedown", function (e) { e.preventDefault(); });
+    /* hiện nghĩa ngay tại từ (mọi màn hình), Student's notes chỉ mở khi học viên bấm */
+    function showLookup(x, rect) {
+      var rc = { left: rect.left, top: rect.top, bottom: rect.bottom };
+      delete S.dis[x]; S.fc = { w: x, rect: rc, quick: true };
+      fcard.innerHTML = ""; fcard.appendChild(h("div", { cls: "vw", text: x })); fcard.appendChild(h("div", { cls: "npm", text: "Looking up..." })); place(rc);
+      lookup(x, true).then(function () { if (S.fc && S.fc.w === x) drawCards(); });
+    }
     bl.addEventListener("click", function () {
-      var x = selWord; hideSel(); if (!x) return;
-      /* mọi màn hình: hiện nghĩa ngay tại từ, Student's notes chỉ mở khi học viên bấm */
-      if (selRect) {
-        var rc = { left: selRect.left, top: selRect.top, bottom: selRect.bottom };
-        delete S.dis[x]; S.fc = { w: x, rect: rc, quick: true };
-        fcard.innerHTML = ""; fcard.appendChild(h("div", { cls: "vw", text: x })); fcard.appendChild(h("div", { cls: "npm", text: "Looking up..." })); place(rc);
-        lookup(x, true).then(function () { if (S.fc && S.fc.w === x) drawCards(); });
-        return;
-      }
-      lookupInNotes(x);
+      var x = selWord, rc = selRect; hideSel(); if (!x) return;
+      if (rc) showLookup(x, rc); else lookupInNotes(x);
     });
+    /* chạm đúp (điện thoại, iPad) hoặc nhấp đúp (máy tính) vào một từ: tra luôn, không qua menu */
+    var noSel = 0, lastTap = null;
+    function wordAt(x, y) {
+      var n, o;
+      if (document.caretRangeFromPoint) { var r = document.caretRangeFromPoint(x, y); if (r) { n = r.startContainer; o = r.startOffset; } }
+      else if (document.caretPositionFromPoint) { var c = document.caretPositionFromPoint(x, y); if (c) { n = c.offsetNode; o = c.offset; } }
+      if (!n || n.nodeType !== 3 || !inRoots(n)) return null;
+      var t = n.nodeValue, a = o, b = o, re = /[A-Za-z'\u2019-]/;
+      while (a > 0 && re.test(t.charAt(a - 1))) a--;
+      while (b < t.length && re.test(t.charAt(b))) b++;
+      var wd = t.slice(a, b).replace(/^['\u2019-]+|['\u2019-]+$/g, "");
+      if (!/^[A-Za-z][A-Za-z'\u2019-]{1,38}$/.test(wd)) return null;
+      var rg = document.createRange(); rg.setStart(n, a); rg.setEnd(n, b);
+      return { w: wd.replace(/\u2019/g, "'").toLowerCase(), rect: rg.getBoundingClientRect() };
+    }
+    function dbl(x, y) {
+      var hit = wordAt(x, y); if (!hit) return false;
+      noSel = Date.now() + 400; hideSel(); showLookup(hit.w, hit.rect); return true;
+    }
+    (cfg.selRoots ? cfg.selRoots() : []).forEach(function (r) { if (r) r.style.touchAction = "manipulation"; });
+    document.addEventListener("dblclick", function (e) { if (Date.now() < noSel) return; dbl(e.clientX, e.clientY); });
+    document.addEventListener("touchend", function (e) {
+      var t = e.changedTouches && e.changedTouches[0]; if (!t) return;
+      var now = Date.now();
+      if (lastTap && now - lastTap.t < 320 && Math.abs(t.clientX - lastTap.x) < 30 && Math.abs(t.clientY - lastTap.y) < 30) {
+        lastTap = null;
+        if (dbl(t.clientX, t.clientY)) {
+          /* chặn iOS tự chọn từ và bật menu riêng (Copy / Look Up / Share) */
+          if (e.cancelable) e.preventDefault();
+          noSel = now + 700;
+          [0, 80, 250, 500].forEach(function (ms) { setTimeout(function () { var sl = window.getSelection(); if (sl && !sl.isCollapsed) sl.removeAllRanges(); }, ms); });
+        }
+      } else lastTap = { t: now, x: t.clientX, y: t.clientY };
+    }, { passive: false });
     bh.addEventListener("click", function () { var i = selHl; hideSel(); if (i) cfg.hl.set(i, true); });
     bc.addEventListener("click", function () { var i = selHl; hideSel(); if (i) cfg.hl.set(i, false); });
 
