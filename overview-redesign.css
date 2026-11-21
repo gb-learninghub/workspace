@@ -45,7 +45,7 @@ main .bg-white.rounded-2xl>div.overflow-auto{max-height:calc(100dvh - 238px)!imp
 .chip small{color:#718096;font-size:.75rem}
 .chip.offline{background:#F4F5F7;color:#1B1D22}
 .chip.online{background:#f5eee5;color:#806344}
-.chip.holiday,.chip.cancel{background:#f6f3f2;color:#906a67}
+.chip.holiday,.chip.cancel_free,.chip.cancel{background:#f6f3f2;color:#906a67}
 .chip:hover{filter:brightness(.98)}
 .schedule-toolbar .btn-primary,main .btn-primary{border-radius:9px}
 @media(max-width:1023px){header.has-week{top:0}header.has-week>div{min-height:76px}header.has-week .schedule-page-title{display:none}header.has-week .week-navigation{left:50%}header.has-week .header-tools{right:16px}main{padding-top:4px!important}}

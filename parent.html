@@ -94,7 +94,7 @@ button.stat{border:0;font:inherit;cursor:pointer;width:100%;min-height:44px}.pb:
   function monthLabel(m) { return 'Tháng ' + Number(m.slice(5, 7)) + '/' + m.slice(0, 4); }
   function timeRange(x) { return x.start ? (x.end ? x.start + ' - ' + x.end : x.start) : ''; }
   function modeChip(x) { return '<span class="chip ' + (x.mode === 'online' ? 'c-on' : 'c-off') + '" title="' + (x.mode === 'online' ? 'Học online' : 'Học tại lớp') + '" aria-label="' + (x.mode === 'online' ? 'Học online' : 'Học tại lớp') + '">' + (x.mode === 'online' ? 'Online' : 'Tại lớp') + '</span>'; }
-  var STAT = { planned: ['Sắp học', 'c-mut'], done: ['Đã học', 'c-ok'], cancel: ['Nghỉ', 'c-bad'], makeup: ['Học bù', 'c-warn'], holiday: ['Nghỉ lễ', 'c-mut'] };
+  var STAT = { planned: ['Sắp học', 'c-mut'], done: ['Đã học', 'c-ok'], cancel: ['Nghỉ', 'c-bad'], makeup: ['Học bù', 'c-warn'], holiday: ['Nghỉ lễ', 'c-mut'], cancel_free: ['Nghỉ', 'c-mut'] };
   var HW = { done: ['Đã nộp', 'c-ok'], partial: ['Đang làm', 'c-warn'], pending: ['Chưa nộp', 'c-mut'], overdue: ['Quá hạn', 'c-bad'] };
   var TUI = { 'Đã đóng': 'c-ok', 'Chưa đóng': 'c-bad' };
 

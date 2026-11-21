@@ -4,7 +4,7 @@
     const DAY = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
     const BASE_MONDAY = new Date(2026, 8, 7);
     const STATUS = { planned: ['Sắp tới', 'bg-slate-100 text-slate-600'], done: ['Đã học', 'bg-emerald-50 text-emerald-700'], cancel: ['Hủy', 'bg-rose-50 text-rose-700'],
-      makeup: ['Học bù', 'bg-sky-50 text-sky-700'], holiday: ['Nghỉ lễ', 'bg-slate-100 text-slate-600'] };
+      makeup: ['Học bù', 'bg-sky-50 text-sky-700'], holiday: ['Nghỉ lễ', 'bg-slate-100 text-slate-600'], cancel_free: ['Hủy', 'bg-slate-100 text-slate-600'] };
     const pad = n => String(n).padStart(2, '0');
     const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
     const dOf = k => new Date(k + 'T00:00:00');

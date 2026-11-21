@@ -74,7 +74,7 @@
 .hrow .h-st{display:block;text-align:center;padding:3px 8px;border-radius:9999px;font-size:.75rem;font-weight:600}
 @media(max-width:760px){.hrow{grid-template-columns:auto auto 1fr}.hrow .h-st{min-width:8rem}.hrow .h-note{grid-column:1/-1}}
 </style>
-  <link rel="stylesheet" href="lms-polish.css?v=22">
+  <link rel="stylesheet" href="lms-polish.css?v=23">
   <script src="lms-mode.js?v=1"></script>
 <link rel="stylesheet" href="tailwind.css?v=1"></head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
@@ -205,7 +205,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
       <label for="dss-status">Trạng thái</label>
       <select id="dss-status" class="field">
         <option value="planned">Chưa cập nhật</option><option value="done">Hoàn thành</option><option value="cancel">Hủy (tính nợ)</option>
-        <option value="makeup">Bù (trừ nợ)</option><option value="holiday">Nghỉ lễ (không tính nợ)</option>
+        <option value="makeup">Bù (trừ nợ)</option><option value="holiday">Nghỉ lễ (không tính nợ)</option><option value="cancel_free">Hủy (không bù)</option>
       </select>
       <label for="dss-mode">Hình thức</label>
       <select id="dss-mode" class="field"><option value="offline">Trực tiếp</option><option value="online">Online</option></select>
@@ -332,10 +332,10 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
     const icons = () => { if (window.lucide) lucide.createIcons(); };
     const DAYS = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
     const WEEK_ANCHOR = new Date(2026, 8, 7); // thứ 2 07/09/2026 = tuần 1
-    const STATUS_TXT = { planned: 'Chưa cập nhật', done: 'Hoàn thành', cancel: 'Hủy (còn nợ buổi)', makeup: 'Đã học bù', holiday: 'Nghỉ lễ' };
-    const STATUS_IC = { planned: 'clock', done: 'check-circle-2', cancel: 'x-circle', makeup: 'refresh-cw', holiday: 'sun' };
+    const STATUS_TXT = { planned: 'Chưa cập nhật', done: 'Hoàn thành', cancel: 'Hủy (còn nợ buổi)', makeup: 'Đã học bù', holiday: 'Nghỉ lễ', cancel_free: 'Hủy (không bù, không nợ)' };
+    const STATUS_IC = { planned: 'clock', done: 'check-circle-2', cancel: 'x-circle', makeup: 'refresh-cw', holiday: 'sun', cancel_free: 'ban' };
     const modeHtml = m => `<span class="m-txt">${m === 'online' ? 'Online' : 'Trực tiếp'}</span><i data-lucide="${m === 'online' ? 'video' : 'map-pin'}" class="m-ic w-4 h-4"></i>`;
-    const STATUS_CLS = { planned: 'bg-slate-100 text-slate-500', done: 'bg-emerald-50 text-emerald-700', cancel: 'bg-rose-50 text-rose-700', makeup: 'bg-sky-50 text-sky-700', holiday: 'bg-slate-100 text-slate-600' };
+    const STATUS_CLS = { planned: 'bg-slate-100 text-slate-500', done: 'bg-emerald-50 text-emerald-700', cancel: 'bg-rose-50 text-rose-700', makeup: 'bg-sky-50 text-sky-700', holiday: 'bg-slate-100 text-slate-600', cancel_free: 'bg-slate-100 text-slate-600' };
     const S = { c: null, cls: null, set: {}, students: [], sessions: [], links: {}, shared: {}, att: {}, offset: 0, busy: false };
 
     const pad = n => String(n).padStart(2, '0');
@@ -466,7 +466,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
     }
     /* ---------- Thời khóa biểu tuần ---------- */
     function attBtn(s, cls) {
-      const n = S.students.length; if (!n || s.status === 'cancel' || s.status === 'holiday') return '';
+      const n = S.students.length; if (!n || s.status === 'cancel' || s.status === 'holiday' || s.status === 'cancel_free') return '';
       const p = S.students.filter(st => (S.att[s.id + '|' + st.id] || '') && S.att[s.id + '|' + st.id] !== 'absent').length, m = S.students.filter(st => S.att[s.id + '|' + st.id]).length;
       return `<button type="button" data-atts="${s.id}" class="${cls} att-btn ${m === 0 ? 'a0' : m < n ? 'a1' : 'a2'}" aria-label="Điểm danh ${sessionLabel(s)}"><i data-lucide="user-check" class="w-4 h-4"></i><span>${p}/${n}</span></button>`;
     }
@@ -583,7 +583,7 @@ var cur=document.querySelector('#lms-nav a[aria-current=page]');if(cur&&cur.scro
     function renderStudents() {
       const body = $('student-list-body');
       if (!S.students.length) { body.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-400">Chưa có học sinh. Thêm học sinh ở trang Student List.</td></tr>'; return; }
-      const sess = weekSessions(S.offset).filter(s => s.status !== 'cancel' && s.status !== 'holiday');
+      const sess = weekSessions(S.offset).filter(s => s.status !== 'cancel' && s.status !== 'holiday' && s.status !== 'cancel_free');
       $('att-head').innerHTML = 'Điểm danh' + (sess.length > 1 ? '<div class="att-hl">' + sess.map(x => `<span>${sessionLabel(x).replace('Thứ ', 'T').replace('Chủ nhật', 'CN')}</span>`).join('') + '</div>' : '');
       body.innerHTML = S.students.map(st => {
         const att = sess.length ? '<div class="att-row">' + sess.map(s => {

@@ -1221,10 +1221,12 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 .sw-row small{display:block;font-size:.75rem;color:#596579}
 .sw-row>button{min-height:44px;padding:0 14px;border-radius:12px;border:1px solid #dfe3e8;background:#fff;font-weight:700;font-size:.8125rem}
 .sw-dlg .sw-sub{font-size:.8125rem;color:#596579;margin:0 0 10px}
-.sw-seg{display:flex;gap:8px;margin-bottom:14px}
-.sw-seg button{flex:1;min-height:44px;border-radius:12px;border:1px solid #dfe3e8;background:#fff;font-weight:700;font-size:.9375rem}
-.sw-chips{display:flex;gap:6px}
+.sw-seg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.sw-seg button{flex:1 1 30%;min-height:44px;border-radius:12px;border:1px solid #dfe3e8;background:#fff;font-weight:700;font-size:.9375rem}
+.sw-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.sw-dlg .sw-row{flex-wrap:wrap}
 .sw-chips button{min-height:44px;padding:0 12px;border-radius:12px;border:1px solid #dfe3e8;background:#fff;font-size:.8125rem;font-weight:600}
+.sw-dlg .on-none{background:#f1f5f9!important;color:#475569!important;border-color:#e2e8f0!important}
 .sw-dlg .on-ok{background:#dcfce7!important;color:#166534!important;border-color:#bbf7d0!important}
 .sw-dlg .on-bu{background:#ffedd5!important;color:#9a3412!important;border-color:#fed7aa!important}
 .sw-dlg .on-no{background:#ffe4e6!important;color:#be123c!important;border-color:#fecdd3!important}

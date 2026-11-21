@@ -5,7 +5,7 @@
     const BASE_MONDAY = new Date(2026, 8, 7);
     const tuiTone = st => st === 'Đã đóng' ? 'bg-emerald-50 text-emerald-700' : st === 'Chưa đóng' ? 'bg-rose-50 text-rose-700' : 'bg-slate-100 text-slate-600';
     const STATUS = { planned: ['Sắp tới', 'bg-slate-100 text-slate-600'], done: ['Đã học', 'bg-emerald-50 text-emerald-700'], cancel: ['Hủy', 'bg-rose-50 text-rose-700'],
-      makeup: ['Học bù', 'bg-sky-50 text-sky-700'], holiday: ['Nghỉ lễ', 'bg-slate-100 text-slate-600'] };
+      makeup: ['Học bù', 'bg-sky-50 text-sky-700'], holiday: ['Nghỉ lễ', 'bg-slate-100 text-slate-600'], cancel_free: ['Hủy', 'bg-slate-100 text-slate-600'] };
     const pad = n => String(n).padStart(2, '0');
     const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
     const dOf = k => new Date(k + 'T00:00:00');
@@ -45,7 +45,7 @@
       $('btn-back').classList.add('hidden');
       if (!cls) { restoreHeaderActions(); $('app').innerHTML = '<div class="card text-sm text-slate-600">Bạn chưa được xếp lớp. Hỏi giáo viên nhé.</div>'; return; }
       const sess = d.sessions || [];
-      const joinOpen = s => s.mode === 'online' && isHttp(d.meet_url) && s.status !== 'cancel' && s.status !== 'holiday' && s.date === todayKey
+      const joinOpen = s => s.mode === 'online' && isHttp(d.meet_url) && s.status !== 'cancel' && s.status !== 'holiday' && s.status !== 'cancel_free' && s.date === todayKey
         && nowHM >= hm(toMin(s.start) - 15) && nowHM < s.end;
       const joinBtn = k => k === 'solid'
         ? `<a class="hero-btn solid" href="${esc(d.meet_url)}" target="_blank" rel="noopener" aria-label="Mở Google Meet" title="Vào lớp online"><i data-lucide="video" class="w-4 h-4"></i><span>Meet</span></a>`
@@ -98,7 +98,7 @@
 
       const [calYear, calMonth] = S.calendarMonth.split('-').map(Number), monthKey = S.calendarMonth;
       const firstDay = new Date(calYear, calMonth - 1, 1), gridStart = new Date(calYear, calMonth - 1, 1 - ((firstDay.getDay() + 6) % 7));
-      const monthSessions = sess.filter(s => s.date.startsWith(monthKey) && !['cancel', 'holiday'].includes(s.status));
+      const monthSessions = sess.filter(s => s.date.startsWith(monthKey) && !['cancel', 'holiday', 'cancel_free'].includes(s.status));
       const sessionsByDay = {}; monthSessions.forEach(s => (sessionsByDay[s.date] = sessionsByDay[s.date] || []).push(s));
       Object.values(sessionsByDay).forEach(a => a.sort((x, y) => x.start.localeCompare(y.start)));
       const calendarDays = Array.from({ length: 42 }, (_, i) => { const date = new Date(gridStart); date.setDate(gridStart.getDate() + i); const key = ymd(date), daySessions = sessionsByDay[key] || [], inMonth = date.getMonth() === calMonth - 1, selected = key === S.calendarDate, today = key === todayKey; const tip = daySessions.map(s => `${tmr(s)}${s.lesson ? ' · ' + s.lesson : ''}`).join(' | '); return `<button type="button" class="month-day${inMonth ? '' : ' outside'}${daySessions.length ? ' has-session' : ''}${today ? ' today' : ''}${selected ? ' selected' : ''}" data-calendar-day="${key}" ${!inMonth ? 'disabled' : ''} aria-label="${key}${daySessions.length ? ', có buổi học' : ''}" title="${esc(tip || key)}">${date.getDate()}</button>`; }).join('');
@@ -107,7 +107,7 @@
       const monthDetails = sessionDetails(selectedSessions);
       const schedHtml = `<section class="card g-sched" id="student-calendar"><div class="month-head"><div class="month-caption">Lịch học tháng</div><div class="month-controls"><button type="button" class="month-nav" data-calendar-step="-1" aria-label="Tháng trước"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><span class="month-title">${new Intl.DateTimeFormat('vi-VN', { month: 'long', year: 'numeric' }).format(firstDay)}</span><button type="button" class="month-nav" data-calendar-step="1" aria-label="Tháng sau"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div></div><div class="month-calendar" role="grid" aria-label="Lịch học tháng ${pad(calMonth)}/${calYear}">${['T2','T3','T4','T5','T6','T7','CN'].map(x => `<div class="month-weekday" role="columnheader">${x}</div>`).join('')}${calendarDays}</div><div class="month-detail"><div class="text-xs font-bold text-slate-700 mb-2">${fmtDay(S.calendarDate)}</div>${monthDetails}</div></section>`;
       const curWeekKey = mondayKey(now), weekStartKey = S.calWeek || curWeekKey, weekStartDate = dOf(weekStartKey), weekDays = Array.from({length:7}, (_, i) => { const date = new Date(weekStartDate); date.setDate(date.getDate() + i); return ymd(date); });
-      const weekSessionsByDay = {}; sess.filter(s => weekDays[0] <= s.date && s.date <= weekDays[6] && !['cancel','holiday'].includes(s.status)).forEach(s => (weekSessionsByDay[s.date] = weekSessionsByDay[s.date] || []).push(s));
+      const weekSessionsByDay = {}; sess.filter(s => weekDays[0] <= s.date && s.date <= weekDays[6] && !['cancel','holiday','cancel_free'].includes(s.status)).forEach(s => (weekSessionsByDay[s.date] = weekSessionsByDay[s.date] || []).push(s));
       Object.values(weekSessionsByDay).forEach(a => a.sort((x, y) => x.start.localeCompare(y.start)));
       const weekSelectedDate = weekDays.includes(S.calendarDate) ? S.calendarDate : (weekDays.includes(todayKey) ? todayKey : (weekDays.find(k => (weekSessionsByDay[k] || []).length) || weekDays[0]));
       const weekCalendarDays = weekDays.map((key, i) => { const date = dOf(key), has = (weekSessionsByDay[key] || []).length > 0, selected = key === weekSelectedDate, today = key === todayKey; return `<button type="button" class="week-calendar-day${has ? ' has-session' : ''}${today ? ' today' : ''}${selected ? ' selected' : ''}" data-calendar-day="${key}" aria-label="${fmtDay(key)}${has ? ', có buổi học' : ''}" title="${fmtDay(key)}"><span>${['T2','T3','T4','T5','T6','T7','CN'][i]}</span><b>${pad(date.getDate())}</b></button>`; }).join('');

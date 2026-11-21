@@ -132,7 +132,7 @@
     var rs = await S.c.from('students').select('id,student_name,class_id,note').eq('is_active', true).in('class_id', ids);
     var rt = await S.c.from('sessions').select('id,class_id,session_date,start_time,status').in('class_id', ids).gte('session_date', ymd(wd[0])).lte('session_date', ymd(wd[6])).order('session_date').order('start_time');
     if (rs.error || rt.error) { S.loading = false; return err(rs.error || rt.error); }
-    var ses = (rt.data || []).filter(function (s) { return s.status !== 'cancel' && s.status !== 'holiday'; });
+    var ses = (rt.data || []).filter(function (s) { return s.status !== 'cancel' && s.status !== 'holiday' && s.status !== 'cancel_free'; });
     var at = [];
     if (ses.length) {
       var ra = await S.c.from('attendance').select('session_id,student_id,status').in('session_id', ses.map(function (s) { return s.id; }));

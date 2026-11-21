@@ -76,7 +76,7 @@ body.student-dashboard-view .t-class-name span{color:#64748b!important;font-vari
 .t-status[data-st="done"]{color:#059669}
 .t-status[data-st="cancel"]{color:#e11d48}
 .t-status[data-st="makeup"]{color:#d97706}
-.t-status[data-st="holiday"]{color:#64748b}
+.t-status[data-st="holiday"],.t-status[data-st="cancel_free"]{color:#64748b}
 .t-status[data-st="mixed"]{color:#475569}
 .t-status option{color:#1B1D22;font-weight:600}
 .t-row{display:flex;flex-direction:column;gap:12px;padding-top:10px;border-top:1px solid var(--t-border)}
