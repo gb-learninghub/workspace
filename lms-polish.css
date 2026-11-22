@@ -1224,7 +1224,7 @@ body.wk-open .wk-drawer{transform:none;visibility:visible;transition:transform .
 .sw-seg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .sw-seg button{flex:1 1 30%;min-height:44px;border-radius:12px;border:1px solid #dfe3e8;background:#fff;font-weight:700;font-size:.9375rem}
 .sw-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
-.sw-dlg .sw-row{flex-wrap:wrap}
+.sw-dlg .sw-row{flex-wrap:nowrap}.sw-dlg .sw-row>span{white-space:nowrap}.sw-dlg .sw-chips{flex-wrap:nowrap;gap:4px}.sw-dlg .sw-chips button{padding:0 8px;white-space:nowrap}
 .sw-chips button{min-height:44px;padding:0 12px;border-radius:12px;border:1px solid #dfe3e8;background:#fff;font-size:.8125rem;font-weight:600}
 .sw-dlg .on-none{background:#f1f5f9!important;color:#475569!important;border-color:#e2e8f0!important}
 .sw-dlg .on-ok{background:#dcfce7!important;color:#166534!important;border-color:#bbf7d0!important}

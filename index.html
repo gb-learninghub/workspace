@@ -124,7 +124,7 @@
     }
   </style>
   <script src="lms-mode.js?v=1"></script><link rel="stylesheet" href="overview-redesign.css?v=6">
-  <link rel="stylesheet" href="lms-polish.css?v=23">
+  <link rel="stylesheet" href="lms-polish.css?v=24">
 <link rel="stylesheet" href="tailwind.css?v=1"></head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
   <nav id="lms-nav" aria-label="Điều hướng chính">
@@ -869,7 +869,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const dates = weekDates(NOW_WEEK), first = dates[0], last = dates[6];
         $('overview-week-label').textContent = pad(first.getDate()) + '/' + pad(first.getMonth() + 1) + ' – ' + pad(last.getDate()) + '/' + pad(last.getMonth() + 1);
         const today = ymd(new Date()), upcoming = (st.nowSessions || (st.week === NOW_WEEK ? st.sessions : [])).filter(s => s.session_date >= today && sessEnd(s) >= new Date() && !['cancel', 'holiday', 'cancel_free', 'done'].includes(s.status)).sort((a, b) => a.session_date.localeCompare(b.session_date) || a.start_time.localeCompare(b.start_time)).slice(0, 5);
-        $('overview-upcoming').innerHTML = upcoming.length ? upcoming.map(s => { const c = st.classes.find(x => x.id === s.class_id), d = new Date(s.session_date + 'T00:00:00'); return `<a class="overview-session" href="${esc(c && (c.page_url || 'class.html?class=' + encodeURIComponent(c.class_code)) || 'classes.html')}"><span class="overview-session-date"><b>${pad(d.getDate())}</b><small>${DAY[(d.getDay() + 6) % 7].replace('Thứ ', 'T')}</small></span><span class="overview-session-info"><b>${esc(c ? c.class_code : 'Lớp')}</b><small>${esc(lessonOf(s) || s.note || 'Buổi học')}</small></span><span class="overview-session-time">${t5(s.start_time)}</span></a>`; }).join('') : '<p class="overview-empty">Không còn buổi học sắp tới trong tuần này.</p>';
+        $('overview-upcoming').innerHTML = upcoming.length ? upcoming.map(s => { const c = st.classes.find(x => x.id === s.class_id), d = new Date(s.session_date + 'T00:00:00'); return `<a class="overview-session" href="${esc(c && (c.page_url || 'class.html?class=' + encodeURIComponent(c.class_code)) || 'classes.html')}"><span class="overview-session-date"><b>${pad(d.getDate())}</b><small>${DAY[(d.getDay() + 6) % 7].replace('Thứ ', 'T').replace('Chủ nhật', 'CN')}</small></span><span class="overview-session-info"><b>${esc(c ? c.class_code : 'Lớp')}</b><small>${esc(lessonOf(s) || s.note || 'Buổi học')}</small></span><span class="overview-session-time">${t5(s.start_time)}</span></a>`; }).join('') : '<p class="overview-empty">Không còn buổi học sắp tới trong tuần này.</p>';
         icons();
       }
 
