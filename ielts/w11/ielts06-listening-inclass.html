@@ -509,6 +509,15 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       var gi = host.querySelector("input.gap"), old = host.querySelector(".ick"); if (old) old.remove(); var oldf = host.querySelector(".icf"); if (oldf) oldf.remove();
       if (gi) { var gw = gi.parentNode; if (!gw.classList.contains("gw")) { gw = h("span", { cls: "gw" }); gi.parentNode.insertBefore(gw, gi); gw.appendChild(gi); } gw.appendChild(b); } else host.appendChild(b);
       if (ic.pop === n) popTick = b;
+      /* tô xanh / đỏ: đáp án đúng xanh, lựa chọn sai (đang chọn) đỏ; ô điền thì đúng xanh, sai đỏ */
+      var box2 = qn.closest(".mq,.mrow"), want = lnorm(icAns(n));
+      function colGap() { if (gi) { gi.classList.remove("ok", "bad"); if (on && LK && LK["q" + n] && gi.value.trim() !== "") gi.classList.add(icOk(n, gi.value) ? "ok" : "bad"); } }
+      colGap(); if (gi) gi.oninput = colGap;
+      if (box2) [].forEach.call(box2.querySelectorAll(".opt,.cb"), function (o) {
+        o.classList.remove("ok", "bad"); if (!on || !want) return;
+        var t = lnorm((o.querySelector("b") ? o.querySelector("b").textContent : o.textContent).trim().split(/\s\s/)[0]);
+        if (t === want) o.classList.add("ok"); else if (o.classList.contains("sel")) o.classList.add("bad");
+      });
     });
     icPanels();
     if (popTick) icPop(ic.pop, popTick);
