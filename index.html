@@ -123,7 +123,7 @@
       #grid[data-day="0"] .d0,#grid[data-day="1"] .d1,#grid[data-day="2"] .d2,#grid[data-day="3"] .d3,#grid[data-day="4"] .d4,#grid[data-day="5"] .d5,#grid[data-day="6"] .d6{display:table-cell}
     }
   </style>
-  <script src="lms-mode.js?v=1"></script><link rel="stylesheet" href="overview-redesign.css?v=6">
+  <script src="lms-mode.js?v=1"></script><link rel="stylesheet" href="overview-redesign.css?v=7">
   <link rel="stylesheet" href="lms-polish.css?v=24">
 <link rel="stylesheet" href="tailwind.css?v=1"></head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col relative">
@@ -869,7 +869,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const dates = weekDates(NOW_WEEK), first = dates[0], last = dates[6];
         $('overview-week-label').textContent = pad(first.getDate()) + '/' + pad(first.getMonth() + 1) + ' – ' + pad(last.getDate()) + '/' + pad(last.getMonth() + 1);
         const today = ymd(new Date()), upcoming = (st.nowSessions || (st.week === NOW_WEEK ? st.sessions : [])).filter(s => s.session_date >= today && sessEnd(s) >= new Date() && !['cancel', 'holiday', 'cancel_free', 'done'].includes(s.status)).sort((a, b) => a.session_date.localeCompare(b.session_date) || a.start_time.localeCompare(b.start_time)).slice(0, 5);
-        $('overview-upcoming').innerHTML = upcoming.length ? upcoming.map(s => { const c = st.classes.find(x => x.id === s.class_id), d = new Date(s.session_date + 'T00:00:00'); return `<a class="overview-session" href="${esc(c && (c.page_url || 'class.html?class=' + encodeURIComponent(c.class_code)) || 'classes.html')}"><span class="overview-session-date"><b>${pad(d.getDate())}</b><small>${DAY[(d.getDay() + 6) % 7].replace('Thứ ', 'T').replace('Chủ nhật', 'CN')}</small></span><span class="overview-session-info"><b>${esc(c ? c.class_code : 'Lớp')}</b><small>${esc(lessonOf(s) || s.note || 'Buổi học')}</small></span><span class="overview-session-time">${t5(s.start_time)}</span></a>`; }).join('') : '<p class="overview-empty">Không còn buổi học sắp tới trong tuần này.</p>';
+        $('overview-upcoming').innerHTML = upcoming.length ? (() => { const gs = []; upcoming.forEach(s => { const g = gs[gs.length - 1]; if (g && g[0].session_date === s.session_date && g[0].start_time === s.start_time) g.push(s); else gs.push([s]); }); return gs.map(g => { const s = g[0], d = new Date(s.session_date + 'T00:00:00'), href = c => esc(c && (c.page_url || 'class.html?class=' + encodeURIComponent(c.class_code)) || 'classes.html'), cs = g.map(x => st.classes.find(y => y.id === x.class_id)), dt = `<span class="overview-session-date"><b>${pad(d.getDate())}</b><small>${DAY[(d.getDay() + 6) % 7].replace('Thứ ', 'T').replace('Chủ nhật', 'CN')}</small></span>`, tm = `<span class="overview-session-time">${t5(s.start_time)}</span>`; if (g.length === 1) { const c = cs[0]; return `<a class="overview-session" href="${href(c)}">${dt}<span class="overview-session-info"><b>${esc(c ? c.class_code : 'Lớp')}</b><small>${esc(lessonOf(s) || s.note || 'Buổi học')}</small></span>${tm}</a>`; } return `<div class="overview-session">${dt}<span class="overview-session-info"><b>${g.map((x, k) => `<a class="overview-session-link" href="${href(cs[k])}">${esc(cs[k] ? cs[k].class_code : 'Lớp')}</a>`).join(' · ')}</b><small>Buổi học</small></span>${tm}</div>`; }).join(''); })() : '<p class="overview-empty">Không còn buổi học sắp tới trong tuần này.</p>';
         icons();
       }
 
@@ -1905,13 +1905,15 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
           const live = list.filter(s => sessEnd(s) >= now);
           const cut = s => new Date(sessEnd(s) - 5 * 60000);
           const dueEnd = live.filter(s => now >= cut(s));
-          const startable = live.filter(s => now < cut(s) && !sw.dismissed.has('a' + s.id));
+          const startable = live.filter(s => !sw.dismissed.has('a' + s.id));
           const hide = swHide();
           const backlog = list.filter(s => sessEnd(s) < now && s.session_date > hide).sort((a, b) => sessStart(b) - sessStart(a));
           let taken = new Set();
           if (startable.length) {
-            const a = await st.c.from('attendance').select('session_id').in('session_id', startable.map(s => s.id));
-            if (!a.error) taken = new Set((a.data || []).map(x => x.session_id));
+            const [a, u] = await Promise.all([
+              st.c.from('attendance').select('session_id,student_id').in('session_id', startable.map(s => s.id)),
+              st.c.from('students').select('id,class_id').eq('is_active', true).in('class_id', [...new Set(startable.map(s => s.class_id))])]);
+            if (!a.error && !u.error) startable.forEach(s => { const ids = (u.data || []).filter(x => x.class_id === s.class_id).map(x => x.id), got = new Set((a.data || []).filter(x => x.session_id === s.id).map(x => x.student_id)); if (got.size && ids.every(i => got.has(i))) taken.add(s.id); });
           }
           swRender(startable.filter(s => !taken.has(s.id)), backlog);
           if (!document.querySelector('.dlg:not([hidden])')) {
@@ -1996,7 +1998,7 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
               if (got.length) { const x = await st.c.from('attendance').upsert(got.map(u => ({ session_id: s.id, student_id: u.id, status: val[u.id], updated_at: ts }))); if (x.error) throw x.error; }
             }
             if (status) { const y = await st.c.from('sessions').update({ status, updated_at: ts }).eq('id', s.id); if (y.error) throw y.error; }
-            closeSw(); sw.dismissed.add('a' + s.id);
+            closeSw(); if (!stu.some(u => val[u.id] === 'none')) sw.dismissed.add('a' + s.id);
             await refresh(status && status !== 'planned' ? 'Đã chuyển sang: ' + STATUS_TXT[status] + '.' : 'Đã lưu điểm danh.');
             sw.html = ''; swTick();
           } catch (e) { err.textContent = LMS.friendlyError(e); save.disabled = false; }
