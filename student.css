@@ -985,3 +985,10 @@ body.student-dashboard-view .student-overview-highlight .prog-head>*,
 body.student-dashboard-view .student-overview-highlight .g-week-sched .month-session>*{flex:0 0 auto!important;max-width:none!important}
 body.student-dashboard-view .student-overview-highlight .g-week-sched .month-session-meta{display:flex;flex-wrap:nowrap;gap:6px}
 @media(pointer:coarse){body.student-dashboard-view .student-overview-highlight :is(.week-calendar-head,.tuition-head,.prog-head,.g-week-sched .month-session){scrollbar-width:none}}
+
+/* Tổng quan: cuộn dọc phần nội dung, header và sidebar đứng yên */
+html body.student-dashboard-view .student-shell .student-workspace-overview{overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;align-content:start}
+html body.student-dashboard-view .student-overview-view,
+html body.student-dashboard-view .student-overview-view .student-main-content,
+html body.student-dashboard-view .student-overview-view .student-main-section{overflow:visible!important;height:auto;max-height:none}
+html body.student-dashboard-view .student-overview-content{grid-template-rows:auto 300px auto;padding-bottom:24px}
