@@ -140,6 +140,8 @@ table.tb input.gap.ok{background:var(--ok)}table.tb input.gap.bad{background:var
 .tnq b{font-weight:800}
 .ica{position:relative}.ica.hn:before{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:#e0a24a}
 .icstrip{flex:none;padding:10px 12px 0}
+.icvr{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;margin:6px 0 0;font-size:14px;line-height:1.4}.icvs{font-weight:700}.icvs.ok{color:#1a7f45}.icvs.bad{color:#c0392b}.icvs.blank{color:#8a8f98;font-weight:400}
+.icr.ok,.icr.bad{font-weight:700}
 .icr.hn:after{content:" ●";color:#e0a24a;font-size:12px}
 </style><style id="fitfix">
 html,body{max-width:100%;overflow-x:hidden}
@@ -513,6 +515,16 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       var box2 = qn.closest(".mq,.mrow"), want = lnorm(icAns(n));
       function colGap() { if (gi) { gi.classList.remove("ok", "bad"); if (on && LK && LK["q" + n] && gi.value.trim() !== "") gi.classList.add(icOk(n, gi.value) ? "ok" : "bad"); } }
       colGap(); if (gi) gi.oninput = colGap;
+      /* giáo viên: dưới mỗi câu đã Check hiện từng học sinh làm đúng (xanh) hay sai (đỏ) */
+      var vh = box2 || host, ov0 = vh.querySelector(":scope > .icvr"); if (ov0) ov0.remove();
+      if (on && ic.stu && ic.stu.length && LK && LK["q" + n]) {
+        var vr = h("div", { cls: "icvr" }), okc = 0;
+        ic.stu.forEach(function (s) {
+          var g = s.ans(QMAP[n].pi)["q" + n] || "", ok = g === "" ? null : icOk(n, g); if (ok) okc++;
+          vr.appendChild(h("span", { cls: "icvs " + (ok === true ? "ok" : ok === false ? "bad" : "blank"), text: (ok === true ? "✓ " : ok === false ? "✗ " : "– ") + s.name + (g !== "" ? ": " + g : "") }));
+        });
+        vr.insertBefore(h("b", { text: okc + "/" + ic.stu.length + " đúng" }), vr.firstChild); vh.appendChild(vr);
+      }
       if (box2) [].forEach.call(box2.querySelectorAll(".opt,.cb"), function (o) {
         o.classList.remove("ok", "bad"); if (!on || !want) return;
         var t = lnorm((o.querySelector("b") ? o.querySelector("b").textContent : o.textContent).trim().split(/\s\s/)[0]);
