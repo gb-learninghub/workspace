@@ -34,7 +34,7 @@
     '.td-ck{flex-direction:row!important;align-items:center;gap:8px!important;font-weight:600!important}.td-ck input{width:18px;height:18px}.td-hint{color:#92400E;font-size:.8125rem;min-height:0}.td-hint:empty{display:none}.td-sm{margin-top:4px}.td-sm h3{font-size:.8125rem;font-weight:800;margin:0 0 6px}.td-sr{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:#F6F7F9;border-radius:14px;margin-bottom:6px}.td-sr .td-acts{justify-content:flex-start}' +
     '.td-sr .q{font-weight:700}.td-sr .who{color:#64748b;font-size:.8125rem;margin-top:2px}.td-none{color:#64748b;font-size:.875rem;padding:14px 4px}.td-err{color:#be123c;font-size:.875rem;min-height:1em}';
 
-  var S = { c: null, root: null, loaded: false, loading: false, err: '', bank: [], links: {}, stu: {}, q: '', f: 'all', pos: '', topic: '', open: null, editing: false, adding: false };
+  var S = { imp: null, c: null, root: null, loaded: false, loading: false, err: '', bank: [], links: {}, stu: {}, q: '', f: 'all', pos: '', topic: '', open: null, editing: false, adding: false };
 
   function css() { V.uiCss(); if (document.getElementById('td-css')) return; var st = document.createElement('style'); st.id = 'td-css'; st.textContent = CSS; document.head.appendChild(st); }
   function icons() { if (w.lucide) w.lucide.createIcons(); }
@@ -86,7 +86,7 @@
     if (!r.querySelector('.td-head')) {
       r.innerHTML = '<div class="td"><div class="td-head"><h2><i data-lucide="book-a"></i>Từ điển chung</h2><span class="td-b" data-td-count></span></div>' +
         '<div class="td-tb"><label class="td-search"><i data-lucide="search"></i><input type="search" placeholder="Tìm từ hoặc nghĩa" aria-label="Tìm từ hoặc nghĩa" data-td-q autocomplete="off" spellcheck="false"></label>' +
-        '<button type="button" class="td-btn" data-td="add"><i data-lucide="plus"></i><span>Thêm từ</span></button><button type="button" class="td-btn td-ic" data-td="reload" aria-label="Tải lại" title="Tải lại"><i data-lucide="rotate-cw"></i></button></div>' +
+        '<button type="button" class="td-btn" data-td="add"><i data-lucide="plus"></i><span>Thêm từ</span></button><button type="button" class="td-btn" data-td="imp-pick"><i data-lucide="upload"></i><span>Nhập file</span></button><input type="file" accept=".csv,text/csv,text/plain" hidden data-td-file><button type="button" class="td-btn td-ic" data-td="reload" aria-label="Tải lại" title="Tải lại"><i data-lucide="rotate-cw"></i></button></div>' +
         '<div data-td-add></div><div class="vf td-fr" data-td-drops></div><div class="td-list" data-td-list></div></div>';
       r.querySelector('[data-td-q]').value = S.q;
       icons();
@@ -210,6 +210,8 @@
       ed.querySelectorAll('[data-td="pos"]').forEach(function (x) { var o = x.dataset.p === pv.value; x.classList.toggle('on', o); x.setAttribute('aria-pressed', o); });
     }
     else if (a === 'reload') { load(); }
+    else if (a === 'imp-pick') { var fi0 = S.root.querySelector('[data-td-file]'); if (fi0) { fi0.value = ''; fi0.click(); } }
+    else if (a === 'imp-go') { doImport(b); }
     else if (a === 'add') { S.adding = true; S.open = null; S.editing = false; draw(); var wi = document.querySelector('.vm [data-ed="new"] [data-in="word"]'); if (wi) wi.focus(); }
     else if (a === 'add-cancel') { S.adding = false; draw(); }
     else if (a === 'open') { S.open = id; S.editing = false; draw(); }
@@ -270,6 +272,95 @@
       }
     }
   }
+  /* ---------- nhập từ file CSV ---------- */
+  var IMP_H = { word: 'word', tu: 'word', pos: 'pos', ipa: 'ipa', meaning_vi: 'meaning', meaning: 'meaning', nghia: 'meaning', definition_en: 'def', definition: 'def', def: 'def', example: 'ex', ex: 'ex', topic: 'topic', note: 'note' };
+  function parseCsv(txt) {
+    txt = String(txt || '').replace(/^﻿/, '');
+    var head = txt.split(/\r?\n/)[0] || '', d = ',', best = -1;
+    [',', ';', '\t'].forEach(function (c) { var n = head.split(c).length; if (n > best) { best = n; d = c; } });
+    var rows = [], row = [], cell = '', q = false, i, ch;
+    for (i = 0; i < txt.length; i++) {
+      ch = txt[i];
+      if (q) { if (ch === '"') { if (txt[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+      else if (ch === '"') q = true;
+      else if (ch === d) { row.push(cell); cell = ''; }
+      else if (ch === '\n' || ch === '\r') { if (ch === '\r' && txt[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+      else cell += ch;
+    }
+    if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+    return rows.filter(function (r) { return r.some(function (c) { return norm(c); }); });
+  }
+  function dupKey(word, pos) { return key(word) + '|' + V.posShort(pos || ''); }
+  function impPlan(txt) {
+    var rows = parseCsv(txt), out = { news: [], dups: [], bad: [], inFile: 0, err: '' };
+    if (!rows.length) { out.err = 'File trống.'; return out; }
+    var cols = rows[0].map(function (h) { return IMP_H[key(h).replace(/\s+/g, '_')] || ''; });
+    if (cols.indexOf('word') < 0) { out.err = 'Không thấy cột "word" ở dòng đầu. Dùng file mẫu Mau tu vung.csv.'; return out; }
+    var bankBy = {}; S.bank.forEach(function (b) { bankBy[dupKey(b.word, b.pos)] = b; });
+    var seen = {};
+    rows.slice(1).forEach(function (r, n) {
+      var v = { proper: false }; cols.forEach(function (c, j) { if (c) v[c] = norm(r[j]); });
+      if (!v.word) { out.bad.push((n + 2) + ': thiếu từ'); return; }
+      if (v.word.length > 80) { out.bad.push((n + 2) + ': từ quá dài'); return; }
+      var row = patchOf(v); row.kind = /\s/.test(row.word) || /phr|phrase|idiom/.test(row.pos) ? (row.pos === 'idiom' ? 'idiom' : 'phrase') : 'word';
+      var k = dupKey(row.word, row.pos);
+      if (seen[k]) { out.inFile++; return; } seen[k] = 1;
+      if (bankBy[k]) out.dups.push({ row: row, old: bankBy[k] }); else out.news.push(row);
+    });
+    return out;
+  }
+  function impFillPatch(row, old) {
+    var p = {};
+    ['ipa', 'definition_en', 'example', 'topic', 'note'].forEach(function (f) { if (row[f] && !norm(old[f])) p[f] = row[f]; });
+    if (row.meaning_vi && !norm(old.meaning_vi)) { p.meaning_vi = row.meaning_vi; p.meaning_status = 'approved'; }
+    return p;
+  }
+  function impHtml(P) {
+    if (P.err) return '<div class="td vm-fl"><div class="vm-hd"><div class="td-new-t">Nhập từ file</div></div><div class="td-none td-err">' + esc(P.err) + '</div></div>';
+    var fillN = P.dups.filter(function (d) { return Object.keys(impFillPatch(d.row, d.old)).length; }).length;
+    var h = '<div class="td vm-fl"><div class="vm-hd"><div class="td-new-t">Nhập từ file</div></div><div class="td-ed">' +
+      '<p><b>' + P.news.length + '</b> từ mới sẽ được thêm.</p>' +
+      '<p>' + P.dups.length + ' từ đã có trong từ điển' + (P.inFile ? ', ' + P.inFile + ' dòng lặp trong file' : '') + ' (bỏ qua).</p>' +
+      (P.bad.length ? '<p class="td-err">' + P.bad.length + ' dòng lỗi, bỏ qua: ' + esc(P.bad.slice(0, 5).join('; ')) + (P.bad.length > 5 ? '...' : '') + '</p>' : '') +
+      (P.news.length ? '<p class="td-hint">Ví dụ: ' + esc(P.news.slice(0, 5).map(function (x) { return x.word; }).join(', ')) + (P.news.length > 5 ? '...' : '') + '</p>' : '') +
+      (fillN ? '<label class="td-ck"><input type="checkbox" data-imp-fill> Điền thêm vào ô còn trống của ' + fillN + ' từ đã có (không ghi đè nghĩa đang có)</label>' : '') +
+      '<div class="td-err" data-err></div><div class="td-acts"><button type="button" class="td-btn" data-vm-close>Hủy</button>' +
+      '<button type="button" class="td-btn pri" data-td="imp-go"' + (P.news.length || fillN ? '' : ' disabled') + '>Nhập</button></div></div></div>';
+    return h;
+  }
+  function onFile(f) {
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      S.imp = impPlan(rd.result);
+      V.modal(impHtml(S.imp), { form: true, onClick: onClick, onClose: function () { S.imp = null; } });
+    };
+    rd.onerror = function () { S.imp = { err: 'Không đọc được file.', news: [], dups: [], bad: [] }; V.modal(impHtml(S.imp), { onClick: onClick }); };
+    rd.readAsText(f, 'utf-8');
+  }
+  function doImport(btn) {
+    var P = S.imp; if (!P) return; var m = V.modalOpen(), ed = m && m.el.querySelector('.td-ed');
+    var fill = !!(ed && ed.querySelector('[data-imp-fill]') && ed.querySelector('[data-imp-fill]').checked);
+    busy(btn, true, 'Đang nhập...');
+    var added = 0, failed = 0, filled = 0, chain = Promise.resolve();
+    for (var i = 0; i < P.news.length; i += 100) (function (batch) {
+      chain = chain.then(function () {
+        return S.c.from('vocab_bank').insert(batch).then(function (r) {
+          if (!r.error) { added += batch.length; return; }
+          return batch.reduce(function (p, row) { return p.then(function () { return S.c.from('vocab_bank').insert(row).then(function (x) { if (x.error) failed++; else added++; }); }); }, Promise.resolve());
+        });
+      });
+    })(P.news.slice(i, i + 100));
+    if (fill) P.dups.forEach(function (d) {
+      var pt = impFillPatch(d.row, d.old); if (!Object.keys(pt).length) return;
+      chain = chain.then(function () { return S.c.from('vocab_bank').update(pt).eq('id', d.old.id).then(function (x) { if (x.error) failed++; else filled++; }); });
+    });
+    chain.then(function () {
+      S.imp = null; V.closeModal(true);
+      toast('Đã thêm ' + added + ' từ' + (filled ? ', điền thêm ' + filled + ' từ' : '') + (failed ? ', lỗi ' + failed : '') + '.');
+      return load();
+    }).catch(function (er) { busy(btn, false); setErr(ed, errMsg(er)); });
+  }
   var spT = null;
   function onInput(e) {
     if (e.target.matches && e.target.matches('.td-ed [data-in="word"]')) {
@@ -286,6 +377,7 @@
     if (e.target.matches && e.target.matches('[data-td-q]')) { S.q = e.target.value; S.open = null; draw(); }
   }
   function onChange(e) {
+    if (e.target.matches && e.target.matches('[data-td-file]')) { onFile(e.target.files && e.target.files[0]); return; }
     var k = e.target.getAttribute && e.target.getAttribute('data-td-sel'); if (!k) return;
     S[k] = e.target.value; S.open = null; draw();
   }

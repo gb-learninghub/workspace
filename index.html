@@ -967,8 +967,11 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
             try {
               const rr = await fetch(x.url, { cache: 'no-store' }); if (!rr.ok || !rr.body) return;
               const rd = rr.body.getReader(), ch = await rd.read(); rd.cancel();
-              const t = /<title>([^<]*)<\/title>/i.exec(new TextDecoder().decode(ch.value || new Uint8Array()));
-              if (t && t[1].trim()) x.title = t[1].trim();
+              const html = new TextDecoder().decode(ch.value || new Uint8Array());
+              const meta = /<meta\b[^>]*name=[\"']assignment-title[\"'][^>]*content=[\"']([^\"']*)[\"']/i.exec(html);
+              const t = /<title>([^<]*)<\/title>/i.exec(html);
+              if (meta && meta[1].trim()) x.title = meta[1].trim();
+              else if (t && t[1].trim()) x.title = t[1].trim();
             } catch (e) { }
           }));
           st.scanAll = out; st.scanAt = Date.now(); st.scanErr = '';
@@ -1322,12 +1325,22 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         const km = opt.noKey ? null : text.match(/<script[^>]*id=["']gb-key["'][^>]*>([\s\S]*?)<\/script>/);
         let K = {}; if (km) { try { K = JSON.parse(km[1]); } catch (e) { return fail('Khối key không đọc được (JSON lỗi).'); } }
         const code = String(D.code || '').trim(); if (!code) return fail('Bài chưa có mã (code).');
-        const name = String(D.title || code).trim();
+        const titleMeta = /<meta\b[^>]*name=[\"']assignment-title[\"'][^>]*content=[\"']([^\"']*)[\"']/i.exec(text);
+        const name = String((titleMeta && titleMeta[1]) || D.title || code).trim();
         const isListen = /listening/i.test(code + ' ' + name);
         const P = D.passages || D.parts || D.sections || [];
+        const isNewFormat = Array.isArray(D.sections) && !D.passages && !D.parts;
         const fillNums = new Set(); P.forEach(pp => (pp.groups || []).forEach(g => { if (/fill|note|form|sum|blank/i.test(g.kind || '')) (g.items || []).forEach(it => fillNums.add(it[0])); }));
         const questions = [], parts = [];
-        if (P.length) P.forEach(pp => {
+        if (isNewFormat) P.forEach((pp, i) => {
+          const qids = [];
+          (pp.questions || []).forEach((q, qi) => {
+            const id = String(q.id || ('q' + (questions.length + 1)));
+            qids.push(id); questions.push({ id, text: q.prompt || ('Question ' + (qi + 1)), type: q.type === 'mcq' ? 'mcq' : 'fill' });
+          });
+          parts.push({ id: pp.id == null ? i + 1 : pp.id, name: pp.title || ('Part ' + (i + 1)), qids });
+        });
+        else if (P.length) P.forEach(pp => {
           const a = pp.range && pp.range[0], b = pp.range && pp.range[1]; if (!a || !b) return;
           const qids = []; for (let n = a; n <= b; n++) { qids.push('q' + n); questions.push({ id: 'q' + n, text: 'Question ' + n, type: fillNums.has(n) ? 'fill' : 'mcq' }); }
           parts.push({ id: pp.id, name: pp.label || ((isListen ? 'Part ' : 'Passage ') + pp.id), qids });
@@ -1353,8 +1366,8 @@ place();mq.addEventListener('change',place);document.addEventListener('DOMConten
         }
         const kind = D.mode === 'teaching' ? 'lesson' : 'homework';
         if (opt.expect && kind !== opt.expect) return fail('File này là ' + (kind === 'lesson' ? 'bài học' : 'bài tập') + ', không đúng ô ' + (opt.expect === 'lesson' ? 'Bài học' : 'Bài tập') + '. Chọn lại file.');
-        const tn = code + ' ' + name, skill = kind === 'homework' ? (/thpt/i.test(tn) ? 'thpt' : /đgnl|dgnl|vact/i.test(tn) ? 'dgnl' : isListen ? 'listening' : /reading/i.test(tn) ? 'reading' : /writing/i.test(tn) ? 'writing' : null) : null;
-        const program = /^ielts/i.test(code) ? 'ielts' : /^toeic/i.test(code) ? 'toeic' : (/^ac12/i.test(code) || /thpt|đgnl|dgnl|vact/i.test(tn)) ? 'ac12' : null;
+        const tn = code + ' ' + name, skill = kind === 'homework' ? (D.skill || (/thpt/i.test(tn) ? 'thpt' : /đgnl|dgnl|vact/i.test(tn) ? 'dgnl' : isListen ? 'listening' : /reading/i.test(tn) ? 'reading' : /writing/i.test(tn) ? 'writing' : null)) : null;
+        const program = D.program || (/^ielts/i.test(code) ? 'ielts' : /^toeic/i.test(code) ? 'toeic' : (/^ac12/i.test(code) || /thpt|đgnl|dgnl|vact/i.test(tn)) ? 'ac12' : null);
         const folder = program || 'gt', wk = weekNoOf(curMon());
         const page_path = (opt.path || $('da-path').value || '').trim().replace(/^\/+/, '') || (folder + '/w' + String(wk).padStart(2, '0') + '/' + file.name);
         const row = { assignment_code: code, assignment_name: name, kind, skill, program, page_path, questions, parts: parts.length ? parts : null, is_active: true };
