@@ -969,3 +969,26 @@ html body.student-dashboard-view .asg-row .asg-line .asg-slot{width:34px;height:
 @media(max-width:1023px){body.student-dashboard-view .g-week-sched .week-calendar.week-calendar{column-gap:1px!important}body.student-dashboard-view .g-week-sched .week-calendar .week-calendar-day.week-calendar-day.week-calendar-day{width:100%!important}}
 .overview-week-controls .icon-btn{min-width:44px!important;min-height:44px!important}
 .t-thisweek{min-height:44px}
+
+/* Ô tổng quan: nội dung dài hơn khung thì cuộn ngang, không bị cắt */
+body.student-dashboard-view .student-overview-highlight .week-calendar-head,
+body.student-dashboard-view .student-overview-highlight .tuition-head,
+body.student-dashboard-view .student-overview-highlight .prog-head,
+body.student-dashboard-view .student-overview-highlight .g-week-sched .month-session{overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap!important;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:thin}
+body.student-dashboard-view .student-overview-highlight .week-calendar-head::-webkit-scrollbar,
+body.student-dashboard-view .student-overview-highlight .tuition-head::-webkit-scrollbar,
+body.student-dashboard-view .student-overview-highlight .prog-head::-webkit-scrollbar,
+body.student-dashboard-view .student-overview-highlight .g-week-sched .month-session::-webkit-scrollbar{height:6px}
+body.student-dashboard-view .student-overview-highlight .week-calendar-head>*,
+body.student-dashboard-view .student-overview-highlight .tuition-head>*,
+body.student-dashboard-view .student-overview-highlight .prog-head>*,
+body.student-dashboard-view .student-overview-highlight .g-week-sched .month-session>*{flex:0 0 auto!important;max-width:none!important}
+body.student-dashboard-view .student-overview-highlight .g-week-sched .month-session-meta{display:flex;flex-wrap:nowrap;gap:6px}
+@media(pointer:coarse){body.student-dashboard-view .student-overview-highlight :is(.week-calendar-head,.tuition-head,.prog-head,.g-week-sched .month-session){scrollbar-width:none}}
+
+/* Tổng quan: cuộn dọc phần nội dung, header và sidebar đứng yên */
+html body.student-dashboard-view .student-shell .student-workspace-overview{overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;align-content:start}
+html body.student-dashboard-view .student-overview-view,
+html body.student-dashboard-view .student-overview-view .student-main-content,
+html body.student-dashboard-view .student-overview-view .student-main-section{overflow:visible!important;height:auto;max-height:none}
+html body.student-dashboard-view .student-overview-content{grid-template-rows:auto 300px auto;padding-bottom:24px}
