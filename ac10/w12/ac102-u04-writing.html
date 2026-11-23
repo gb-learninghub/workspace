@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AC10-W12 Writing</title>
+<style>
+:root{--fs:18px;--ink:#111;--mut:#6b6b6b;--line:#dcdcdc;--soft:#f3f3f3;--ok:#e3f3e6;--okl:#2e7d4f;--bad:#fbe6e6;--badl:#b42b2b}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:Aptos,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#fff;font-size:16px}
+button{font-family:inherit;color:inherit;cursor:pointer}
+#app{height:100dvh;display:grid;grid-template-rows:56px 1fr}
+#hd{display:flex;align-items:center;gap:18px;padding:0 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);backdrop-filter:blur(10px)}
+.brand{font-weight:700;font-size:16px;white-space:nowrap}
+.tabs{display:flex;gap:4px;margin:0 auto}
+.tab{border:0;background:none;padding:15px 14px 13px;font-size:16px;border-bottom:3px solid transparent;color:var(--mut)}
+.tab.on{color:var(--ink);font-weight:700;border-bottom-color:var(--ink)}
+.tools{display:flex;align-items:center;gap:6px}
+.who2{font-size:14px;color:var(--mut);margin-right:6px}
+.ib,.fsb,.tm{height:38px;min-width:38px;border:0;border-radius:19px;background:var(--soft);display:inline-flex;align-items:center;justify-content:center;padding:0 10px}
+.fsb,.tm{font-weight:700;font-size:15px}
+.tm.on{background:#111;color:#fff}
+.ib.dark{background:#111;color:#fff}
+.clock{font-variant-numeric:tabular-nums;font-weight:700;font-size:16px;min-width:56px;text-align:center}
+.clock.over{color:var(--badl)}
+.sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+.mv{display:none}
+#main{--lw:48%;display:flex;min-height:0}
+#task{width:var(--lw);overflow:auto;padding:24px 28px 60px;min-width:0}
+#split{width:10px;cursor:col-resize;background:var(--soft);flex:none;position:relative;touch-action:none}
+#split:after{content:"";position:absolute;left:3px;top:50%;width:4px;height:44px;margin-top:-22px;border-radius:2px;background:#bdbdbd}
+#work{flex:1;display:flex;flex-direction:column;min-width:0;padding:24px 28px 16px}
+.ptag{font-size:14px;color:var(--mut);margin-bottom:4px}
+h2{margin:0 0 14px;font-size:calc(var(--fs) + 8px);line-height:1.25}
+.tp{font-size:var(--fs);line-height:1.6;margin:0 0 12px;text-align:justify}
+.tp.hint{color:var(--mut);font-size:16px}
+.tp b{font-weight:700}
+.q{font-weight:700}
+#fig{width:100%;height:auto;border:1px solid var(--line);border-radius:8px;margin-top:6px;display:block}
+#ta{flex:1;min-height:0;width:100%;resize:none;border:1.5px solid var(--line);border-radius:12px;padding:16px 18px;font:inherit;font-size:var(--fs);line-height:1.6;outline:none;color:var(--ink);background:#fff}
+#ta:focus{border-color:#111}
+#ta[readonly]{background:var(--soft)}
+#bar{display:flex;align-items:center;gap:12px;padding:10px 2px 0;font-size:15px;color:var(--mut)}
+#wc{font-weight:700;color:var(--ink)}
+#wc.low{color:var(--badl)}
+#wc.ok{color:var(--okl)}
+.fill{flex:1}
+.banner{border-radius:10px;padding:10px 14px;margin:0 0 12px;font-size:15px;line-height:1.5;background:var(--ok)}
+.banner.fb{background:var(--soft)}
+.banner b{font-weight:700}
+.ov{position:fixed;inset:0;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:50}
+.ov.solid{background:#fff}
+.card{width:min(480px,92vw);background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 28px}
+.card h3{margin:0 0 10px;font-size:22px}
+.card p{margin:8px 0;line-height:1.5;font-size:16px}
+.card p.muted{color:var(--mut);font-size:15px}
+.err{color:var(--badl)}
+.gap{font:inherit;font-size:16px;border:0;border-bottom:2px solid #111;background:var(--soft);padding:10px 12px;margin:10px 0;width:100%;border-radius:6px 6px 0 0;outline:none}
+.brow{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.pill{white-space:nowrap;border:0;border-radius:22px;background:#111;color:#fff;height:44px;padding:0 24px;font-size:16px;font-weight:600}
+.pill.ghost{background:var(--soft);color:#111}
+@media (max-width:900px){#main{flex-direction:column}#task{width:100%;height:42%}#split{display:none}.brand{display:none}}
+@media (max-width:700px){#app{grid-template-rows:auto 1fr}#hd{height:auto;flex-wrap:wrap;gap:4px 8px;padding:6px 10px}.tabs{order:3;flex:1 0 100%;margin:0}.tab{flex:1;padding:8px 6px}.tools{margin-left:auto;flex-wrap:wrap;gap:4px}.who2,.hide-m{display:none}#main[data-v="t"] #work,#main[data-v="w"] #task{display:none}#task,#work{width:100%;flex:1;min-height:0}#task{padding:14px 16px 24px}#work{padding:12px 16px 10px}.mv{display:flex;order:4;flex:1 0 100%;gap:8px;padding-bottom:6px}.mvb{flex:1;height:38px;border:0;border-radius:19px;background:var(--soft);font-size:15px;font-weight:600}.mvb.on{background:#111;color:#fff}.card{padding:20px}.brow{flex-wrap:wrap}.sep{display:none}}
+
+#tn{flex:none;max-height:34%;overflow:auto;margin-top:10px;border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;background:#fafafa}
+#tn[hidden]{display:none}
+#tn .th{font-weight:800;font-size:14px;margin-bottom:4px}
+#tn .ni{display:flex;gap:8px;align-items:baseline;font-size:15px;line-height:1.45;margin:4px 0}
+#tn .ni b{flex:none;min-width:18px}
+#tn .ni i{font-style:normal;flex:none;border-radius:10px;padding:1px 8px;font-size:13px;font-weight:700}
+#tn .ni q{quotes:none;color:var(--mut)}
+.t-Grammar{background:#fbd5d5}.t-Word{background:#ffe0a8}.t-Spelling{background:#e3d4ff}.t-Unclear{background:#cfe3ff}.t-Good{background:#cdeccf}
+</style><style id="fitfix">
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,video,canvas{max-width:100%}
+.card:has(ul.intro){max-height:calc(100dvh - 20px);overflow:hidden;padding:14px 16px}
+.card:has(ul.intro) h3{font-size:18px;margin:0 0 6px}
+ul.intro{margin:0 0 4px;padding-left:18px}
+ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
+.card:has(ul.intro) .brow{margin-top:8px}
+@media (max-height:700px){ul.intro li{font-size:13px;margin-bottom:3px}}
+.gap{max-width:100%}
+.tbl{table-layout:fixed;width:100%}.tbl td,.tbl th{word-break:break-word}
+#tiles{overflow-x:visible;gap:8px;padding:6px 10px}
+#tiles .tg{flex:1 1 0;min-width:0;gap:3px;padding:3px 4px}
+#tiles .tile{flex:1 1 0;min-width:0;width:auto;max-width:34px;height:30px}
+@media (max-width:700px){#tiles .tg:not(.cur){display:none}#tiles .tg.cur{flex:1 1 100%}#tiles .tile{height:28px;font-size:12px;max-width:none}}
+#tl .t{min-width:0;flex:1 1 0;padding:0}
+#hd{height:auto;min-height:52px;flex-wrap:wrap;row-gap:4px}
+#hd .tools{flex-wrap:wrap}
+#app{grid-template-columns:minmax(0,1fr);max-width:100vw}
+#app>*{min-width:0}
+.qcell{white-space:normal}
+</style>
+</head>
+<body><div id="app"><header id="hd"></header>
+<div id="main"><div id="task"></div><div id="split" title="Drag to resize"></div><div id="work"></div></div></div>
+<script>window.DATA={"title": "AC10-W12 Writing", "code": "AC102-U04-Writing", "sb": {"url": "https://bumaiagvgpewhvczgwio.supabase.co", "key": "sb_publishable_B563fC34wnTDCGSZv29euw_6P3mFRs5"}, "tasks": [{"id": 1, "name": "Writing", "mins": 20, "min": 120, "max": 150, "lines": [{"t": "Write a paragraph (120–150 words) about a volunteer activity you took part in recently."}, {"t": "Include what you did, when and where it happened, why you joined, and how you felt."}]}]};</script>
+<script>(function () {
+  "use strict";
+  var D = window.DATA;
+  var state = { p: 0, text: {}, lock: {}, sub: {}, code: "", sname: "", saved: "", timer: null, loading: false,
+    mins: 20, left: 20 * 60, running: false, tick: null, touched: false };
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  function h(tag, a) {
+    var e = document.createElement(tag);
+    if (a) for (var k in a) { if (k === "cls") e.className = a[k]; else if (k === "html") e.innerHTML = a[k]; else if (k === "text") e.textContent = a[k]; else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), a[k]); else e.setAttribute(k, a[k]); }
+    for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c == null) continue; e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); }
+    return e;
+  }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { } return null; }
+  var I = function (p, w) { return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="' + (w || 2) + '" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; };
+  var ICON = { tick: I('<path d="M4 12.5l5 5L20 6.5"/>', 2.4), full: I('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),
+    play: I('<path d="M7 4.5v15l12-7.5z"/>'), pause: I('<path d="M8 5v14M16 5v14"/>', 2.6), reset: I('<path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5"/>') };
+  function ibtn(name, title, fn, cls) { return h("button", { cls: "ib " + (cls || ""), title: title, "aria-label": title, html: ICON[name], onclick: fn }); }
+  var WSTEPS = {
+    1: [["Read the task", ["Gạch chân các ý đề yêu cầu: bạn đã làm gì, khi nào và ở đâu, vì sao bạn tham gia, bạn cảm thấy thế nào."]], ["Analyse the task", ["Chọn một hoạt động có thật hoặc dễ kể. Ghi nhanh vài từ cho từng ý trước khi viết."]], ["Layout", ["Một đoạn: câu chủ đề, hoạt động (what, when, where), lý do tham gia, cảm nhận, câu kết."]], ["Write and check", ["Viết từ 120 đến 150 từ. Kiểm tra thì quá khứ, từ nối, ngữ pháp và chính tả."]]]
+  };
+  function stepCards(id) { return WSTEPS[1].map(function (x) { return { n: x[0], c: x[1] }; }); }
+
+  function T() { return D.tasks[state.p]; }
+  function wc(s) { var m = String(s || "").trim().match(/\S+/g); return m ? m.length : 0; }
+
+  /* ---------- timer ---------- */
+  function fmt(s) { var neg = s < 0; s = Math.abs(s); return (neg ? "-" : "") + ("0" + Math.floor(s / 60)).slice(-2) + ":" + ("0" + (s % 60)).slice(-2); }
+  function paintClock() { var c = $("#clock"); c.textContent = fmt(state.left); c.classList.toggle("over", state.left <= 0); }
+  function setMins(m) { state.mins = m; state.left = m * 60; stopClock(); paintClock(); paintTm(); }
+  function stopClock() { state.running = false; clearInterval(state.tick); var b = $("#pp"); if (b) b.innerHTML = ICON.play; }
+  function toggleClock() {
+    if (state.running) { stopClock(); return; }
+    if (state.left <= 0) state.left = state.mins * 60;
+    state.running = true; $("#pp").innerHTML = ICON.pause;
+    state.tick = setInterval(function () { state.left -= 1; paintClock(); if (state.left <= 0) stopClock(); }, 1000);
+  }
+  function paintTm() { document.querySelectorAll(".tm").forEach(function (b) { b.classList.toggle("on", +b.dataset.m === state.mins); }); }
+
+  /* ---------- render ---------- */
+  function renderTask() {
+    var t = T(), box = $("#task"); box.innerHTML = "";
+    box.appendChild(h("div", { cls: "ptag", text: "Writing" }));
+    box.appendChild(h("h2", { text: "Writing task" }));
+    if (t.time) box.appendChild(h("p", { cls: "tp hint", text: t.time }));
+    t.lines.forEach(function (l) { box.appendChild(h("p", { cls: "tp" + (l.q ? " q" : ""), text: l.t })); });
+    if (t.fig) box.appendChild(h("img", { id: "fig", src: t.fig, alt: "Task 1 chart" }));
+    box.appendChild(h("p", { cls: "tp hint", text: "Write " + t.min + "–" + t.max + " words." }));
+    box.scrollTop = 0;
+  }
+  function renderWork() {
+    var t = T(), id = t.id, box = $("#work"); box.innerHTML = "";
+    var sub = state.sub[id];
+    if (sub) {
+      box.appendChild(h("div", { cls: "banner" }, h("b", { text: "Submitted. " }), h("span", { text: sub.word_count + " words" + (sub.is_late ? " · submitted after the deadline" : "") + ". Your teacher will review it." })));
+      if (sub.feedback || sub.band != null) {
+        var f = h("div", { cls: "banner fb" }, h("b", { text: "Teacher feedback" + (sub.band != null ? " · Band " + sub.band : "") }));
+        if (sub.feedback) f.appendChild(h("div", { text: sub.feedback, style: "white-space:pre-wrap;margin-top:6px" }));
+        box.appendChild(f);
+      }
+    }
+    var ta = h("textarea", { id: "ta", spellcheck: "true", "aria-label": "Your answer", placeholder: "Type your answer here..." });
+    ta.value = state.text[id] || ""; if (sub) ta.readOnly = true;
+    ta.addEventListener("input", function () { state.text[id] = ta.value; paintWc(); scheduleSave(); });
+    box.appendChild(ta);
+    box.appendChild(h("div", { id: "bar" }, h("span", { id: "wc" }), h("span", { id: "need", text: "of " + t.min + "–" + t.max + " words" }), h("span", { cls: "fill" })));
+    box.appendChild(h("div", { id: "tn", hidden: "hidden" })); state.tnsig = ""; paintTn();
+    paintWc();
+  }
+  /* teacher's notes (sent from the In-class page) */
+  state.tnotes = {};
+  function paintTn() {
+    var box = $("#tn"); if (!box) return;
+    var t = T(), items = (state.tnotes["t" + t.id] || []).slice(), txt = state.text[t.id] || "";
+    var sig = JSON.stringify([t.id, items]); if (sig === state.tnsig) return; state.tnsig = sig;
+    box.innerHTML = "";
+    if (!items.length) { box.setAttribute("hidden", "hidden"); return; }
+    box.removeAttribute("hidden");
+    items.sort(function (a, b) { var x = txt.indexOf(a.txt), y = txt.indexOf(b.txt); return (x < 0 ? 1e9 : x) - (y < 0 ? 1e9 : y); });
+    box.appendChild(h("div", { cls: "th", text: "Teacher's notes" }));
+    items.forEach(function (a, n) { box.appendChild(h("div", { cls: "ni" }, h("b", { text: String(n + 1) }), h("i", { cls: "t-" + String(a.type || "").split(" ")[0], text: a.type || "" }), h("span", { text: a.note || "" }), h("q", { text: " \u201c" + a.txt + "\u201d" }))); });
+  }
+  function pollTn() {
+    if (!state.code || document.visibilityState !== "visible") return;
+    rpc("student_notes", { p_student_code: state.code, p_assignment_code: D.code }).then(function (r) {
+      var m = {}; (r || []).forEach(function (n) { m[n.ref] = n.items || []; }); state.tnotes = m; paintTn();
+    }).catch(function () { });
+  }
+  setInterval(pollTn, 6000);
+  function paintWc() {
+    var t = T(), n = wc(state.text[t.id]), e = $("#wc"); e.textContent = n + " words";
+    e.className = n === 0 ? "" : (n >= t.min ? "ok" : "low");
+  }
+  function paintTabs() {
+    document.querySelectorAll(".tab").forEach(function (b, i) { b.classList.toggle("on", i === state.p); b.textContent = D.tasks[i].name + (state.sub[D.tasks[i].id] ? "  ✓" : ""); });
+  }
+  function paint() { paintTabs(); renderTask(); renderWork(); if (state.npEl) renderNotes(); }
+
+  /* ---------- server ---------- */
+  function rpc(fn, body, keep) {
+    return fetch(D.sb.url + "/rest/v1/rpc/" + fn, { method: "POST", keepalive: !!keep, headers: { "Content-Type": "application/json", apikey: D.sb.key }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error((j && (j.message || j.hint)) || "error"); return j; }); });
+  }
+  function errText(e) {
+    var m = String(e && e.message || e);
+    if (m.indexOf("student_not_found") > -1) return "Student code not found. Please check it and try again.";
+    if (m.indexOf("assignment_not_found") > -1) return "This task has not been assigned to your class.";
+    if (m.indexOf("already_submitted") > -1) return "This task was already submitted.";
+    return "Could not reach the server. Check your internet connection and try again.";
+  }
+  function draftBody() { var o = {}; D.tasks.forEach(function (t) { if (!state.sub[t.id] && state.text[t.id]) o["t" + t.id] = state.text[t.id]; if (state.notes[t.id]) o["n" + t.id] = state.notes[t.id]; if (state.words && state.words[t.id] && state.words[t.id].length) o["w" + t.id] = state.words[t.id]; }); return o; }
+  function setSave(t) { var e = $("#sv"); if (e) e.textContent = t; }
+  function scheduleSave() {
+    if (!state.code || state.loading) return;
+    var cur = JSON.stringify(draftBody()); if (cur === state.saved) return;
+    setSave("Saving..."); clearTimeout(state.timer); state.timer = setTimeout(function () { saveNow(false); }, 1500);
+  }
+  function saveNow(keep) {
+    if (!state.code) return Promise.resolve();
+    clearTimeout(state.timer);
+    var body = draftBody(), cur = JSON.stringify(body); if (cur === state.saved) { return Promise.resolve(); }
+    return rpc("save_draft", { p_student_code: state.code, p_assignment_code: D.code, p_answers: body }, keep)
+      .then(function () { state.saved = cur; setSave("Saved"); }).catch(function () { setSave("Not saved"); });
+  }
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") saveNow(true); });
+  window.addEventListener("pagehide", function () { saveNow(true); });
+  function loadProgress(pg) {
+    state.loading = true; var d = pg.draft || {};
+    D.tasks.forEach(function (t) { state.text[t.id] = d["t" + t.id] || ""; state.notes[t.id] = d["n" + t.id] != null ? d["n" + t.id] : null; state.words = state.words || {}; state.words[t.id] = d["w" + t.id] || []; });
+    (pg.parts || []).forEach(function (x) { state.sub[x.part] = x; state.text[x.part] = x.body; });
+    var first = 0; for (var i = 0; i < D.tasks.length; i++) { if (!state.sub[D.tasks[i].id]) { first = i; break; } }
+    state.p = first; state.mins = T().mins; state.left = state.mins * 60;
+    state.saved = JSON.stringify(draftBody()); state.loading = false; paint(); paintClock(); paintTm(); pollTn();
+  }
+
+  /* ---------- modal, submit ---------- */
+  function modal(title, body, btns) {
+    var ov = h("div", { cls: "ov" }), card = h("div", { cls: "card" }, h("h3", { text: title }));
+    if (typeof body === "string") card.appendChild(h("p", { text: body })); else if (body) card.appendChild(body);
+    var row = h("div", { cls: "brow" });
+    btns.forEach(function (b) { row.appendChild(h("button", { cls: "pill" + (b.ghost ? " ghost" : ""), text: b.t, onclick: function () { ov.remove(); if (b.f) b.f(); } })); });
+    card.appendChild(row); ov.appendChild(card); document.body.appendChild(ov); return ov;
+  }
+  function submit() {
+    var t = T(), id = t.id; if (state.sub[id]) return;
+    var n = wc(state.text[id]);
+    if (n === 0) { modal("Nothing to submit", "Please write your answer first.", [{ t: "OK" }]); return; }
+    modal("Submit " + t.name + "?", (n < t.min ? "Your text has " + n + " words, which is below the minimum of " + t.min + ". " : "") + "You cannot change your answer after submitting.",
+      [{ t: "Keep writing", ghost: true }, { t: "Submit", f: function () { doSubmit(t); } }]);
+  }
+  function doSubmit(t) {
+    var wait = modal("Submitting...", "Please wait.", []);
+    rpc("submit_writing", { p_student_code: state.code, p_assignment_code: D.code, p_part: t.id, p_text: state.text[t.id] })
+      .then(function (j) {
+        wait.remove(); stopClock();
+        state.sub[t.id] = { part: t.id, body: state.text[t.id], word_count: j.word_count, is_late: j.is_late, feedback: null, band: null };
+        saveNow(false); paint();
+        var left = D.tasks.filter(function (x) { return !state.sub[x.id]; });
+        modal(t.name + " submitted", j.word_count + " words." + (j.is_late ? " Submitted after the deadline." : "") + (left.length ? " " + left.length + " task left." : " You have submitted your writing."),
+          [{ t: "OK", ghost: !left.length }].concat(left.length ? [{ t: "Next task", f: function () { switchTo(D.tasks.indexOf(left[0])); } }] : []));
+      }).catch(function (e) { wait.remove(); modal("Could not submit", errText(e), [{ t: "OK" }]); });
+  }
+  function setView(v) { $("#main").setAttribute("data-v", v); document.querySelectorAll(".mvb").forEach(function (b) { b.classList.toggle("on", b.dataset.v === v); }); }
+  function switchTo(i) { state.p = i; if (!state.running) setMins(D.tasks[i].mins); paint(); }
+
+  /* ---------- login ---------- */
+  function login() {
+    var inp = h("input", { cls: "gap", type: "text", autocomplete: "off", spellcheck: "false", placeholder: "Student code", "aria-label": "Student code" });
+    inp.value = store("sc") || "";
+    var msg = h("p", { cls: "err", text: "" });
+    var ov = h("div", { cls: "ov solid" }, h("div", { cls: "card" }, h("h3", { text: D.title }), h("p", { text: "Enter your student code to start." }), inp, msg,
+      h("div", { cls: "brow" }, h("button", { cls: "pill", text: "Start", onclick: go1 }))));
+    function go1() {
+      var c = inp.value.trim(); if (!c) { msg.textContent = "Please enter your code."; return; }
+      msg.textContent = "Checking...";
+      rpc("get_writing_progress", { p_student_code: c, p_assignment_code: D.code }).then(function (pg) {
+        state.code = c; state.sname = pg.student_name || ""; store("sc", c); $("#who").textContent = state.sname; loadProgress(pg); ov.remove();
+      }).catch(function (e) { msg.textContent = errText(e); });
+    }
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go1(); });
+    document.body.appendChild(ov); setTimeout(function () { inp.focus(); }, 50);
+  }
+
+
+  /* ---------- student's notes + notebook ---------- */
+  ICON.note = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5zM9 11h6M9 15h6"/></svg>';
+  var FILEKEY = "ac10/w12/ac102-u04-writing.html";
+  /* khung Student's notes + tra từ: dùng chung file ../../student-notes.js */
+  state.notes = {}; state.words = state.words || {};
+  var NOTES = null;
+  function buildNotes() {
+    NOTES = GBNotes.mount({
+      rpc: rpc, code: function () { return state.code; }, fileKey: FILEKEY, store: state,
+      part: function () { return T().id; },
+      noteLabel: function () { return T().name + " notes (not submitted)"; },
+      steps: function () { return stepCards(T().id); },
+      save: scheduleSave,
+      frame: function () { var hd = $("#hd"); return { top: hd ? hd.offsetHeight : 56, bottom: 0 }; },
+      main: "#main",
+      selRoots: function () { return [$("#task")]; },
+      placeholder: "Write your plan and ideas here. Type a word and it appears below if it is in the word bank."
+    });
+    state.npEl = NOTES.el; state.npTab = NOTES.tab;
+  }
+  function toggleNotes() { if (NOTES) NOTES.toggle(); }
+  function renderNotes() { if (NOTES) NOTES.render(); }
+  function fitNotes() { if (NOTES) NOTES.fit(); }
+
+  /* ---------- chrome ---------- */
+  function fontStep(d) { var cur = parseFloat(store("fs") || "18"); cur = Math.max(14, Math.min(30, cur + d)); store("fs", String(cur)); document.documentElement.style.setProperty("--fs", cur + "px"); }
+  function setupSplit() {
+    var sp = $("#split"), main = $("#main"), drag = false;
+    sp.addEventListener("pointerdown", function (e) { drag = true; sp.setPointerCapture(e.pointerId); });
+    sp.addEventListener("pointermove", function (e) { if (!drag) return; var r = main.getBoundingClientRect(), p = ((e.clientX - r.left) / r.width) * 100; main.style.setProperty("--lw", Math.max(25, Math.min(70, p)) + "%"); });
+    sp.addEventListener("pointerup", function () { drag = false; });
+  }
+  function boot() {
+    document.documentElement.style.setProperty("--fs", parseFloat(store("fs") || "18") + "px");
+    var tabs = h("nav", { cls: "tabs" });
+    D.tasks.forEach(function (t, i) { tabs.appendChild(h("button", { cls: "tab" + (i === 0 ? " on" : ""), text: t.name, onclick: function () { switchTo(i); } })); });
+    var tools = h("div", { cls: "tools" }, h("span", { id: "sv", cls: "who2" }), h("span", { id: "who", cls: "who2" }),
+      h("button", { cls: "tm", "data-m": "20", text: "20", title: "20 minutes", onclick: function () { setMins(20); } }),
+      h("button", { cls: "tm", "data-m": "40", text: "40", title: "40 minutes", onclick: function () { setMins(40); } }),
+      h("span", { id: "clock", cls: "clock", text: "20:00" }),
+      h("button", { id: "pp", cls: "ib", title: "Start or pause the timer", "aria-label": "Start or pause the timer", html: ICON.play, onclick: toggleClock }),
+      ibtn("reset", "Reset the timer", function () { setMins(state.mins); }),
+      h("span", { cls: "sep" }),
+      h("button", { cls: "fsb", text: "A−", title: "Smaller text", onclick: function () { fontStep(-1); } }),
+      h("button", { cls: "fsb", text: "A+", title: "Larger text", onclick: function () { fontStep(1); } }),
+      ibtn("note", "Student's notes", toggleNotes),
+      ibtn("full", "Full screen", function () { try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { } }, "hide-m"),
+      ibtn("tick", "Submit", submit, "dark"));
+    $("#hd").appendChild(h("div", { cls: "brand", text: D.title })); $("#hd").appendChild(tabs); $("#hd").appendChild(tools);
+    var mv = h("div", { cls: "mv" }); [["t", "Prompt"], ["w", "Answer"]].forEach(function (v) { mv.appendChild(h("button", { cls: "mvb" + (v[0] === "t" ? " on" : ""), "data-v": v[0], text: v[1], onclick: function () { setView(v[0]); } })); });
+    $("#hd").appendChild(mv); $("#main").setAttribute("data-v", "t");
+    setupSplit(); buildNotes(); paint(); paintClock(); paintTm(); login();
+  }
+  document.addEventListener("DOMContentLoaded", boot);
+})();
+</script><script src="../../student-notes.js?v=5"></script>
+</body></html>

@@ -641,10 +641,10 @@ function viewMenu(){
   $('#view').innerHTML=h;
 }
 function viewEntry(){
-  if(C.mode==='hw'&&C.code){var sc0='';try{sc0=localStorage.getItem('gs-sc')||''}catch(e){}
+  if(C.mode==='hw'&&C.code){var sc0='';try{sc0=localStorage.getItem('gs-sc')||''}catch(e){}var hc0='';try{hc0=(new URLSearchParams(location.search).get('s')||decodeURIComponent((location.hash||'').slice(1))).trim()}catch(e){}if(/^(teacher|display|remote|student)$/i.test(hc0))hc0='';if(hc0)sc0=hc0;
     $('#view').innerHTML='<div class="screen"><div class="stu"><div class="tag" style="align-self:flex-start">'+esc(C.program)+'</div><h1 style="margin:.2rem 0;font-size:2.4rem">'+esc(C.title)+'</h1><div class="hint">'+esc(C.date)+'</div>'
      +'<input id="en" placeholder="Student code" autocomplete="off" spellcheck="false" value="'+esc(sc0)+'"><div id="em" class="hint" style="color:var(--bad,#c0392b)"></div>'
-     +'<button class="btn pri" data-act="start" style="min-height:3.6rem">'+ic('r')+'</button></div></div>';return}
+     +'<button class="btn pri" data-act="start" style="min-height:3.6rem">'+ic('r')+'</button></div></div>';var en0=$('#en');if(en0)en0.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();var bt=document.querySelector('[data-act="start"]');if(bt)bt.click()}});if(hc0){try{history.replaceState(null,'',location.pathname)}catch(e){}setTimeout(function(){var bt=document.querySelector('[data-act="start"]');if(bt)bt.click()},0)}return}
   $('#view').innerHTML='<div class="screen"><div class="stu"><div class="tag" style="align-self:flex-start">'+esc(C.program)+'</div><h1 style="margin:.2rem 0;font-size:2.4rem">'+esc(C.title)+'</h1><div class="hint">'+esc(C.date)+'</div>'
    +'<input id="en" placeholder="Your name" autocomplete="off" value="'+esc(ST.name)+'"><input id="ec" placeholder="Your class (e.g. AC08)" autocomplete="off" value="'+esc(ST.cls)+'">'
    +'<button class="btn pri" data-act="start" style="min-height:3.6rem">'+ic('r')+'</button></div></div>';
@@ -933,7 +933,7 @@ document.addEventListener('click',function(e){
   case 'prev':{var cb3=SC[ST.idx].bi;if(ST.idx===BLK[cb3].first&&cb3>0){var pb=BLK[cb3-1];if(pb.game)openBlk(cb3-1);else go(pb.last)}else go(ST.idx-1)}break;
   case 'next':if(lastScreen(ST.idx)&&C.mode==='hw'){ST.view='res';render()}else{var cb2=SC[ST.idx].bi;if(ST.idx===BLK[cb2].last&&BLK[cb2+1])openBlk(cb2+1);else go(ST.idx+1)}break;
   case 'start':{if(C.mode==='hw'&&C.code){var c0=$('#en').value.trim();if(!c0){$('#en').focus();break}
-      var okS=function(nm){ST.sc=c0;ST.name=nm;ST.cls=C.program;try{localStorage.setItem('gs-sc',c0)}catch(e){}ST.view='menu';render()};
+      var okS=function(nm){ST.sc=c0;ST.name=nm;ST.cls=C.program;try{localStorage.setItem('gs-sc',c0)}catch(e){}ST.view='menu';render();openBlk(0)};
       if(c0==='0000'){okS('Teacher');break}
       $('#em').textContent='Checking...';
       rpcNet('student_assignment',{p_student_code:c0,p_assignment_code:C.code}).then(function(j){okS(j.student_name||'')}).catch(function(e){var m=String(e&&e.message||e),b=$('#em');if(b)b.textContent=m.indexOf('student_not_found')>-1?'Student code not found. Please check it and try again.':m.indexOf('assignment_not_found')>-1?'This test has not been assigned to your class.':'Could not reach the server. Check your internet connection and try again.'});break}
