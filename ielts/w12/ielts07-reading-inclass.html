@@ -364,7 +364,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
         while ((match = re.exec(stepText))) {
           if (match.index > last) body.appendChild(document.createTextNode(stepText.slice(last, match.index)));
           var n = +match[1];
-          var blank = h("span", { cls: "flowblank" }, h("b", { text: String(n) }), gapInput(n));
+          var blank = h("span", { cls: "flowblank" }, h("span", { cls: "qcell" }, numTile(n), gapInput(n)));
           if (TEACH) {
             var input = blank.querySelector("input");
             if (input) {
