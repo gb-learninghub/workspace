@@ -347,7 +347,7 @@ ul.intro li{margin:0 0 5px;line-height:1.45;font-size:14px}
       g.notes.forEach(function (note) {
         var row = h("div", { cls: "notesline " + note.type });
         var content = h("div", { cls: "notecontent" });
-        var re = /\\{(\\d+)\\}/g, last = 0, match;
+        var re = /\{(\d+)\}/g, last = 0, match;
         while ((match = re.exec(note.text))) {
           if (match.index > last) content.appendChild(document.createTextNode(note.text.slice(last, match.index)));
           var n = +match[1], item = QMAP[n].it;
