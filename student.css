@@ -992,3 +992,14 @@ html body.student-dashboard-view .student-overview-view,
 html body.student-dashboard-view .student-overview-view .student-main-content,
 html body.student-dashboard-view .student-overview-view .student-main-section{overflow:visible!important;height:auto;max-height:none}
 html body.student-dashboard-view .student-overview-content{grid-template-rows:auto 300px auto;padding-bottom:24px}
+
+/* Mobile: chữ không xuống hàng ở ô thống kê, đầu lịch tuần, lịch sử học */
+@media(max-width:640px){
+.student-overview-top .g-info .stat{gap:10px}
+.student-overview-top .g-info .stat>svg{flex:0 0 56px;width:56px;padding:0 15px}
+.student-overview-top .g-info .stat span{white-space:nowrap}
+body.student-dashboard-view .student-overview-highlight .week-calendar-head{flex-wrap:wrap!important;overflow:visible;row-gap:6px;height:auto!important;margin-bottom:10px!important}
+body.student-dashboard-view .student-overview-highlight .week-calendar-head .overview-week-controls{width:100%;justify-content:space-between}
+.student-history-row .c-day{white-space:nowrap;width:auto}
+.att-strip{gap:6px}.att-strip>div{padding:10px 6px}.att-strip span{white-space:nowrap}
+}
