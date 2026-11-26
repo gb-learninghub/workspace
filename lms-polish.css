@@ -1527,3 +1527,10 @@ body.tuition-page .tuition-row .mh::before{line-height:16px;margin-bottom:4px}
 
 /* Lịch tuần ở điện thoại: bớt khoảng trống phía trên lưới */
 @media(max-width:640px){.sched-main{margin-top:0!important}}
+
+/* Nav mobile tự ẩn khi cuộn xuống, hiện lại khi cuộn lên */
+@media(max-width:640px){
+body>#lms-nav{max-height:90px;transition:max-height .38s cubic-bezier(.2,.8,.2,1),padding .38s cubic-bezier(.2,.8,.2,1),margin .38s cubic-bezier(.2,.8,.2,1),opacity .25s}
+body.nav-hide>#lms-nav{max-height:0!important;padding-top:0!important;padding-bottom:0!important;margin-bottom:0!important;opacity:0;overflow:hidden!important;pointer-events:none}
+}
+@media(prefers-reduced-motion:reduce){body>#lms-nav{transition:none!important}}

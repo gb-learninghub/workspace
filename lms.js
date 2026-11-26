@@ -294,6 +294,17 @@
       var full = brand.querySelector('img');
       if (full) full.classList.add('nav-brand-full');
     }
+    /* Mobile: thanh nav trượt ẩn khi cuộn xuống, hiện lại khi cuộn lên (CSS: body.nav-hide trong lms-polish.css) */
+    var mq = window.matchMedia('(max-width:640px)'), lastY = 0, acc = 0;
+    document.addEventListener('scroll', function (e) {
+      var m = e.target;
+      if (!mq.matches || !m || m.tagName !== 'MAIN') return;
+      var y = m.scrollTop, d = y - lastY; lastY = y;
+      acc = (d > 0) === (acc > 0) ? acc + d : d;
+      if (y < 60) document.body.classList.remove('nav-hide');
+      else if (acc > 8) document.body.classList.add('nav-hide');
+      else if (acc < -6) document.body.classList.remove('nav-hide');
+    }, { passive: true, capture: true });
     var cur = nav.querySelector('[aria-current="page"]');
     if (cur) requestAnimationFrame(function () { nav.scrollLeft = cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2; });
     /* Chuyển tab thống nhất: tải trước trang khi chạm, báo ngay là đang chuyển (mục sáng lên + thanh tiến trình) */
