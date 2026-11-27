@@ -194,6 +194,7 @@ body:not(.tp) #bRev{display:none}.fimg{width:190px;height:190px;border-radius:18
 .chk{width:auto;min-width:48px;padding:0 22px;font-size:18px;font-weight:700}
 .pg:not(.pt) .qt{text-align:center}.pg:not(.pt) .qimg{width:260px;height:260px;margin:0 auto}
 .alt{display:inline-grid;place-items:center;min-height:44px;padding:0 16px;border-radius:22px;border:2px solid var(--blk);color:var(--ink);text-decoration:none;font-weight:600;font-size:18px;white-space:nowrap}
+.chk{display:none!important}
 </style>
 </head>
 <body>
@@ -322,7 +323,7 @@ return[
 {n:1,t:'drag',title:'Tap a hidden word to reveal it, then drag it onto the matching picture.',items:[[15,'lantern'],[16,'carp'],[36,'monk'],[14,'bell'],[17,'offering'],[21,'pray'],[23,'hang'],[24,'release'],[45,'lion dance'],[46,'unicorn dance'],[37,'martial arts'],[7,'kumquat'],[12,'bamboo pole'],[13,'ornamental tree'],[40,'flower village'],[10,'peach blossoms']].map(x=>({n:x[0],w:x[1]}))},
 {n:2,t:'mcq',paged:true,auto:true,title:'Look at the picture and choose the correct word.',items:P.map(p=>({q:img(p[0]),o:p[1],a:p[2],e:p[1][p[2]]}))},
 {n:3,t:'type',title:'Unscramble the letters to make a word.',items:[["tradition","truyền thống"],["decoration","sự trang trí"],["festival","lễ hội"],["longevity","sự sống lâu"],["reunion","sự sum họp"],["offering","đồ thờ cúng"],["maintain","giữ gìn"],["lantern","lồng đèn"]].map((x,i)=>({q:scr(x[0],7+i*3)+'   →   …',a:x[0],h:x[1],e:x[0]+': '+x[1]}))},
-{n:4,t:'mcq',title:'Choose the correct word form.',items:W.map(w=>({q:w[0],o:w[1],a:w[2],e:w[3]}))},
+{n:4,t:'mcq',auto:true,title:'Choose the correct word form.',items:W.map(w=>({q:w[0],o:w[1],a:w[2],e:w[3]}))},
 {n:5,t:'type',title:'Listen and type the word you hear.',items:[["custom","phong tục"],["kumquat","quả cam quất"],["peach","quả đào"],["monk","nhà sư"],["carp","cá chép"],["worship","thờ cúng"],["manner","cách, lối"],["ceremony","nghi lễ"]].map(x=>({q:'…',say:x[0],a:x[0],h:x[1],e:x[0]+': '+x[1]}))},
 {n:6,t:'gap',title:'Complete each sentence with a word from the box.',bank:gb,items:G.map(g=>({q:g[0],a:g[1],e:g[2]}))}
 ]})();
@@ -371,9 +372,9 @@ function bankEx(r,ex,st,upd){
  r.append(bank);const syncs=[];
  function sy(){const used=st.map(s=>s.val);chips.forEach((c,k)=>{const t=ex.bank[k];c.disabled=used.includes(t);c.classList.toggle('pick',pick===t)});syncs.forEach(f=>f())}
  function mkSlot(s){const sl=h('button','slot');
-  sl.onclick=()=>{if(s.ok)return;if(pick){s.val=pick;pick=null}else if(s.val)s.val=null;s.bad=false;sy()};
+  sl.onclick=()=>{if(s.ok)return;if(pick){s.val=pick;pick=null}else if(s.val)s.val=null;s.bad=false;sy();if(s.val&&s.autoCk)s.autoCk()};
   syncs.push(()=>{sl.textContent=s.val||'';sl.className='slot'+(s.val?' has':'')+(s.ok?' ok':'')+(s.bad?' bad':'')});return sl}
- function mkCheck(s,it,fb){const ck=h('button','chk','Enter');ck.setAttribute('aria-label','Check');
+ function mkCheck(s,it,fb){const ck=h('button','chk','Enter');ck.setAttribute('aria-label','Check');s.autoCk=()=>ck.onclick();
   ck.onclick=()=>{if(!s.val||s.ok)return;if(s.val===it.a){s.ok=true;s.bad=false}else s.bad=true;sy();upd()};
   syncs.push(()=>{ck.disabled=!s.val||!!s.ok;fb.className='fb'+(s.ok?' ok':s.bad?' bad':'');fb.innerHTML=s.ok?(it.e?fbOK(it.e):'<b>Correct.</b>'):s.bad?'Not quite. Try again.':''});return ck}
  ex.items.forEach((it,i)=>{const s=st[i];
