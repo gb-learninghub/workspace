@@ -812,13 +812,7 @@ body.np-open #tiles .tg{padding:3px 2px}
     return wrap;
   }
   var FILEKEY = "ac12/w12/ac12-dgnl-12.html";
-  state.notes = {}; state.nview = "notes"; state.vc = {}; state.shown = []; state.nb = null; state.nbf = "";
-  function buildNotes() {
-    var p = h("div", { id: "np", hidden: "hidden", role: "dialog", "aria-label": "Student's notes" });
-    var t = h("button", { id: "npt", text: "Student's notes", "aria-label": "Open student's notes", onclick: toggleNotes });
-    document.body.appendChild(p); document.body.appendChild(t); state.npEl = p; state.npTab = t; renderNotes();
-    window.addEventListener("resize", fitNotes); if (window.ResizeObserver) { var ro = new ResizeObserver(fitNotes); ro.observe($("#hd")); ro.observe($("#tiles")); }
-  }
+  state.vc = {}; state.nb = null;
   function fitNotes() {
     var p = state.npEl, hd = $("#hd"), ft = $("#tiles"); if (!p) return;
     p.style.top = (hd ? hd.offsetHeight : 56) + "px"; p.style.bottom = (ft ? ft.offsetHeight : 52) + "px";
@@ -839,88 +833,6 @@ body.np-open #tiles .tg{padding:3px 2px}
     if (!state.code) return Promise.resolve([]);
     if (!count && Object.prototype.hasOwnProperty.call(state.vc, w)) return Promise.resolve(state.vc[w]);
     return rpc("student_vocab_lookup", { p_student_code: state.code, p_word: w, p_count: !!count }).then(function (r) { state.vc[w] = r || []; return state.vc[w]; }).catch(function () { return []; });
-  }
-  var scanTimer = null;
-  function scanNotes() {
-    clearTimeout(scanTimer);
-    scanTimer = setTimeout(function () {
-      var ws = tokensOf(state.notes[state.p]).filter(function (w) { return !Object.prototype.hasOwnProperty.call(state.vc, w); }).slice(0, 12);
-      Promise.all(ws.map(function (w) { return lookup(w, false); })).then(function () { drawCards(); });
-      drawCards();
-    }, 700);
-  }
-  function cardEntries() {
-    var list = [], seen = {};
-    state.shown.concat(tokensOf(state.notes[state.p])).forEach(function (w) {
-      if (seen[w]) return; seen[w] = 1;
-      var r = state.vc[w]; if (r && r.length) list.push({ w: w, r: r });
-    });
-    return list;
-  }
-  function addWord(e, btn, own) {
-    btn.disabled = true; btn.textContent = "Adding...";
-    rpc("student_vocab_add", { p_student_code: state.code, p_word: e.word || own.word, p_pos: e.pos || "", p_ipa: e.ipa || null, p_meaning: own ? own.meaning : (e.meaning || null), p_definition: e.definition || null, p_file_key: FILEKEY })
-      .then(function () { e.in_notebook = true; state.nb = null; btn.textContent = "In notebook"; if (own) { state.vc[own.word.toLowerCase()] = [{ word: own.word, pos: "", meaning: own.meaning, in_notebook: true }]; drawCards(); } })
-      .catch(function () { btn.disabled = false; btn.textContent = "Try again"; });
-  }
-  function drawCards() {
-    var box = document.getElementById("npc"); if (!box) return; box.innerHTML = "";
-    cardEntries().forEach(function (x) {
-      x.r.forEach(function (e) {
-        var c = h("div", { cls: "vc" }, h("span", { cls: "vw", text: e.word }), h("span", { cls: "vp", text: [e.pos, e.ipa].filter(Boolean).join("  ") }), h("div", { text: e.meaning || "No meaning saved yet" }));
-        if (e.definition) c.appendChild(h("div", { cls: "npm", text: e.definition }));
-        var b = h("button", { cls: "vb", text: e.in_notebook ? "In notebook" : "Add to notebook" });
-        if (e.in_notebook) b.disabled = true; else b.addEventListener("click", function () { addWord(e, b); });
-        c.appendChild(b); box.appendChild(c);
-      });
-    });
-    var miss = document.getElementById("npmiss"); if (miss && miss.dataset.w) {
-      var w = miss.dataset.w; if (state.vc[w] && !state.vc[w].length) {
-        miss.innerHTML = ""; miss.appendChild(h("div", { cls: "npm", text: "“" + w + "” is not in the word bank yet. Add it with your own meaning:" }));
-        var mi = h("input", { type: "text", placeholder: "Your meaning", autocomplete: "off", spellcheck: "false" }), mb = h("button", { cls: "vb", text: "Add to notebook" });
-        mb.addEventListener("click", function () { addWord({}, mb, { word: w, meaning: mi.value.trim() }); });
-        miss.appendChild(mi); miss.appendChild(mb);
-      } else miss.innerHTML = "";
-    }
-  }
-  function renderNotes() {
-    var p = state.npEl; if (!p) return; p.innerHTML = "";
-    var head = h("div", { cls: "nph" });
-    [["notes", "Notes"], ["nb", "Notebook"]].forEach(function (v) { head.appendChild(h("button", { cls: "nt" + (state.nview === v[0] ? " on" : ""), text: v[1], onclick: function () { state.nview = v[0]; renderNotes(); } })); });
-    head.appendChild(h("span", { cls: "sp" })); head.appendChild(h("button", { cls: "ib bare", text: "×", title: "Close", "aria-label": "Close", onclick: toggleNotes }));
-    p.appendChild(head);
-    var body = h("div", { cls: "npb" + (state.nview === "notes" ? " nn" : "") }); p.appendChild(body);
-    if (state.nview === "notes") {
-      body.appendChild(h("div", { cls: "npm", text: D.passages[state.p].label + " notes" }));
-      var ta = h("textarea", { placeholder: "Write your notes here. Type a word and it appears below if it is in the word bank.", spellcheck: "false", autocapitalize: "off", autocomplete: "off" });
-      ta.value = state.notes[state.p] || "";
-      ta.addEventListener("input", function () { state.notes[state.p] = ta.value; scheduleSave(); scanNotes(); });
-      body.appendChild(ta);
-      var inp = h("input", { type: "text", placeholder: "Look up a word", autocomplete: "off", spellcheck: "false", "aria-label": "Look up a word" });
-      function go() {
-        var w = inp.value.trim().toLowerCase(); if (!w) return;
-        lookup(w, true).then(function () { if (state.shown.indexOf(w) < 0) state.shown.unshift(w); var m = document.getElementById("npmiss"); if (m) m.dataset.w = w; drawCards(); });
-      }
-      state.goLookup = go;
-      inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
-      body.appendChild(h("div", { cls: "lk" }, inp, h("button", { cls: "pill", text: "Look up", onclick: go })));
-      body.appendChild(h("div", { id: "npmiss" })); body.appendChild(h("div", { id: "npc" })); drawCards();
-    } else {
-      var f = h("input", { type: "text", placeholder: "Search my notebook", autocomplete: "off", spellcheck: "false", value: state.nbf });
-      body.appendChild(h("div", { cls: "lk" }, f)); var lst = h("div"); body.appendChild(lst);
-      function paintNb() {
-        lst.innerHTML = ""; var q = norm(f.value);
-        (state.nb || []).filter(function (e) { return !q || norm(e.word + " " + (e.meaning || "")).indexOf(q) > -1; }).forEach(function (e) {
-          lst.appendChild(h("div", { cls: "vc" }, h("span", { cls: "vw", text: e.word }), h("span", { cls: "vp", text: [e.pos, e.ipa].filter(Boolean).join("  ") }), h("div", { text: e.meaning || "" })));
-        });
-        if (state.nb && !lst.childNodes.length) lst.appendChild(h("div", { cls: "npm", text: state.nb.length ? "No matching words." : "Your notebook is empty." }));
-      }
-      f.addEventListener("input", function () { state.nbf = f.value; paintNb(); });
-      if (state.nb) paintNb(); else {
-        lst.appendChild(h("div", { cls: "npm", text: "Loading..." }));
-        rpc("student_vocab_list", { p_student_code: state.code }).then(function (r) { state.nb = r || []; paintNb(); }).catch(function () { lst.innerHTML = ""; lst.appendChild(h("div", { cls: "npm err", text: "Could not load your notebook." })); });
-      }
-    }
   }
   /* ---------- demo v2: floating word card ---------- */
   var bl = h("button", { text: "Look up" }), bh = h("button", { text: "Highlight" }), bc = h("button", { text: "Clear" });
@@ -1075,32 +987,7 @@ body.np-open #tiles .tg{padding:3px 2px}
   function addWords(w, r) {
     var rows = (r && r.length) ? r.map(function (e) { return { word: e.word, pos: e.pos || "", ipa: e.ipa || "", meaning: e.meaning || "" }; }) : [{ word: w, pos: "", ipa: "", meaning: "" }];
     var L = wlist(); rows.forEach(function (x) { if (!L.some(function (y) { return y.word.toLowerCase() === x.word.toLowerCase() && y.pos === x.pos; })) L.push(x); });
-    state.dis[w] = 1; scheduleSave(); drawWords();
-  }
-  var POS = ["noun", "verb", "adjective", "adverb", "preposition", "pronoun", "conjunction", "phrase"];
-  function drawWords() {
-    var box = document.getElementById("npw"); if (!box) return; box.innerHTML = "";
-    var L = wlist(); if (!L.length) box.appendChild(h("div", { cls: "none", text: "Words you look up appear here." }));
-    L.forEach(function (x, i) {
-      var sel = h("select", { "aria-label": "Part of speech of " + x.word });
-      var opts = POS.slice(); if (x.pos && opts.indexOf(x.pos) < 0) opts.push(x.pos);
-      sel.appendChild(h("option", { value: "", text: "Word class" }));
-      opts.forEach(function (o) { var op = h("option", { value: o, text: o }); if (o === x.pos) op.selected = true; sel.appendChild(op); });
-      sel.addEventListener("change", function () { x.pos = sel.value; x.added = false; scheduleSave(); drawWords(); });
-      var mi = h("input", { cls: "wmi", type: "text", placeholder: "Meaning", autocomplete: "off", spellcheck: "false", value: x.meaning || "", "aria-label": "Meaning of " + x.word });
-      mi.addEventListener("input", function () { x.meaning = mi.value; x.added = false; scheduleSave(); });
-      var add = h("button", { cls: "ib bare", title: x.added ? "In notebook" : "Add to notebook", "aria-label": "Add " + x.word + " to notebook", text: x.added ? "✓" : "+" });
-      if (x.added) add.disabled = true; else add.addEventListener("click", function () {
-        add.disabled = true; add.textContent = "…";
-        rpc("student_vocab_add", { p_student_code: state.code, p_word: x.word, p_pos: x.pos || "", p_ipa: x.ipa || null, p_meaning: x.meaning || null, p_file_key: FILEKEY })
-          .then(function () { x.added = true; state.nb = null; scheduleSave(); drawWords(); }).catch(function () { add.disabled = false; add.textContent = "!"; });
-      });
-      box.appendChild(h("div", { cls: "wr" },
-        h("button", { cls: "ib bare", title: "Listen", "aria-label": "Listen to " + x.word, html: ICON.spk, onclick: function () { speak(x.word); } }),
-        h("span", { cls: "ww", text: x.word }), sel, add,
-        h("button", { cls: "ib bare wx", text: "×", title: "Remove", "aria-label": "Remove " + x.word, onclick: function () { L.splice(i, 1); scheduleSave(); drawWords(); } }),
-        h("span", { cls: "wi", text: x.ipa }), mi));
-    });
+    state.dis[w] = 1; scheduleSave();
   }
   function autoAdd(r) {
     (r || []).forEach(function (e) {
@@ -1111,13 +998,6 @@ body.np-open #tiles .tg{padding:3px 2px}
   }
   var lookup0 = lookup;
   lookup = function (w, count) { return lookup0(w, count).then(function (r) { if (count) addWords(w, r); return r; }); };
-  /* look-up bar on top, notes below */
-  var renderNotes0 = renderNotes;
-  renderNotes = function () {
-    renderNotes0(); var b = state.npEl && state.npEl.querySelector(".npb.nn"); if (!b) return;
-    var lk = b.querySelector(".lk"); if (lk) b.insertBefore(lk, b.firstChild);
-    var w = h("div", { id: "npw", cls: "wl" }); if (lk) lk.after(w); drawWords();
-  };
 
   /* ---------- in-class: per-question check, evidence, students' answers ---------- */
   ICON.evid = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h6M14.5 5.5l4 4L9 19l-4.5.5L5 15zM14.5 5.5L17 3l4 4-2.5 2.5"/></svg>';
